@@ -3,7 +3,7 @@ import { User } from '../types';
 import GoogleSheetsAPI from '../utils/googleSheets';
 
 const TEACHER_LEVELS: Record<string, number> = {
-  'teacher1@baladatta.edu': 1,
+  'rakeshjai0369@gmail.com': 1,
   'teacher2@baladatta.edu': 2,
   'teacher3@baladatta.edu': 3,
   'teacher4@baladatta.edu': 4,
