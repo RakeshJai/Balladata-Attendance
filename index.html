@@ -1,301 +1,153 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Attendance System</title>
-
-  <!-- Material Design Lite -->
-  <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
-  <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
-
-  <!-- Google Identity & API -->
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script src="https://apis.google.com/js/api.js"></script>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Baladatta Tamil School Attendance</title>
   <style>
-    :root {
-      --bg-color: #121212;
-      --card-color: #1e1e1e;
-      --text-color: #ffffff;
-      --accent-color: #bb86fc;
-      --error-color: #cf6679;
-    }
-
     body {
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      font-family: 'Roboto', sans-serif;
-      margin: 0;
-    }
-
-    header.mdl-layout__header {
-      background-color: #000;
-      color: white;
-      box-shadow: none;
-      border-bottom: 1px solid #333;
-    }
-
-    .page-content {
-      padding: 20px;
-      max-width: 800px;
-      margin: 0 auto;
+      font-family: "Poppins", sans-serif;
+      background-color: #121212;
+      color: #f5f5f5;
       text-align: center;
+      margin: 0;
+      padding: 0;
     }
 
-    .mdl-button--colored, .mdl-button--accent {
-      background-color: var(--accent-color) !important;
-      color: #000 !important;
+    h1, h2 {
+      color: #ff914d;
     }
 
-    .mdl-button--raised {
+    .container {
+      margin-top: 60px;
+    }
+
+    button {
+      background-color: #ff914d;
+      color: #121212;
+      border: none;
       border-radius: 8px;
-      text-transform: none;
-    }
-
-    .student-card {
-      background-color: var(--card-color);
-      color: var(--text-color);
-      padding: 15px;
-      margin: 10px 0;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(255, 255, 255, 0.05);
-      transition: transform 0.2s ease;
-    }
-
-    .student-card:hover {
-      transform: translateY(-3px);
-    }
-
-    .mdl-radio__label {
-      color: var(--text-color);
-    }
-
-    .level-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 15px;
-      margin-top: 20px;
-    }
-
-    .level-btn {
-      background-color: var(--card-color);
-      color: var(--text-color);
-      border: 1px solid #333;
-      padding: 15px;
-      border-radius: 10px;
+      padding: 12px 20px;
+      margin: 8px;
       cursor: pointer;
       font-size: 16px;
+      font-weight: bold;
       transition: all 0.2s ease;
     }
 
-    .level-btn:hover {
-      background-color: var(--accent-color);
-      color: #000;
-      transform: translateY(-3px);
+    button:hover {
+      background-color: #ffad66;
+      transform: scale(1.05);
     }
 
-    #statusMessage {
-      font-weight: bold;
-      margin: 10px 0;
+    #studentList {
+      margin-top: 30px;
+      text-align: left;
+      display: inline-block;
+      background-color: #1e1e1e;
+      padding: 20px;
+      border-radius: 10px;
+      min-width: 300px;
     }
 
-    #backBtn {
-      margin-top: 10px;
-      background-color: #333 !important;
-      color: #fff !important;
+    .student-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #333;
     }
 
-    #backBtn:hover {
-      background-color: #444 !important;
-    }
-
-    .fade {
-      animation: fadeIn 0.3s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    input[type="text"] {
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #444;
+      background-color: #222;
+      color: white;
     }
   </style>
 </head>
 <body>
-  <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
-    <header class="mdl-layout__header">
-      <div class="mdl-layout__header-row">
-        <span class="mdl-layout-title">Attendance System</span>
-      </div>
-    </header>
-    <main class="mdl-layout__content">
-      <div class="page-content fade">
+  <div class="container" id="home">
+    <h1>Baladatta Tamil School Attendance</h1>
+    <p>Select a Level:</p>
+    <div id="levels">
+      <button onclick="openLevel('Level1')">Level 1</button>
+      <button onclick="openLevel('Level2')">Level 2</button>
+      <button onclick="openLevel('Level3')">Level 3</button>
+      <button onclick="openLevel('Level4')">Level 4</button>
+      <button onclick="openLevel('Level5')">Level 5</button>
+      <button onclick="openLevel('Level6')">Level 6</button>
+    </div>
+  </div>
 
-        <!-- LOGIN -->
-        <button id="loginBtn" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">
-          Sign in with Google
-        </button>
-
-        <!-- LEVEL SELECTOR -->
-        <div id="levelSelector" style="display:none;">
-          <p>Welcome, <span id="teacherNameDisplay"></span></p>
-          <h4>Select Level</h4>
-          <div class="level-grid">
-            <div class="level-btn" onclick="selectLevel('Level1')">Level 1</div>
-            <div class="level-btn" onclick="selectLevel('Level2')">Level 2</div>
-            <div class="level-btn" onclick="selectLevel('Level3')">Level 3</div>
-            <div class="level-btn" onclick="selectLevel('Level4')">Level 4</div>
-            <div class="level-btn" onclick="selectLevel('Level5')">Level 5</div>
-            <div class="level-btn" onclick="selectLevel('Level6')">Level 6</div>
-          </div>
-        </div>
-
-        <!-- ATTENDANCE SECTION -->
-        <div id="attendanceSection" style="display:none;">
-          <h4>Mark Attendance for <span id="currentLevelDisplay"></span></h4>
-          <button id="backBtn" class="mdl-button mdl-js-button mdl-button--raised">⬅ Back</button>
-          <div id="statusMessage"></div>
-          <div id="studentList"></div>
-          <button id="submitBtn" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent submit-btn">
-            Submit Attendance
-          </button>
-        </div>
-      </div>
-    </main>
+  <div class="container" id="levelPage" style="display:none;">
+    <h2 id="levelTitle"></h2>
+    <div id="studentList"></div>
+    <br>
+    <input type="text" id="newStudent" placeholder="Enter student name">
+    <button onclick="addStudent()">Add Student</button>
+    <br><br>
+    <button onclick="goBack()">⬅ Back</button>
   </div>
 
   <script>
-    const CLIENT_ID = "1062324886633-brv79jb9smbkrpd9iuvtj5galvhbqfqh.apps.googleusercontent.com";
-    const SPREADSHEET_ID = "1qnNF6HZXxWksMjJ-Z06Ovk64CWMvXFHeTieaTi8xZ5M";
-    const SCOPES = "https://www.googleapis.com/auth/spreadsheets";
+    const SHEET_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEBAPP_URL"; // <-- Replace this
 
-    let tokenClient;
-    let attendance = {};
-    let teacherName = "";
     let currentLevel = "";
 
-    gapi.load("client", async () => {
-      await gapi.client.init({
-        discoveryDocs: ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
-      });
-    });
-
-    window.onload = () => {
-      tokenClient = google.accounts.oauth2.initTokenClient({
-        client_id: CLIENT_ID,
-        scope: SCOPES,
-        callback: async (resp) => {
-          if (resp.error !== undefined) {
-            console.error(resp);
-            showStatus("OAuth Error", false);
-            return;
-          }
-
-          teacherName = "Teacher";
-          document.getElementById("teacherNameDisplay").textContent = teacherName;
-
-          document.getElementById("loginBtn").style.display = "none";
-          document.getElementById("levelSelector").style.display = "block";
-        },
-      });
-
-      document.getElementById("loginBtn").onclick = () => {
-        tokenClient.requestAccessToken({ prompt: "consent" });
-      };
-
-      document.getElementById("submitBtn").onclick = submitAttendance;
-      document.getElementById("backBtn").onclick = goBack;
-    };
-
-    function selectLevel(level) {
+    function openLevel(level) {
       currentLevel = level;
-      document.getElementById("levelSelector").style.display = "none";
-      document.getElementById("attendanceSection").style.display = "block";
-      document.getElementById("currentLevelDisplay").textContent = level;
-      loadStudents();
+      document.getElementById("home").style.display = "none";
+      document.getElementById("levelPage").style.display = "block";
+      document.getElementById("levelTitle").textContent = level + " Attendance";
+      loadStudents(level);
     }
 
     function goBack() {
-      document.getElementById("attendanceSection").style.display = "none";
-      document.getElementById("levelSelector").style.display = "block";
-      document.getElementById("studentList").innerHTML = "";
-      attendance = {};
-      currentLevel = "";
+      document.getElementById("levelPage").style.display = "none";
+      document.getElementById("home").style.display = "block";
     }
 
-    async function loadStudents() {
-      try {
-        const response = await gapi.client.sheets.spreadsheets.values.get({
-          spreadsheetId: SPREADSHEET_ID,
-          range: `${currentLevel}!A2:A`,
-        });
+    async function loadStudents(level) {
+      const res = await fetch(`${SHEET_URL}?action=get&level=${level}`);
+      const data = await res.json();
+      const list = document.getElementById("studentList");
+      list.innerHTML = "";
 
-        const students = response.result.values ? response.result.values.flat() : [];
-        renderStudents(students);
-      } catch (err) {
-        console.error("Error loading students:", err);
-        showStatus("Error loading students", false);
-      }
-    }
-
-    function renderStudents(students) {
-      const listDiv = document.getElementById("studentList");
-      listDiv.innerHTML = "";
-
-      students.forEach((student) => {
-        attendance[student] = "Absent";
-
-        const div = document.createElement("div");
-        div.className = "student-card mdl-shadow--2dp";
-
-        const radios = `
-          <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="present-${student}">
-            <input type="radio" id="present-${student}" class="mdl-radio__button" name="${student}" value="Present"
-              onchange="mark('${student}', 'Present')" />
-            <span class="mdl-radio__label">Present</span>
-          </label>
-          <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="absent-${student}">
-            <input type="radio" id="absent-${student}" class="mdl-radio__button" name="${student}" value="Absent"
-              checked onchange="mark('${student}', 'Absent')" />
-            <span class="mdl-radio__label">Absent</span>
-          </label>
+      data.forEach(student => {
+        const item = document.createElement("div");
+        item.className = "student-item";
+        item.innerHTML = `
+          <span>${student.name}</span>
+          <button onclick="toggleStatus('${student.name}', '${student.status}')">
+            ${student.status}
+          </button>
         `;
-
-        div.innerHTML = `<span class="student-name">${student}</span><div>${radios}</div>`;
-        listDiv.appendChild(div);
-        componentHandler.upgradeElements(div);
+        list.appendChild(item);
       });
     }
 
-    function mark(student, status) {
-      attendance[student] = status;
+    async function toggleStatus(name, currentStatus) {
+      const newStatus = currentStatus === "Present" ? "Absent" : "Present";
+      await fetch(SHEET_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "update", level: currentLevel, name, status: newStatus }),
+        headers: { "Content-Type": "application/json" },
+      });
+      loadStudents(currentLevel);
     }
 
-    function showStatus(msg, success = true) {
-      const status = document.getElementById("statusMessage");
-      status.textContent = msg;
-      status.style.color = success ? "var(--accent-color)" : "var(--error-color)";
-      setTimeout(() => {
-        status.textContent = "";
-      }, 3000);
-    }
-
-    async function submitAttendance() {
-      try {
-        const students = Object.keys(attendance);
-        for (let i = 0; i < students.length; i++) {
-          const student = students[i];
-          await gapi.client.sheets.spreadsheets.values.update({
-            spreadsheetId: SPREADSHEET_ID,
-            range: `${currentLevel}!B${i + 2}`,
-            valueInputOption: "RAW",
-            resource: { values: [[attendance[student]]] },
-          });
-        }
-        showStatus("Attendance submitted!");
-      } catch (err) {
-        console.error(err);
-        showStatus("Error submitting attendance", false);
-      }
+    async function addStudent() {
+      const name = document.getElementById("newStudent").value.trim();
+      if (!name) return alert("Please enter a name.");
+      await fetch(SHEET_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "add", level: currentLevel, name }),
+        headers: { "Content-Type": "application/json" },
+      });
+      document.getElementById("newStudent").value = "";
+      loadStudents(currentLevel);
     }
   </script>
 </body>
