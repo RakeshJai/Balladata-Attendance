@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Quick Attendance — Direct Sheets PWA</title>
+
+  <!-- Inline minimal styles -->
+  <style>
+    :root{--bg:#f4f7fb;--card:#fff;--accent:#1a73e8;--muted:#666}
+    *{box-sizing:border-box}
+    body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:0;padding:20px;background:var(--bg);color:#111}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    h1{margin:0;font-size:1.25rem}
+    .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(20,20,40,0.06);margin-top:16px}
+    label{display:block;margin:10px 0}
+    input[type="text"]{width:100%;padding:10px;border-radius:8px;border:1px solid #ddd}
+    button{background:var(--accent);color:#fff;padding:10px 14px;border:none;border-radius:8px;cursor:pointer}
+    .hidden{display:none}
+    footer{margin-top:18px;color:var(--muted);font-size:0.9rem}
+    #user img{width:36px;height:36px;border-radius:50%;vertical-align:middle;margin-right:8px}
+    .smallmuted{color:var(--muted);font-size:0.9rem}
+    #status{margin-top:12px}
+    .danger{color:crimson}
+    .ok{color:green}
+  </style>
+
+  <!-- Google Identity Services (for OAuth token flow) -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+
+<body>
+  <header>
+    <h1>Quick Attendance</h1>
+    <div id="signin-container"></div>
+    <div id="user" class="hidden">
+      <img id="user-pic" alt="avatar" />
+      <span id="user-email"></span>
+      <button id="signout">Sign out</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="card">
+      <div id="not-signed" class="">
+        <p class="smallmuted">Sign in with Google and grant Sheets access to append attendance rows.</p>
+      </div>
+
+      <form id="attendance-form" class="hidden" autocomplete="off">
+        <label>
+          Student name
+          <input id="student" type="text" name="student" required placeholder="Student full name" />
+        </label>
+
+        <label>
+          Level (auto-filled)
+          <input id="level" type="text" readonly />
+        </label>
+
+        <label>
+          Present?
+          <select id="present">
+            <option value="Present">Present</option>
+            <option value="Absent">Absent</option>
+          </select>
+        </label>
+
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button id="submit" type="submit">Submit</button>
+          <button id="quick" type="button">Quick: Mark Present</button>
+        </div>
+
+        <div id="status" aria-live="polite"></div>
+      </form>
+    </section>
+
+    <section class="card smallmuted" style="margin-top:12px;">
+      <strong>Notes</strong>
+      <ul>
+        <li>The app requests Sheets API scope — configure OAuth in Google Cloud and add this origin to Authorized JS origins.</li>
+        <li>Make tabs in the sheet exactly as the level names used in the mapping (e.g. <code>Level1</code>).</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <div class="smallmuted">PWA-ready — add a manifest and service worker (optional). Replace placeholders inside the script before publishing.</div>
+  </footer>
+
+  <!-- App logic -->
+  <script type="module">
+  /**
+   * Replace these values:
+   * - CLIENT_ID: OAuth client ID (Web application) from Google Cloud Console
+   * - SHEET_ID: Google Sheet ID (between /d/ and /edit in the sheet URL)
+   *
+   * LEVELS: mapping from teacher email -> sheet tab name (case-sensitive).
+   *
+   * Notes:
+   * - In Google Cloud Console: enable "Google Sheets API", create OAuth client ID (Web app),
+   *   add your site origin (https://<username>.github.io) and http://localhost:5500 for testing.
+   * - The app requests the `https://www.googleapis.com/auth/spreadsheets` scope.
+   */
+
+  const CLIENT_ID = "YOUR_OAUTH_CLIENT_ID.apps.googleusercontent.com"; // <<-- REPLACE
+  const SHEET_ID   = "YOUR_SHEET_ID"; // <<-- REPLACE
+
+  // Map teacher email -> sheet tab name
+  const LEVELS = {
+    // example:
+    // "alice.teacher@gmail.com": "Level1",
+    // "bob.teacher@gmail.com": "Level2",
+  };
+
+  // DOM
+  const signinContainer = document.getElementById('signin-container');
+  const userDiv = document.getElementById('user');
+  const userEmailSpan = document.getElementById('user-email');
+  const userPic = document.getElementById('user-pic');
+  const signoutBtn = document.getElementById('signout');
+  const form = document.getElementById('attendance-form');
+  const studentInput = document.getElementById('student');
+  const levelInput = document.getElementById('level');
+  const presentInput = document.getElementById('present');
+  const statusDiv = document.getElementById('status');
+  const quickBtn = document.getElementById('quick');
+
+  // OAuth token client (GIS)
+  let tokenClient;
+  let accessToken = null;
+  let currentUser = null;
+
+  // Initialize GIS components on load
+  window.onload = () => {
+    if (!CLIENT_ID || CLIENT_ID.includes("YOUR_OAUTH_CLIENT_ID")) {
+      showStatus("⚠️ Replace CLIENT_ID & SHEET_ID placeholders in the script before testing.", "danger");
+    }
+
+    // token client grants access token with requested scopes
+    tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: CLIENT_ID,
+      scope: "https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/userinfo.email openid profile",
+      callback: (tokenResponse) => {
+        if (tokenResponse.error) {
+          showStatus("Token error: " + tokenResponse.error, "danger");
+          return;
+        }
+        accessToken = tokenResponse.access_token;
+        // fetch userinfo to populate UI and check mapping
+        fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+          headers: { Authorization: "Bearer " + accessToken }
+        }).then(r => r.json()).then(user => {
+          currentUser = user;
+          onSignedIn();
+        }).catch(err => {
+          console.error(err);
+          showStatus("Failed to fetch user info", "danger");
+        });
+      }
+    });
+
+    // Render a basic Google Sign-in button (Id tokens are optional; we use tokenClient for access token)
+    google.accounts.id.initialize({ client_id: CLIENT_ID });
+    google.accounts.id.renderButton(signinContainer, { theme: "outline", size: "large" });
+
+    // When user clicks the rendered button, we want to request an access token too.
+    // Easiest approach: make sign-in container clickable to request access token.
+    signinContainer.addEventListener("click", () => {
+      // Request access token interactively
+      tokenClient.requestAccessToken({prompt: 'consent'}); // prompt=consent ensures user sees consent
+    });
+  };
+
+  function onSignedIn() {
+    if (!currentUser) return;
+    signinContainer.classList.add('hidden');
+    userDiv.classList.remove('hidden');
+    form.classList.remove('hidden');
+    userEmailSpan.textContent = currentUser.email;
+    userPic.src = currentUser.picture || "";
+
+    // lookup assignment
+    const assignedTab = LEVELS[currentUser.email];
+    if (!assignedTab) {
+      showStatus("You don't appear in the LEVELS mapping. Add your email to the LEVELS object.", "danger");
+      levelInput.value = "";
+      // keep form visible but disabled
+      form.querySelectorAll('input,select,button').forEach(el => el.disabled = true);
+      return;
+    }
+
+    levelInput.value = assignedTab;
+    form.querySelectorAll('input,select,button').forEach(el => el.disabled = false);
+    showStatus("Signed in as " + currentUser.email + ". Ready.", "ok");
+  }
+
+  signoutBtn.addEventListener('click', () => {
+    // revoke token locally and refresh UI
+    if (accessToken) {
+      // Optional: revoke token (best-effort)
+      fetch('https://oauth2.googleapis.com/revoke?token=' + accessToken, { method: 'POST' })
+        .catch(()=>{});
+    }
+    accessToken = null;
+    currentUser = null;
+    signinContainer.classList.remove('hidden');
+    userDiv.classList.add('hidden');
+    form.classList.add('hidden');
+    clearStatus();
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!accessToken || !currentUser) {
+      showStatus("Sign in and grant Sheets access first.", "danger");
+      return;
+    }
+
+    const assignedTab = LEVELS[currentUser.email];
+    if (!assignedTab) {
+      showStatus("You are not assigned to a level (update LEVELS mapping).", "danger");
+      return;
+    }
+
+    const studentName = studentInput.value.trim();
+    if (!studentName) {
+      showStatus("Enter student name.", "danger");
+      return;
+    }
+
+    const present = presentInput.value;
+    const timestamp = new Date().toLocaleString();
+
+    const range = `${assignedTab}!A:D`; // append to columns A-D
+    const body = {
+      values: [[ timestamp, currentUser.email, studentName, present ]]
+    };
+
+    showStatus("Submitting...", null);
+    try {
+      const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=RAW`, {
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer ' + accessToken,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (!res.ok) {
+        const txt = await res.text();
+        console.error('Sheets API error', txt);
+        throw new Error(txt);
+      }
+
+      showStatus("✅ Saved", "ok");
+      form.reset();
+    } catch (err) {
+      console.error(err);
+      showStatus("Error saving attendance. Check console and OAuth scopes.", "danger");
+    }
+  });
+
+  quickBtn.addEventListener('click', async () => {
+    // Quick mark present: if student name empty, use "Unknown"
+    if (!studentInput.value.trim()) studentInput.value = 'Unknown';
+    presentInput.value = 'Present';
+    form.requestSubmit();
+  });
+
+  function showStatus(msg, level) {
+    statusDiv.textContent = msg;
+    statusDiv.className = "";
+    if (level === "danger") statusDiv.classList.add('danger');
+    if (level === "ok") statusDiv.classList.add('ok');
+  }
+  function clearStatus() { statusDiv.textContent = ""; }
+  </script>
+</body>
+</html>
