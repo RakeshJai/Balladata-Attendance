@@ -12,6 +12,9 @@
   <!-- Google Identity & API -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://apis.google.com/js/api.js"></script>
+  
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ff6e4a">
 
   <style>
     :root {
@@ -219,8 +222,14 @@
   <header>Baladatta Tamil School Attendance</header>
 
   <div class="page-content">
+    
+    <div id="authContainer" style="display:flex; flex-direction:column; align-items:center; gap:12px; margin-bottom:20px;">
+      <button id="loginBtn" class="custom-login-btn">Sign in with Google</button>
+      <button id="installBtn" style="display:none; padding: 12px 24px; border-radius: 8px; background: #ff6e4a; color: #000; border: none; cursor: pointer;">
+        Install App
+      </button>
+    </div>
 
-    <button id="loginBtn" class="custom-login-btn">Sign in with Google</button>
 
     <div id="levelSelection"></div>
 
@@ -390,6 +399,44 @@
         showStatus("Error adding student", false);
       }
     }
+
+    let deferredPrompt;
+    const installBtn = document.getElementById('installBtn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // Prevent Chrome from showing the default prompt
+      e.preventDefault();
+      deferredPrompt = e;
+      
+      // Show our custom install button
+      installBtn.style.display = 'inline-block';
+    });
+
+    installBtn.addEventListener('click', async () => {
+      installBtn.style.display = 'none';
+      if (deferredPrompt) {
+        deferredPrompt.prompt();  // Show the browser install prompt
+        const choiceResult = await deferredPrompt.userChoice;
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted the install prompt');
+        } else {
+          console.log('User dismissed the install prompt');
+        }
+        deferredPrompt = null;
+      }
+    });
+
   </script>
+
+  <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js')
+        .then(reg => console.log('Service Worker registered', reg))
+        .catch(err => console.log('Service Worker failed', err));
+    });
+  }
+  </script>
+
 </body>
 </html>
