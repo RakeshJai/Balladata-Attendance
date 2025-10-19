@@ -15,7 +15,7 @@
 
   <style>
     :root {
-      --accent: #ff8a4b;
+      --accent: #ff6e4a ;
       --present: #4caf50;
       --absent: #ff4c4c;
       --card-bg: #121212;
@@ -27,7 +27,9 @@
       font-family: 'Inter', sans-serif;
       color: var(--text);
       background: linear-gradient(180deg, #0b0b0b, #1a1a1a);
-      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       min-height: 100vh;
     }
 
@@ -55,6 +57,7 @@
       font-size: 20px;
       font-weight: bold;
       text-align: center;
+      width: 100%;
       position: relative;
       z-index: 1;
     }
@@ -62,9 +65,13 @@
     .page-content {
       padding: 20px;
       max-width: 800px;
+      width: 100%;
       margin: 40px auto;
       position: relative;
       z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .student-card {
@@ -72,14 +79,10 @@
       border-radius: 12px;
       padding: 16px;
       margin-bottom: 12px;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
       display: flex;
       justify-content: space-between;
       align-items: center;
-    }
-    .student-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 20px rgba(255, 140, 75, 0.3);
+      width: 100%;
     }
 
     .student-name {
@@ -89,17 +92,22 @@
     #statusMessage {
       margin: 10px 0;
       font-weight: bold;
-      transition: opacity 0.3s ease, transform 0.3s ease;
     }
 
-    /* Buttons */
-    button.mdl-button, .custom-login-btn {
-      transition: 0.3s;
+    button.mdl-button, .custom-login-btn, .level-btn, #submitBtn, #backBtn, #addStudentBtn {
+      background: #1a1a1a !important;
+      color: var(--accent) !important;
+      border: 2px solid var(--accent);
+      border-radius: 8px;
+      padding: 12px 20px;
+      margin: 8px;
+      font-size: 16px;
       cursor: pointer;
+      transition: 0.3s;
     }
-    button.mdl-button:hover, .custom-login-btn:hover {
-      box-shadow: 0 4px 12px rgba(255,140,75,0.5);
-      transform: translateY(-2px);
+    button.mdl-button:hover, .custom-login-btn:hover, .level-btn:hover, #submitBtn:hover, #backBtn:hover, #addStudentBtn:hover {
+      background: var(--accent) !important;
+      color: #000 !important;
     }
     button:active {
       transform: scale(0.96);
@@ -107,30 +115,8 @@
 
     /* Custom Google Sign-In */
     .custom-login-btn {
-      background: #1a1a1a;
-      color: var(--accent);
-      border: 2px solid var(--accent);
-      border-radius: 8px;
-      padding: 12px 20px;
-      font-size: 16px;
-      margin-bottom: 20px;
-    }
-    .custom-login-btn:hover {
-      background: var(--accent);
-      color: #000;
-    }
-
-    /* Back button */
-    #backBtn {
-      background-color: var(--accent);
-      color: #111;
-      transition: 0.3s;
-    }
-    #backBtn:hover {
-      background-color: #ff7043; 
-      color: #fff;
-      box-shadow: 0 4px 12px rgba(255,140,75,0.5);
-      transform: translateY(-2px);
+      display: block;
+      margin: 60px auto 20px auto;
     }
 
     /* Toggle Switch */
@@ -176,6 +162,7 @@
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
+      width: 100%;
     }
     .add-student-container input {
       flex: 1;
@@ -192,19 +179,15 @@
   <header>Baladatta Tamil School Attendance</header>
 
   <div class="page-content">
+    <button id="loginBtn" class="custom-login-btn">Sign in with Google</button>
 
-    <!-- Centered Google Sign-In -->
-    <div style="text-align:center;">
-      <button id="loginBtn" class="custom-login-btn">
-        Sign in with Google
-      </button>
+    <div id="levelSelection" style="display:none;">
+      <h3>Select Your Level</h3>
+      <div id="levelButtons"></div>
     </div>
 
     <div id="attendanceSection" style="display:none;">
-      <button id="backBtn" class="mdl-button mdl-js-button mdl-button--raised" style="margin-bottom:20px;">
-        ← Back
-      </button>
-
+      <button id="backBtn">← Back</button>
       <p>Logged in as: <span id="teacherNameDisplay"></span></p>
       <h4>Mark Attendance</h4>
       <div id="statusMessage"></div>
@@ -212,14 +195,10 @@
 
       <div class="add-student-container">
         <input type="text" id="newStudentName" placeholder="Enter new student name" />
-        <button id="addStudentBtn" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent">
-          Add Student
-        </button>
+        <button id="addStudentBtn">Add Student</button>
       </div>
 
-      <button id="submitBtn" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent" style="margin-top:20px;">
-        Submit Attendance
-      </button>
+      <button id="submitBtn">Submit Attendance</button>
     </div>
   </div>
 
@@ -227,13 +206,14 @@
     const CLIENT_ID = "1062324886633-brv79jb9smbkrpd9iuvtj5galvhbqfqh.apps.googleusercontent.com";
     const SPREADSHEET_ID = "1qnNF6HZXxWksMjJ-Z06Ovk64CWMvXFHeTieaTi8xZ5M";
     const SCOPES = "https://www.googleapis.com/auth/spreadsheets";
-
-    const TEACHER_LEVEL = "Level1"; // testing single level
+    const LEVELS = ["Level1","Level2","Level3","Level4","Level5","Level6"];
 
     let tokenClient;
     let attendance = {};
     let teacherName = "";
+    let TEACHER_LEVEL = "";
 
+    const levelButtonsDiv = document.getElementById("levelButtons");
     const backBtn = document.getElementById("backBtn");
     const studentList = document.getElementById("studentList");
 
@@ -248,113 +228,120 @@
         client_id: CLIENT_ID,
         scope: SCOPES,
         callback: async (resp) => {
-          if (resp.error !== undefined) {
-            console.error(resp);
-            showStatus("OAuth Error", false);
-            return;
-          }
+          if(resp.error !== undefined){ console.error(resp); showStatus("OAuth Error",false); return; }
           teacherName = "Teacher";
           document.getElementById("teacherNameDisplay").textContent = teacherName;
-          document.getElementById("attendanceSection").style.display = "block";
-          backBtn.style.display = "inline-block";
-          document.getElementById("loginBtn").style.display = "none";
-          await loadStudents();
-        },
+          document.getElementById("loginBtn").style.display="none";
+          document.getElementById("levelSelection").style.display="block";
+          renderLevels();
+        }
       });
 
-      document.getElementById("loginBtn").onclick = () => {
-        tokenClient.requestAccessToken({ prompt: "consent" });
+      document.getElementById("loginBtn").onclick = () => tokenClient.requestAccessToken({ prompt:"consent" });
+      backBtn.onclick = () => {
+        document.getElementById("attendanceSection").style.display="none";
+        document.getElementById("levelSelection").style.display="block";
+        studentList.innerHTML="";
       };
-
       document.getElementById("submitBtn").onclick = submitAttendance;
       document.getElementById("addStudentBtn").onclick = addStudent;
-      backBtn.onclick = () => {
-        document.getElementById("attendanceSection").style.display = "none";
-        document.getElementById("loginBtn").style.display = "block";
-        backBtn.style.display = "none";
-        studentList.innerHTML = "";
-      };
     };
 
-    async function loadStudents() {
-      try {
-        const response = await gapi.client.sheets.spreadsheets.values.get({
-          spreadsheetId: SPREADSHEET_ID,
-          range: `${TEACHER_LEVEL}!A2:A`,
-        });
-        const students = response.result.values ? response.result.values.flat() : [];
-        renderStudents(students);
-      } catch (err) {
-        console.error("Error loading students:", err);
-        showStatus("Error loading students", false);
-      }
+    function renderLevels(){
+      levelButtonsDiv.innerHTML="";
+      LEVELS.forEach(lvl=>{
+        const btn=document.createElement("button");
+        btn.className="level-btn";
+        btn.textContent=lvl;
+        btn.onclick=()=>selectLevel(lvl);
+        levelButtonsDiv.appendChild(btn);
+      });
     }
 
-    function renderStudents(students) {
-      studentList.innerHTML = "";
-      students.forEach((student) => {
-        attendance[student] = "Absent";
-        const div = document.createElement("div");
-        div.className = "student-card";
+    async function selectLevel(level){
+      TEACHER_LEVEL=level;
+      document.getElementById("levelSelection").style.display="none";
+      document.getElementById("attendanceSection").style.display="block";
+      studentList.innerHTML="";
+      attendance={};
+      await loadStudents();
+    }
 
-        div.innerHTML = `
-          <span class="student-name">${student}</span>
-          <label class="toggle-switch">
-            <input type="checkbox" onchange="mark('${student}', this.checked)">
-            <span class="slider"></span>
-          </label>
-        `;
+    async function loadStudents(){
+      try{
+        const response = await gapi.client.sheets.spreadsheets.values.get({
+          spreadsheetId: SPREADSHEET_ID,
+          range: `${TEACHER_LEVEL}!A2:A`
+        });
+        const students=response.result.values?response.result.values.flat():[];
+        renderStudents(students);
+      }catch(err){console.error(err); showStatus("Error loading students",false);}
+    }
+
+    function renderStudents(students){
+      studentList.innerHTML="";
+      students.forEach(student=>{
+        attendance[student]="Absent";
+        const div=document.createElement("div");
+        div.className="student-card";
+        div.innerHTML=`<span class="student-name">${student}</span>
+        <label class="toggle-switch">
+          <input type="checkbox" onchange="mark('${student}',this.checked)">
+          <span class="slider"></span>
+        </label>`;
         studentList.appendChild(div);
       });
     }
 
-    function mark(student, isPresent) {
-      attendance[student] = isPresent ? "Present" : "Absent";
+    function mark(student,isPresent){attendance[student]=isPresent?"Present":"Absent";}
+
+    function showStatus(msg,success=true){
+      const status=document.getElementById("statusMessage");
+      status.textContent=msg;
+      status.style.color=success?"var(--present)":"var(--absent)";
+      setTimeout(()=>{status.textContent="";},3000);
     }
 
-    function showStatus(msg, success=true) {
-      const status = document.getElementById("statusMessage");
-      status.textContent = msg;
-      status.style.color = success ? "var(--present)" : "var(--absent)";
-      setTimeout(() => { status.textContent = ""; }, 3000);
-    }
-
-    async function submitAttendance() {
-      try {
-        const students = Object.keys(attendance);
-        for (let i = 0; i < students.length; i++) {
-          const student = students[i];
+    async function submitAttendance(){
+      try{
+        const students=Object.keys(attendance);
+        const date=(new Date()).toLocaleDateString();
+        for(let i=0;i<students.length;i++){
+          const student=students[i];
+          // Update level sheet
           await gapi.client.sheets.spreadsheets.values.update({
-            spreadsheetId: SPREADSHEET_ID,
-            range: `${TEACHER_LEVEL}!B${i+2}`,
-            valueInputOption: "RAW",
-            resource: { values: [[attendance[student]]] },
+            spreadsheetId:SPREADSHEET_ID,
+            range:`${TEACHER_LEVEL}!B${i+2}`,
+            valueInputOption:"RAW",
+            resource:{values:[[attendance[student]]]}
           });
+          // Append to logs
+          await gapi.client.sheets.spreadsheets.values.append({
+            spreadsheetId: SPREADSHEET_ID,
+            range: `Logs!A1`,
+            valueInputOption: "RAW",
+            resource: { values: [[student, date, teacherName, attendance[student], TEACHER_LEVEL]] },
+          });
+
         }
         showStatus("Attendance submitted!");
-      } catch (err) {
-        console.error(err);
-        showStatus("Error submitting attendance", false);
-      }
+      }catch(err){console.error(err); showStatus("Error submitting attendance",false);}
     }
 
-    async function addStudent() {
-      const newName = document.getElementById("newStudentName").value.trim();
-      if (!newName) return alert("Enter student name");
-      try {
+    async function addStudent(){
+      const newName=document.getElementById("newStudentName").value.trim();
+      if(!newName)return alert("Enter student name");
+      try{
         await gapi.client.sheets.spreadsheets.values.append({
-          spreadsheetId: SPREADSHEET_ID,
-          range: `${TEACHER_LEVEL}!A1`,
-          valueInputOption: "RAW",
-          resource: { values: [[newName]] },
+          spreadsheetId:SPREADSHEET_ID,
+          range:`${TEACHER_LEVEL}!A1`,
+          valueInputOption:"RAW",
+          resource:{values:[[newName]]}
         });
-        document.getElementById("newStudentName").value = "";
+        document.getElementById("newStudentName").value="";
         loadStudents();
         showStatus("Student added!");
-      } catch (err) {
-        console.error(err);
-        showStatus("Error adding student", false);
-      }
+      }catch(err){console.error(err); showStatus("Error adding student",false);}
     }
   </script>
 </body>
