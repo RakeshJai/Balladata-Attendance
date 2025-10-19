@@ -216,40 +216,42 @@
       background: #1e1e1e;
       color: #fff;
     }
+
+    /* Offline banner */
+    #offlineBanner {
+      display: none;
+      position: fixed;
+      top: 56px;
+      left: 0;
+      width: 100%;
+      background: #ff6e4a;
+      color: #000;
+      text-align: center;
+      padding: 6px 0;
+      font-weight: bold;
+      z-index: 9999;
+      font-size: 14px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
   </style>
 </head>
 <body>
   <header>Baladatta Tamil School Attendance</header>
-  
-  <div id="offlineBanner" style="
-  display: none;
-  position: fixed;
-  top: 56px; /* below header */
-  left: 0;
-  width: 100%;
-  background: #ff6e4a;
-  color: #000;
-  text-align: center;
-  padding: 6px 0;
-  font-weight: bold;
-  z-index: 9999;
-  font-size: 14px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  ">
-  You are offline. Go online to sync attendance.
-  </div>
 
-
+  <div id="offlineBanner">You are offline. Go online to sync attendance.</div>
 
   <div class="page-content">
 
     <div id="authContainer" style="display:flex; flex-direction:column; align-items:center; gap:12px; margin-bottom:20px;">
+      <div id="iosInstallTip" style="display: none; color: #ff6e4a; font-size: 14px; margin-top: 8px;">
+        To install this app on iOS: tap the Share icon and select <strong>Add to Home Screen</strong>.
+      </div>
+
       <button id="loginBtn" class="custom-login-btn">Sign in with Google</button>
       <button id="installBtn" style="display:none; padding: 12px 24px; border-radius: 8px; background: #ff6e4a; color: #000; border: none; cursor: pointer;">
         Install App
       </button>
     </div>
-
 
     <div id="levelSelection"></div>
 
@@ -274,9 +276,7 @@
     const CLIENT_ID = "1062324886633-brv79jb9smbkrpd9iuvtj5galvhbqfqh.apps.googleusercontent.com";
     const SPREADSHEET_ID = "1qnNF6HZXxWksMjJ-Z06Ovk64CWMvXFHeTieaTi8xZ5M";
     const SCOPES = "https://www.googleapis.com/auth/spreadsheets";
-
     const LEVELS = ["Level1", "Level2", "Level3", "Level4", "Level5", "Level6"];
-
     let tokenClient;
     let attendance = {};
     let teacherName = "";
@@ -297,7 +297,7 @@
         callback: async (resp) => {
           if (resp.error) { console.error(resp); showStatus("OAuth Error", false); return; }
 
-          teacherName = "Teacher"; 
+          teacherName = "Teacher";
           document.getElementById("teacherNameDisplay").textContent = teacherName;
 
           loginBtn.style.display = "none";
@@ -313,6 +313,8 @@
         levelSelection.style.display = "flex";
         studentList.innerHTML = "";
       };
+
+      updateOnlineStatus();
     };
 
     function renderLevelButtons() {
@@ -350,7 +352,7 @@
     function renderStudents(students) {
       studentList.innerHTML = "";
       students.forEach(student => {
-        attendance[student] = "Present"; // starts in Present
+        attendance[student] = "Present";
         const div = document.createElement("div");
         div.className = "student-card";
         div.innerHTML = `
@@ -379,14 +381,12 @@
         const today = new Date().toLocaleString();
         for (let i = 0; i < students.length; i++) {
           const student = students[i];
-          // update level sheet
           await gapi.client.sheets.spreadsheets.values.update({
             spreadsheetId: SPREADSHEET_ID,
             range: `${currentLevel}!B${i+2}`,
             valueInputOption: "RAW",
             resource: { values: [[attendance[student]]] },
           });
-          // append to logs
           await gapi.client.sheets.spreadsheets.values.append({
             spreadsheetId: SPREADSHEET_ID,
             range: `Logs!A1`,
@@ -420,59 +420,55 @@
       }
     }
 
-    let deferredPrompt;
-    const installBtn = document.getElementById('installBtn');
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-      // Prevent Chrome from showing the default prompt
-      e.preventDefault();
-      deferredPrompt = e;
-      
-      // Show our custom install button
-      installBtn.style.display = 'inline-block';
-    });
-
-    installBtn.addEventListener('click', async () => {
-      installBtn.style.display = 'none';
-      if (deferredPrompt) {
-        deferredPrompt.prompt();  // Show the browser install prompt
-        const choiceResult = await deferredPrompt.userChoice;
-        if (choiceResult.outcome === 'accepted') {
-          console.log('User accepted the install prompt');
-        } else {
-          console.log('User dismissed the install prompt');
-        }
-        deferredPrompt = null;
-      }
-    });
-
+    // Offline banner
     const offlineBanner = document.getElementById('offlineBanner');
-
     function updateOnlineStatus() {
-      if (navigator.onLine) {
-        offlineBanner.style.display = 'none';
-      } else {
-        offlineBanner.style.display = 'block';
-      }
+      if (navigator.onLine) offlineBanner.style.display = 'none';
+      else offlineBanner.style.display = 'block';
     }
-
-    // Initial check
-    updateOnlineStatus();
-
-    // Listen for changes
     window.addEventListener('online', updateOnlineStatus);
     window.addEventListener('offline', updateOnlineStatus);
 
-  </script>
+    // PWA Install logic
+    const installBtn = document.getElementById('installBtn');
+    const iosInstallTip = document.getElementById('iosInstallTip');
 
-  <script>
-  if ('serviceWorker' in navigator) {
+    function isIos() { return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream; }
+    function isInStandaloneMode() { return window.matchMedia('(display-mode: standalone)').matches; }
+
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js')
-        .then(reg => console.log('Service Worker registered', reg))
-        .catch(err => console.log('Service Worker failed', err));
+      if (isIos() && !isInStandaloneMode()) {
+        iosInstallTip.style.display = 'block';
+        installBtn.style.display = 'none';
+      }
     });
-  }
+
+    if (!isIos()) {
+      let deferredPrompt;
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installBtn.style.display = 'inline-block';
+      });
+      installBtn.addEventListener('click', async () => {
+        installBtn.style.display = 'none';
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const choiceResult = await deferredPrompt.userChoice;
+          console.log('User choice:', choiceResult.outcome);
+          deferredPrompt = null;
+        }
+      });
+    }
+
+    // Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(reg => console.log('Service Worker registered', reg))
+          .catch(err => console.log('Service Worker failed', err));
+      });
+    }
   </script>
 
 </body>
