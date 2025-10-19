@@ -1,154 +1,240 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Baladatta Tamil School Attendance</title>
-  <style>
-    body {
-      font-family: "Poppins", sans-serif;
-      background-color: #121212;
-      color: #f5f5f5;
-      text-align: center;
-      margin: 0;
-      padding: 0;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Baladatta Tamil School Attendance</title>
 
-    h1, h2 {
-      color: #ff914d;
-    }
+<!-- Google Identity & API -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://apis.google.com/js/api.js"></script>
 
-    .container {
-      margin-top: 60px;
-    }
+<style>
+:root {
+  --bg: #0b0b0b;
+  --card: #151515;
+  --text: #f6f3f1;
+  --warm: #ff8a4b;
+  --warm-soft: #ffb788;
+  --muted: #9a9a9a;
+  --green: #4caf50;
+  --red: #f44336;
+}
 
-    button {
-      background-color: #ff914d;
-      color: #121212;
-      border: none;
-      border-radius: 8px;
-      padding: 12px 20px;
-      margin: 8px;
-      cursor: pointer;
-      font-size: 16px;
-      font-weight: bold;
-      transition: all 0.2s ease;
-    }
+/* General */
+body { background: var(--bg); color: var(--text); font-family: "Inter", sans-serif; margin:0; }
+header { background: #050505; padding: 18px 20px; border-bottom:1px solid #1e1e1e; }
+.title { font-size:20px; color: var(--warm); font-weight:700; }
+main { max-width: 920px; margin: 28px auto; padding:0 16px; }
+.card { background: var(--card); border-radius:12px; padding:16px; box-shadow:0 6px 20px rgba(0,0,0,0.6); }
+.center { text-align:center; }
+.btn { background: var(--warm); color:#0b0b0b; border:none; padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:600; transition: transform .12s ease, background .12s ease;}
+.btn:hover { transform: translateY(-3px); background: var(--warm-soft); }
+.level-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); gap:12px; margin-top:18px; }
+.level-card { background:#101010; border-radius:10px; padding:18px; cursor:pointer; border:1px solid #222; transition: transform .12s ease; text-align:center; font-weight:600; }
+.level-card:hover { transform: translateY(-6px); color: var(--warm); }
 
-    button:hover {
-      background-color: #ffad66;
-      transform: scale(1.05);
-    }
+.row { display:flex; gap:12px; align-items:center; }
+.spaced { justify-content: space-between; }
 
-    #studentList {
-      margin-top: 30px;
-      text-align: left;
-      display: inline-block;
-      background-color: #1e1e1e;
-      padding: 20px;
-      border-radius: 10px;
-      min-width: 300px;
-    }
+#studentList { margin-top:14px; display:flex; flex-direction:column; gap:10px; }
 
-    .student-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 0;
-      border-bottom: 1px solid #333;
-    }
+.student-item { display:flex; align-items:center; justify-content:space-between; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:12px; border-radius:10px; border:1px solid #1b1b1b; }
+.student-name { font-weight:600; color: var(--text); }
 
-    input[type="text"] {
-      padding: 8px;
-      border-radius: 6px;
-      border: 1px solid #444;
-      background-color: #222;
-      color: white;
-    }
-  </style>
+.switch { position: relative; display: inline-block; width:60px; height:30px; }
+.switch input { opacity:0; width:0; height:0; }
+.slider { position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background:var(--red); transition:.4s; border-radius:34px; }
+.slider:before { position:absolute; content:""; height:24px; width:24px; left:3px; bottom:3px; background:white; transition:.4s; border-radius:50%; }
+input:checked + .slider { background: var(--green); }
+input:checked + .slider:before { transform: translateX(30px); }
+
+input:focus + .slider { box-shadow:0 0 1px var(--warm); }
+
+#statusMsg { margin-top:10px; font-weight:600; color:var(--warm); height:18px; }
+.back { background:transparent; border:1px solid #272727; color:var(--text); padding:8px 12px; border-radius:8px; cursor:pointer; }
+.back:hover { background:#111; border-color:#333; }
+input[type="text"] { background:#0f0f0f; border:1px solid #222; padding:8px 10px; color:var(--text); border-radius:8px; min-width:220px; outline:none; }
+
+@media(max-width:560px){.level-grid{grid-template-columns:repeat(2,1fr); } input[type="text"]{width:100%;} .row{flex-direction:column; align-items:stretch;}}
+
+</style>
 </head>
 <body>
-  <div class="container" id="home">
-    <h1>Baladatta Tamil School Attendance</h1>
-    <p>Select a Level:</p>
-    <div id="levels">
-      <button onclick="openLevel('Level1')">Level 1</button>
-      <button onclick="openLevel('Level2')">Level 2</button>
-      <button onclick="openLevel('Level3')">Level 3</button>
-      <button onclick="openLevel('Level4')">Level 4</button>
-      <button onclick="openLevel('Level5')">Level 5</button>
-      <button onclick="openLevel('Level6')">Level 6</button>
+<header><div class="title">Baladatta Tamil School Attendance</div></header>
+<main>
+
+<!-- Login + Level selector -->
+<section id="homeSection" class="card center">
+  <div style="margin-bottom:12px;">
+    <button id="loginBtn" class="btn">Sign in with Google</button>
+  </div>
+
+  <div id="signedInBar" style="display:none;margin-bottom:10px;">
+    <div class="small">Signed in as <span id="teacherLabel" style="color:var(--warm);font-weight:700"></span></div>
+  </div>
+
+  <div id="levelSelector" style="display:none;">
+    <div class="small" style="margin-bottom:8px">Choose a level to view & mark attendance</div>
+    <div class="level-grid" id="levelsGrid"></div>
+  </div>
+</section>
+
+<!-- Attendance page -->
+<section id="attendanceSection" class="card" style="display:none; margin-top:18px;">
+  <div class="row spaced" style="margin-bottom:12px;">
+    <div>
+      <div style="font-size:18px;font-weight:700;color:var(--warm)"><span id="currentLevelTitle"></span></div>
+      <div class="small">Mark Present / Absent for each student</div>
+    </div>
+    <div class="row">
+      <button id="backBtn" class="back">⬅ Back</button>
     </div>
   </div>
 
-  <div class="container" id="levelPage" style="display:none;">
-    <h2 id="levelTitle"></h2>
-    <div id="studentList"></div>
-    <br>
-    <input type="text" id="newStudent" placeholder="Enter student name">
-    <button onclick="addStudent()">Add Student</button>
-    <br><br>
-    <button onclick="goBack()">⬅ Back</button>
+  <div id="statusMsg"></div>
+  <div id="studentList"></div>
+
+  <!-- Add student separate -->
+  <div style="margin-top:20px; padding-top:10px; border-top:1px solid #222; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+    <input id="newStudentInput" type="text" placeholder="Enter new student name"/>
+    <button id="addStudentBtn" class="btn">Add Student</button>
+    <div class="small" style="margin-left:auto">Tip: full name</div>
   </div>
 
-  <script>
-    const SHEET_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEBAPP_URL"; // <-- Replace this
+  <div style="margin-top:16px; display:flex; justify-content:flex-end;">
+    <button id="submitBtn" class="btn">Submit Attendance</button>
+  </div>
+</section>
+</main>
 
-    let currentLevel = "";
+<script>
+const CLIENT_ID = "1062324886633-brv79jb9smbkrpd9iuvtj5galvhbqfqh.apps.googleusercontent.com";
+const SPREADSHEET_ID = "1qnNF6HZXxWksMjJ-Z06Ovk64CWMvXFHeTieaTi8xZ5M";
+const SCOPES = "https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/userinfo.email openid profile";
 
-    function openLevel(level) {
-      currentLevel = level;
-      document.getElementById("home").style.display = "none";
-      document.getElementById("levelPage").style.display = "block";
-      document.getElementById("levelTitle").textContent = level + " Attendance";
-      loadStudents(level);
+const LEVELS = ["Level1","Level2","Level3","Level4","Level5","Level6"];
+let tokenClient, currentLevel="", attendance={}, gapiInited=false, googleToken=null, teacherEmail="";
+
+function initGapi(){
+  gapi.load('client', async () => {
+    await gapi.client.init({ discoveryDocs:["https://sheets.googleapis.com/$discovery/rest?version=v4"] });
+    gapiInited = true;
+  });
+}
+
+window.onload = ()=>{
+  initGapi();
+  tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID,
+    scope: SCOPES,
+    callback: async (resp)=>{
+      if(resp.error){console.error(resp); showStatus('Sign-in failed',false); return;}
+      googleToken = resp.access_token;
+      gapi.client.setToken({access_token: googleToken});
+      try{
+        const userinfo = await fetch("https://www.googleapis.com/oauth2/v3/userinfo",{headers:{Authorization:"Bearer "+googleToken}}).then(r=>r.json());
+        teacherEmail = userinfo.email || "";
+        document.getElementById('teacherLabel').textContent=teacherEmail;
+        document.getElementById('signedInBar').style.display='block';
+      }catch(e){console.warn(e);}
+      document.getElementById('loginBtn').style.display='none';
+      showLevelSelector();
     }
+  });
 
-    function goBack() {
-      document.getElementById("levelPage").style.display = "none";
-      document.getElementById("home").style.display = "block";
-    }
+  document.getElementById('loginBtn').onclick=()=>{ tokenClient.requestAccessToken({prompt:'consent'}); };
+  document.getElementById('backBtn').onclick=()=>{ goHome(); };
+  document.getElementById('addStudentBtn').onclick=()=>{ addStudent(); };
+  document.getElementById('submitBtn').onclick=()=>{ submitAttendance(); };
+};
 
-    async function loadStudents(level) {
-      const res = await fetch(`${SHEET_URL}?action=get&level=${level}`);
-      const data = await res.json();
-      const list = document.getElementById("studentList");
-      list.innerHTML = "";
+function showLevelSelector(){
+  const grid = document.getElementById('levelsGrid'); grid.innerHTML='';
+  LEVELS.forEach(l=>{
+    const el=document.createElement('div'); el.className='level-card'; el.textContent=l.replace(/^Level/,'Level '); el.onclick=()=>openLevel(l); grid.appendChild(el);
+  });
+  document.getElementById('levelSelector').style.display='block';
+}
 
-      data.forEach(student => {
-        const item = document.createElement("div");
-        item.className = "student-item";
-        item.innerHTML = `
-          <span>${student.name}</span>
-          <button onclick="toggleStatus('${student.name}', '${student.status}')">
-            ${student.status}
-          </button>
-        `;
-        list.appendChild(item);
+function goHome(){
+  document.getElementById('attendanceSection').style.display='none';
+  document.getElementById('homeSection').style.display='block';
+  document.getElementById('levelSelector').style.display='block';
+  attendance={};
+  document.getElementById('studentList').innerHTML='';
+}
+
+async function openLevel(level){
+  currentLevel=level;
+  document.getElementById('homeSection').style.display='none';
+  document.getElementById('attendanceSection').style.display='block';
+  document.getElementById('currentLevelTitle').textContent=level.replace(/^Level/,'Level ');
+
+  attendance={};
+  await loadStudents();
+}
+
+async function loadStudents(){
+  try{
+    const response = await gapi.client.sheets.spreadsheets.values.get({
+      spreadsheetId: SPREADSHEET_ID,
+      range:`${currentLevel}!A2:A`,
+    });
+    const students = response.result.values?response.result.values.flat():[];
+    renderStudents(students);
+  }catch(err){console.error(err); showStatus("Error loading students",false);}
+}
+
+function renderStudents(students){
+  const listDiv=document.getElementById('studentList');
+  listDiv.innerHTML='';
+  students.forEach((s,i)=>{
+    attendance[s]="Absent"; // default
+    const div=document.createElement('div'); div.className='student-item';
+    div.innerHTML=`<span class="student-name">${s}</span>
+      <label class="switch"><input type="checkbox" onchange="mark('${s}',this.checked)"><span class="slider"></span></label>`;
+    listDiv.appendChild(div);
+  });
+}
+
+function mark(student,isPresent){ attendance[student]=isPresent?"Present":"Absent"; }
+
+function showStatus(msg,success=true){
+  const el=document.getElementById('statusMsg'); el.textContent=msg; el.style.color=success? 'var(--warm)':'red';
+  setTimeout(()=>{ el.textContent=''; },3000);
+}
+
+async function submitAttendance(){
+  try{
+    const students=Object.keys(attendance);
+    for(let i=0;i<students.length;i++){
+      await gapi.client.sheets.spreadsheets.values.update({
+        spreadsheetId:SPREADSHEET_ID,
+        range:`${currentLevel}!B${i+2}`,
+        valueInputOption:"RAW",
+        resource:{values:[[attendance[students[i]]]]},
       });
     }
+    showStatus("Attendance submitted!");
+  }catch(e){console.error(e); showStatus("Error submitting attendance",false);}
+}
 
-    async function toggleStatus(name, currentStatus) {
-      const newStatus = currentStatus === "Present" ? "Absent" : "Present";
-      await fetch(SHEET_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "update", level: currentLevel, name, status: newStatus }),
-        headers: { "Content-Type": "application/json" },
-      });
-      loadStudents(currentLevel);
-    }
-
-    async function addStudent() {
-      const name = document.getElementById("newStudent").value.trim();
-      if (!name) return alert("Please enter a name.");
-      await fetch(SHEET_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "add", level: currentLevel, name }),
-        headers: { "Content-Type": "application/json" },
-      });
-      document.getElementById("newStudent").value = "";
-      loadStudents(currentLevel);
-    }
-  </script>
+async function addStudent(){
+  const name=document.getElementById('newStudentInput').value.trim();
+  if(!name){showStatus("Enter a valid name",false); return;}
+  try{
+    await gapi.client.sheets.spreadsheets.values.append({
+      spreadsheetId:SPREADSHEET_ID,
+      range:`${currentLevel}!A:A`,
+      valueInputOption:"RAW",
+      resource:{values:[[name]]},
+    });
+    document.getElementById('newStudentInput').value='';
+    showStatus("Student added!");
+    await loadStudents();
+  }catch(e){console.error(e); showStatus("Error adding student",false);}
+}
+</script>
 </body>
 </html>
