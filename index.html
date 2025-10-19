@@ -220,9 +220,29 @@
 </head>
 <body>
   <header>Baladatta Tamil School Attendance</header>
+  
+  <div id="offlineBanner" style="
+  display: none;
+  position: fixed;
+  top: 56px; /* below header */
+  left: 0;
+  width: 100%;
+  background: #ff6e4a;
+  color: #000;
+  text-align: center;
+  padding: 6px 0;
+  font-weight: bold;
+  z-index: 9999;
+  font-size: 14px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  ">
+  You are offline. Go online to sync attendance.
+  </div>
+
+
 
   <div class="page-content">
-    
+
     <div id="authContainer" style="display:flex; flex-direction:column; align-items:center; gap:12px; margin-bottom:20px;">
       <button id="loginBtn" class="custom-login-btn">Sign in with Google</button>
       <button id="installBtn" style="display:none; padding: 12px 24px; border-radius: 8px; background: #ff6e4a; color: #000; border: none; cursor: pointer;">
@@ -425,6 +445,23 @@
         deferredPrompt = null;
       }
     });
+
+    const offlineBanner = document.getElementById('offlineBanner');
+
+    function updateOnlineStatus() {
+      if (navigator.onLine) {
+        offlineBanner.style.display = 'none';
+      } else {
+        offlineBanner.style.display = 'block';
+      }
+    }
+
+    // Initial check
+    updateOnlineStatus();
+
+    // Listen for changes
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
 
   </script>
 
