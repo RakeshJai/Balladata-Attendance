@@ -17,19 +17,24 @@
   <style>
     :root {
       --accent: #ff6e4a;
+      --accent-dark: #e85a36;
       --present: #4caf50;
       --absent: #ff4c4c;
       --card-bg: #121212;
       --text: #ffffff;
+      --text-secondary: #b0b0b0;
+      --input-bg: #1e1e1e;
+      --border-subtle: rgba(255, 255, 255, 0.08);
     }
 
     body {
       margin: 0;
-      font-family: 'Inter', sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       color: var(--text);
       background: linear-gradient(180deg, #0b0b0b, #1a1a1a);
       position: relative;
       min-height: 100vh;
+      overflow-x: hidden;
     }
 
     body::before {
@@ -49,49 +54,93 @@
       z-index: 0;
     }
 
+    /* PREMIUM HEADER */
     header {
-      background: #0d0d0d;
-      padding: 16px 20px;
-      box-shadow: 0 4px 12px rgba(255, 110, 74, 0.2);
-      font-size: 20px;
-      font-weight: bold;
+      background: linear-gradient(135deg, #0d0d0d 0%, #1a1a1a 100%);
+      padding: 24px 20px;
+      box-shadow: 0 4px 20px rgba(255, 110, 74, 0.15), 0 1px 0 rgba(255, 110, 74, 0.1);
+      font-size: 22px;
+      font-weight: 800;
       text-align: center;
       position: relative;
       z-index: 1;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid rgba(255, 110, 74, 0.2);
+    }
+
+    header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      border-radius: 2px;
     }
 
     .page-content {
       padding: 20px;
-      max-width: 800px;
+      max-width: 900px;
       margin: 40px auto;
       position: relative;
       z-index: 1;
       text-align: center;
     }
 
+    /* ENHANCED LOGIN BUTTON */
     .custom-login-btn {
-      background: #1a1a1a;
+      background: linear-gradient(135deg, rgba(255, 110, 74, 0.1) 0%, rgba(255, 110, 74, 0.05) 100%);
       color: var(--accent);
       border: 2px solid var(--accent);
-      border-radius: 8px;
-      padding: 12px 20px;
-      font-size: 16px;
+      border-radius: 12px;
+      padding: 16px 32px;
+      font-size: 17px;
+      font-weight: 700;
       cursor: pointer;
       margin-bottom: 20px;
-      transition: 0.3s;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      box-shadow: 0 4px 15px rgba(255, 110, 74, 0.2);
+      letter-spacing: 0.3px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .custom-login-btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: var(--accent);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+      z-index: -1;
+    }
+
+    .custom-login-btn:hover::before {
+      width: 300px;
+      height: 300px;
     }
 
     .custom-login-btn:hover {
-      background: var(--accent);
-      color: #000;
+      color: #0d0d0d;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(255, 110, 74, 0.4);
+      border-color: var(--accent);
+    }
+
+    .custom-login-btn:active {
+      transform: translateY(-1px) scale(0.98);
     }
 
     #levelSelection {
       display: none;
       flex-wrap: wrap;
-      /* Keeps it responsive */
-      gap: 16px;
-      /* More breathing room */
+      gap: 18px;
       justify-content: center;
       margin-top: 30px;
       width: 100%;
@@ -100,102 +149,142 @@
     /* PREMIUM CARD DESIGN */
     .level-btn {
       flex: 1 1 140px;
-      /* Responsive: Stacks on mobile, grid on desktop */
       max-width: 240px;
-      min-height: 110px;
-      /* Taller card */
+      min-height: 120px;
 
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
 
-      padding: 20px;
+      padding: 24px 20px;
       font-size: 18px;
       font-weight: 700;
       letter-spacing: 0.5px;
 
-      background: rgba(255, 110, 74, 0.08);
-      /* Glass-like fill */
+      background: linear-gradient(135deg, rgba(255, 110, 74, 0.08) 0%, rgba(255, 110, 74, 0.04) 100%);
       border: 1px solid rgba(255, 110, 74, 0.3);
       border-radius: 16px;
       color: var(--accent);
 
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
       cursor: pointer;
       transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 
       white-space: normal;
       text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .level-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left 0.5s;
+    }
+
+    .level-btn:hover::before {
+      left: 100%;
     }
 
     .level-btn:hover {
-      background: var(--accent);
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
       color: #0d0d0d;
       transform: translateY(-6px) scale(1.02);
-      box-shadow: 0 12px 24px rgba(255, 110, 74, 0.4);
+      box-shadow: 0 12px 30px rgba(255, 110, 74, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
       border-color: var(--accent);
     }
 
     .level-btn:active {
-      transform: scale(0.96);
+      transform: translateY(-3px) scale(0.98);
     }
 
+    /* REFINED STUDENT CARDS */
     .student-card {
-      background: var(--card-bg);
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      /* Added definition */
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      background: linear-gradient(135deg, var(--card-bg) 0%, #1a1a1a 100%);
+      border-radius: 14px;
+      padding: 18px 20px;
+      margin-bottom: 14px;
+      border: 1px solid var(--border-subtle);
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
       display: flex;
       justify-content: space-between;
       align-items: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
 
     .student-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 8px 20px rgba(255, 110, 74, 0.3);
-      border-color: rgba(255, 110, 74, 0.3);
-      /* Hover border */
+      box-shadow: 0 8px 25px rgba(255, 110, 74, 0.3);
+      border-color: rgba(255, 110, 74, 0.4);
+      background: linear-gradient(135deg, #1a1a1a 0%, #212121 100%);
     }
 
     .student-name {
-      font-weight: bold;
+      font-weight: 600;
+      font-size: 16px;
+      letter-spacing: 0.3px;
     }
 
     #statusMessage {
-      margin: 10px 0;
-      font-weight: bold;
+      margin: 16px 0;
+      font-weight: 700;
+      font-size: 15px;
+      padding: 12px 20px;
+      border-radius: 10px;
+      transition: all 0.3s ease;
     }
 
-    button.mdl-button,
-    .custom-login-btn {
-      transition: 0.3s;
+    /* ENHANCED BUTTONS */
+    button.mdl-button {
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
       cursor: pointer;
+      border-radius: 10px !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.3px;
+      padding: 12px 24px !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
 
-    button.mdl-button:hover,
-    .custom-login-btn:hover {
-      box-shadow: 0 4px 12px rgba(255, 110, 74, 0.5);
+    button.mdl-button:hover {
+      box-shadow: 0 6px 20px rgba(255, 110, 74, 0.4);
       transform: translateY(-2px);
     }
 
-    button:active {
-      transform: scale(0.96);
+    button.mdl-button:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    button.mdl-button--accent {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%) !important;
+      color: #0d0d0d !important;
+    }
+
+    button.mdl-button--accent:hover {
+      box-shadow: 0 8px 25px rgba(255, 110, 74, 0.5) !important;
     }
 
     #backBtn {
-      background: var(--accent);
-      color: #000;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      color: #0d0d0d;
       border: none;
+      font-weight: 700;
     }
 
+    #backBtn:hover {
+      box-shadow: 0 6px 20px rgba(255, 110, 74, 0.5);
+    }
+
+    /* ENHANCED TOGGLE SWITCH */
     .toggle-switch {
       position: relative;
-      width: 60px;
-      height: 28px;
+      width: 64px;
+      height: 32px;
       display: inline-block;
     }
 
@@ -209,66 +298,149 @@
       position: absolute;
       cursor: pointer;
       background-color: var(--absent);
-      border-radius: 28px;
+      border-radius: 32px;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
       transition: 0.4s;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
     }
 
     .slider:before {
       position: absolute;
       content: "";
-      height: 22px;
-      width: 22px;
+      height: 26px;
+      width: 26px;
       left: 3px;
       bottom: 3px;
       background-color: #fff;
       border-radius: 50%;
       transition: 0.4s;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
     }
 
     input:checked+.slider {
       background-color: var(--present);
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2), 0 0 10px rgba(76, 175, 80, 0.3);
     }
 
     input:checked+.slider:before {
       transform: translateX(32px);
     }
 
+    /* PREMIUM INPUT FIELDS */
     .add-student-container {
-      margin-top: 20px;
+      margin-top: 24px;
       display: flex;
-      gap: 10px;
+      gap: 12px;
       flex-wrap: wrap;
       justify-content: center;
     }
 
     .add-student-container input {
       flex: 1;
-      padding: 8px;
-      border-radius: 6px;
-      border: none;
+      min-width: 200px;
+      padding: 14px 18px;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
       outline: none;
-      background: #1e1e1e;
+      background: var(--input-bg);
       color: #fff;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .add-student-container input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(255, 110, 74, 0.1), inset 0 2px 4px rgba(0, 0, 0, 0.2);
+      background: #252525;
+    }
+
+    .add-student-container input::placeholder {
+      color: var(--text-secondary);
     }
 
     #offlineBanner {
       display: none;
       position: fixed;
-      top: 56px;
+      top: 0;
       left: 0;
       width: 100%;
-      background: #ff6e4a;
-      color: #000;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      color: #0d0d0d;
       text-align: center;
-      padding: 6px 0;
-      font-weight: bold;
+      padding: 12px 0;
+      font-weight: 700;
       z-index: 9999;
       font-size: 14px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 12px rgba(255, 110, 74, 0.4);
+      letter-spacing: 0.3px;
+    }
+
+    /* SMOOTH FADE-IN ANIMATION */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .level-btn,
+    .student-card {
+      animation: fadeInUp 0.4s ease-out backwards;
+    }
+
+    .level-btn:nth-child(1) {
+      animation-delay: 0.05s;
+    }
+
+    .level-btn:nth-child(2) {
+      animation-delay: 0.1s;
+    }
+
+    .level-btn:nth-child(3) {
+      animation-delay: 0.15s;
+    }
+
+    .level-btn:nth-child(4) {
+      animation-delay: 0.2s;
+    }
+
+    .level-btn:nth-child(5) {
+      animation-delay: 0.25s;
+    }
+
+    .level-btn:nth-child(6) {
+      animation-delay: 0.3s;
+    }
+
+    .level-btn:nth-child(7) {
+      animation-delay: 0.35s;
+    }
+
+    /* RESPONSIVE IMPROVEMENTS */
+    @media (max-width: 600px) {
+      header {
+        font-size: 18px;
+        padding: 20px 16px;
+      }
+
+      .page-content {
+        padding: 16px;
+        margin: 20px auto;
+      }
+
+      .level-btn {
+        min-height: 100px;
+        font-size: 16px;
+      }
     }
   </style>
 </head>
