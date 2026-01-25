@@ -89,31 +89,56 @@
     #levelSelection {
       display: none;
       flex-wrap: wrap;
-      gap: 12px;
+      /* Keeps it responsive */
+      gap: 16px;
+      /* More breathing room */
       justify-content: center;
-      margin-top: 20px;
+      margin-top: 30px;
+      width: 100%;
     }
 
+    /* PREMIUM CARD DESIGN */
     .level-btn {
-      min-width: 120px;
-      max-width: 180px;
-      padding: 12px 20px;
-      font-size: 16px;
-      border-radius: 8px;
-      background: #1a1a1a;
-      border: 2px solid var(--accent);
+      flex: 1 1 140px;
+      /* Responsive: Stacks on mobile, grid on desktop */
+      max-width: 240px;
+      min-height: 110px;
+      /* Taller card */
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      padding: 20px;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+
+      background: rgba(255, 110, 74, 0.08);
+      /* Glass-like fill */
+      border: 1px solid rgba(255, 110, 74, 0.3);
+      border-radius: 16px;
       color: var(--accent);
-      text-align: center;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
       cursor: pointer;
-      transition: 0.3s;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+      white-space: normal;
+      text-align: center;
     }
 
     .level-btn:hover {
       background: var(--accent);
-      color: #000;
+      color: #0d0d0d;
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 0 12px 24px rgba(255, 110, 74, 0.4);
+      border-color: var(--accent);
+    }
+
+    .level-btn:active {
+      transform: scale(0.96);
     }
 
     .student-card {
@@ -121,6 +146,8 @@
       border-radius: 12px;
       padding: 16px;
       margin-bottom: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      /* Added definition */
       transition: transform 0.2s ease, box-shadow 0.2s ease;
       display: flex;
       justify-content: space-between;
@@ -130,6 +157,8 @@
     .student-card:hover {
       transform: translateY(-4px);
       box-shadow: 0 8px 20px rgba(255, 110, 74, 0.3);
+      border-color: rgba(255, 110, 74, 0.3);
+      /* Hover border */
     }
 
     .student-name {
