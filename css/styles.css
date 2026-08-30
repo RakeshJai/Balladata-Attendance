@@ -1,55 +1,56 @@
 /* ==========================================================================
    Baladatta Tamil School Attendance Portal
-   Anthropic Claude-inspired Warm Minimalist Design System
-   Coral/Terracotta palette on warm cream canvas. Clean, spacious & decluttered.
+   Anthropic Claude-Inspired Warm Dark Minimalist Theme
+   Terracotta/Coral accents on rich warm charcoal canvas. Clean & de-cluttered.
    ========================================================================== */
 
 :root {
-  /* Warm Claude Palette */
-  --bg-canvas: #faf8f5;
-  --bg-surface: #ffffff;
-  --bg-surface-subtle: #f4f0eb;
-  --bg-surface-hover: #ede8e1;
-  --border-subtle: #e8e2d9;
-  --border-strong: #d6cebf;
+  /* Warm Dark Canvas & Surfaces (Claude Dark Mode) */
+  --bg-canvas: #141413;
+  --bg-surface: #1e1d1a;
+  --bg-surface-subtle: #272522;
+  --bg-surface-hover: #302e2a;
+  --border-subtle: #363430;
+  --border-strong: #4a4640;
 
   /* Anthropic Coral / Terracotta Accents */
-  --coral: #cc6b49;
-  --coral-hover: #b55736;
-  --coral-light: rgba(204, 107, 73, 0.08);
-  --coral-border: rgba(204, 107, 73, 0.25);
-  --coral-text: #b55736;
+  --coral: #d97757;
+  --coral-hover: #e58a6d;
+  --coral-light: rgba(217, 119, 87, 0.14);
+  --coral-border: rgba(217, 119, 87, 0.35);
+  --coral-text: #e58a6d;
+  --coral-glow: rgba(217, 119, 87, 0.2);
 
-  /* Sage / Emerald (Present) */
-  --sage: #2d7a52;
-  --sage-bg: #eaf5ee;
-  --sage-border: #c2e2ce;
-  --sage-text: #1e653f;
+  /* Sage Green (Present) */
+  --sage: #34d399;
+  --sage-bg: rgba(52, 211, 153, 0.12);
+  --sage-border: rgba(52, 211, 153, 0.32);
+  --sage-text: #6ee7b7;
 
-  /* Neutral Slate / Warm Gray (Absent) */
-  --slate: #7c7871;
-  --slate-bg: #f2efe9;
-  --slate-border: #ded8ce;
-  --slate-text: #5e5a54;
+  /* Warm Slate (Absent) */
+  --slate: #9c9890;
+  --slate-bg: rgba(156, 152, 144, 0.1);
+  --slate-border: #363430;
+  --slate-text: #a8a49c;
 
   /* Amber (Alerts) */
-  --amber: #b45309;
-  --amber-bg: #fef3c7;
-  --amber-border: #fde68a;
+  --amber: #f59e0b;
+  --amber-bg: rgba(245, 158, 11, 0.14);
+  --amber-border: rgba(245, 158, 11, 0.35);
 
   /* Typography */
-  --text-primary: #1e1e1c;
-  --text-secondary: #63605a;
-  --text-muted: #949088;
+  --text-primary: #f5f3ef;
+  --text-secondary: #a8a49c;
+  --text-muted: #736f68;
 
   /* Radii & Shadows */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-full: 9999px;
-  --shadow-sm: 0 1px 3px rgba(30, 30, 28, 0.04), 0 1px 2px rgba(30, 30, 28, 0.02);
-  --shadow-md: 0 4px 12px rgba(30, 30, 28, 0.06), 0 1px 3px rgba(30, 30, 28, 0.03);
-  --shadow-sticky: 0 -4px 20px rgba(30, 30, 28, 0.06);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
+  --shadow-sticky: 0 -4px 20px rgba(0, 0, 0, 0.5);
 
   --font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --ease: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
@@ -93,9 +94,9 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(250, 248, 245, 0.94);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(20, 20, 19, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border-subtle);
 }
 
@@ -218,11 +219,12 @@ body {
 
 .nav-pill-btn:hover {
   color: var(--text-primary);
+  background: var(--bg-surface-hover);
 }
 
 .nav-pill-btn.active {
-  background: var(--bg-surface);
-  color: var(--coral-text);
+  background: var(--coral);
+  color: #fff;
   font-weight: 700;
   box-shadow: var(--shadow-sm);
 }
@@ -270,7 +272,6 @@ body {
   white-space: nowrap;
   transition: all var(--ease);
   font-family: inherit;
-  box-shadow: var(--shadow-sm);
 }
 
 .level-chip:hover {
@@ -282,6 +283,7 @@ body {
   background: var(--coral);
   color: #fff;
   border-color: var(--coral);
+  box-shadow: 0 0 0 1px var(--coral);
 }
 
 /* Date & Status Toolbar */
@@ -317,6 +319,7 @@ body {
   font-weight: 600;
   outline: none;
   font-family: inherit;
+  color-scheme: dark;
   transition: border-color var(--ease);
 }
 
@@ -327,7 +330,7 @@ body {
 .icon-btn {
   width: 36px;
   height: 36px;
-  background: var(--bg-surface);
+  background: var(--bg-surface-subtle);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   display: flex;
@@ -464,7 +467,7 @@ body {
 }
 
 .student-card.is-present:hover {
-  background: #f7fbf8;
+  background: var(--bg-surface-hover);
 }
 
 .student-info {
@@ -556,7 +559,7 @@ body {
 }
 
 .btn-icon-subtle.delete:hover {
-  color: #dc2626;
+  color: #ef4444;
 }
 
 /* Clean Toggle Button */
@@ -580,12 +583,12 @@ body {
 
 .is-present .attendance-toggle-btn {
   background: var(--sage);
-  color: #fff;
+  color: #0d2818;
   border-color: var(--sage);
 }
 
 .attendance-toggle-btn:hover {
-  filter: brightness(0.96);
+  filter: brightness(1.1);
 }
 
 /* Add Student Banner */
@@ -646,7 +649,7 @@ body {
   left: 0;
   right: 0;
   z-index: 90;
-  background: rgba(250, 248, 245, 0.96);
+  background: rgba(20, 20, 19, 0.95);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-top: 1px solid var(--border-subtle);
@@ -712,7 +715,7 @@ body {
   gap: 8px;
   transition: all var(--ease);
   font-family: inherit;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 4px 14px var(--coral-glow);
 }
 
 .btn-submit-attendance:hover {
@@ -769,7 +772,7 @@ body {
 }
 
 .stat-number.rate {
-  color: var(--coral);
+  color: var(--coral-text);
 }
 
 .stat-caption {
@@ -875,7 +878,7 @@ body {
 }
 
 .legend-dot.present { background: var(--sage); }
-.legend-dot.absent { background: var(--slate); }
+.legend-dot.absent { background: var(--border-strong); }
 
 /* Bar Chart */
 .chart-body-bars {
@@ -1061,7 +1064,7 @@ body {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(30, 30, 28, 0.4);
+  background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(4px);
   z-index: 300;
   align-items: center;
@@ -1076,7 +1079,7 @@ body {
 
 .modal-box {
   background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-lg);
   max-width: 480px;
   width: 100%;
@@ -1128,7 +1131,7 @@ body {
 
 .toast {
   background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-strong);
   color: var(--text-primary);
   padding: 10px 16px;
   border-radius: var(--radius-md);

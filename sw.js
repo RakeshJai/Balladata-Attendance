@@ -1,4 +1,4 @@
-const CACHE_NAME = 'baladatta-attendance-v3';
+const CACHE_NAME = 'baladatta-attendance-v5';
 const urlsToCache = [
   './',
   './index.html',
@@ -13,10 +13,9 @@ const urlsToCache = [
 ];
 
 self.addEventListener('install', event => {
+  self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(urlsToCache))
-      .then(() => self.skipWaiting())
+    caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
   );
 });
 
@@ -24,39 +23,41 @@ self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
-        cacheNames.filter(name => name !== CACHE_NAME)
-          .map(name => caches.delete(name))
+        cacheNames.map(name => {
+          if (name !== CACHE_NAME) {
+            console.log('[SW] Deleting old cache:', name);
+            return caches.delete(name);
+          }
+        })
       );
     }).then(() => self.clients.claim())
   );
 });
 
+// Network-First strategy: Always fetch fresh code from server if online, fallback to cache if offline
 self.addEventListener('fetch', event => {
-  // Pass Google API and external requests straight through
   if (event.request.url.includes('googleapis.com') || event.request.url.includes('google.com')) {
     return;
   }
 
   event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        if (response) {
-          return response;
-        }
-        return fetch(event.request).then(networkResponse => {
-          if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
-            return networkResponse;
-          }
+    fetch(event.request)
+      .then(networkResponse => {
+        if (networkResponse && networkResponse.status === 200) {
           const responseToCache = networkResponse.clone();
           caches.open(CACHE_NAME).then(cache => {
             cache.put(event.request, responseToCache);
           });
-          return networkResponse;
-        });
-      }).catch(() => {
-        if (event.request.destination === 'document') {
-          return caches.match('./index.html');
         }
+        return networkResponse;
+      })
+      .catch(() => {
+        return caches.match(event.request).then(cached => {
+          if (cached) return cached;
+          if (event.request.destination === 'document') {
+            return caches.match('./index.html');
+          }
+        });
       })
   );
 });
