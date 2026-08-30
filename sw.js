@@ -1,4 +1,4 @@
-const CACHE_NAME = 'baladatta-attendance-v8';
+const CACHE_NAME = 'baladatta-attendance-v9';
 const urlsToCache = [
   './',
   './index.html',
@@ -9,7 +9,9 @@ const urlsToCache = [
   './js/sheets-api.js',
   './js/student-mgr.js',
   './js/dashboard.js',
-  './js/app.js'
+  './js/app.js',
+  './assets/traditional/temple_gopuram_study.jpg',
+  './assets/traditional/meenakshi_pillar_study.jpg'
 ];
 
 self.addEventListener('install', event => {
