@@ -1,5 +1,6 @@
 /**
  * Baladatta Attendance - Attendance Analytics & Dashboard Module
+ * Modern visual charts (Native SVG Donut & Level Comparison Bars) in Claude terracotta theme.
  */
 
 const Dashboard = (() => {
@@ -25,14 +26,15 @@ const Dashboard = (() => {
     if (!container) return;
 
     const stats = Store.getDashboardStats(selectedLevel);
+    const allLevelStats = calculateAllLevelsStats();
 
     let html = `
       <!-- High-Density Stat Cards -->
       <div class="dashboard-stats-grid">
         <div class="dashboard-stat-card">
           <div class="stat-title-row">
-            <span>Overall Attendance</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--emerald-text);"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            <span>Attendance Rate</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--coral);"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
           </div>
           <div class="stat-number rate">${stats.overallAttendanceRate}%</div>
           <div class="stat-caption">${stats.totalPresent} Present / ${stats.totalPresent + stats.totalAbsent} Total</div>
@@ -41,16 +43,16 @@ const Dashboard = (() => {
         <div class="dashboard-stat-card">
           <div class="stat-title-row">
             <span>Enrolled Students</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--primary);"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--text-secondary);"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
           </div>
           <div class="stat-number">${stats.totalStudents}</div>
-          <div class="stat-caption">${selectedLevel === 'ALL' ? 'Across all Nilais' : selectedLevel}</div>
+          <div class="stat-caption">${selectedLevel === 'ALL' ? 'All Nilais' : selectedLevel}</div>
         </div>
 
         <div class="dashboard-stat-card">
           <div class="stat-title-row">
             <span>Class Sessions</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--amber-text);"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--text-secondary);"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
           </div>
           <div class="stat-number">${stats.totalSessions}</div>
           <div class="stat-caption">Recorded dates</div>
@@ -62,12 +64,49 @@ const Dashboard = (() => {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--text-muted);"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
           </div>
           <div class="stat-number" style="font-size:1.5rem; display:flex; gap:8px; align-items:baseline;">
-            <span style="color:var(--emerald-text);">${stats.totalPresent} <small style="font-size:0.75rem;">P</small></span>
+            <span style="color:var(--sage);">${stats.totalPresent} <small style="font-size:0.75rem;">P</small></span>
             <span style="color:var(--text-muted); font-size:1rem;">/</span>
-            <span style="color:var(--text-secondary);">${stats.totalAbsent} <small style="font-size:0.75rem;">A</small></span>
+            <span style="color:var(--slate);">${stats.totalAbsent} <small style="font-size:0.75rem;">A</small></span>
           </div>
-          <div class="stat-caption">Deduplicated latest records</div>
+          <div class="stat-caption">Deduplicated records</div>
         </div>
+      </div>
+
+      <!-- Modern Visual Charts Grid -->
+      <div class="dashboard-charts-grid">
+        
+        <!-- 1. Donut Pie Chart: Attendance Split -->
+        <div class="chart-card">
+          <div class="chart-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--coral);"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
+            <span>Attendance Distribution</span>
+          </div>
+          <div class="chart-body-donut">
+            ${renderDonutChart(stats.totalPresent, stats.totalAbsent, stats.overallAttendanceRate)}
+            <div class="donut-legend">
+              <div class="legend-item">
+                <span class="legend-dot present"></span>
+                <span>Present: <strong>${stats.totalPresent}</strong> (${stats.overallAttendanceRate}%)</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot absent"></span>
+                <span>Absent: <strong>${stats.totalAbsent}</strong> (${100 - stats.overallAttendanceRate}%)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Bar Chart: Level-by-Level Comparison -->
+        <div class="chart-card">
+          <div class="chart-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--coral);"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            <span>Class Performance Comparison</span>
+          </div>
+          <div class="chart-body-bars">
+            ${renderLevelBars(allLevelStats)}
+          </div>
+        </div>
+
       </div>
 
       <!-- Controls & Filter Toolbar -->
@@ -97,6 +136,75 @@ const Dashboard = (() => {
     `;
 
     container.innerHTML = html;
+  }
+
+  function renderDonutChart(present, absent, percentage) {
+    const total = present + absent;
+    const radius = 45;
+    const circumference = 2 * Math.PI * radius; // ~282.74
+
+    let presentStroke = 0;
+    let absentStroke = 0;
+
+    if (total > 0) {
+      presentStroke = (present / total) * circumference;
+      absentStroke = circumference - presentStroke;
+    } else {
+      absentStroke = circumference;
+    }
+
+    return `
+      <div class="donut-svg-wrap">
+        <svg viewBox="0 0 120 120">
+          <!-- Background ring (Absent) -->
+          <circle
+            cx="60" cy="60" r="${radius}"
+            fill="transparent"
+            stroke="var(--slate-border)"
+            stroke-width="12"
+          />
+          <!-- Foreground ring (Present) -->
+          <circle
+            cx="60" cy="60" r="${radius}"
+            fill="transparent"
+            stroke="var(--sage)"
+            stroke-width="12"
+            stroke-dasharray="${presentStroke} ${absentStroke}"
+            stroke-dashoffset="0"
+            stroke-linecap="round"
+            style="transition: stroke-dasharray 0.5s ease;"
+          />
+        </svg>
+        <div class="donut-center-text">
+          <div class="donut-center-pct">${percentage}%</div>
+          <div class="donut-center-sub">Rate</div>
+        </div>
+      </div>
+    `;
+  }
+
+  function calculateAllLevelsStats() {
+    return Store.LEVELS.map(lvl => {
+      const stats = Store.getDashboardStats(lvl.id);
+      return {
+        id: lvl.id,
+        label: lvl.label.split('(')[0].trim(),
+        rate: stats.overallAttendanceRate,
+        studentsCount: stats.totalStudents
+      };
+    });
+  }
+
+  function renderLevelBars(levelStats) {
+    return levelStats.map(lvl => `
+      <div class="level-bar-row">
+        <span class="level-bar-name" title="${lvl.label}">${lvl.label}</span>
+        <div class="level-bar-track">
+          <div class="level-bar-fill" style="width: ${lvl.rate}%;"></div>
+        </div>
+        <span class="level-bar-pct">${lvl.rate}%</span>
+      </div>
+    `).join('');
   }
 
   function renderCardsOnly() {
@@ -196,14 +304,14 @@ const Dashboard = (() => {
     }).join('');
 
     const bodyHtml = `
-      <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-surface-elevated); padding:12px 16px; border-radius:var(--radius-md); margin-bottom:14px; border:1px solid var(--border-subtle);">
+      <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-surface-subtle); padding:12px 16px; border-radius:var(--radius-md); margin-bottom:14px; border:1px solid var(--border-subtle);">
         <div>
           <span style="font-size:0.78rem; color:var(--text-muted);">Nilai:</span>
           <strong style="color:var(--text-primary); font-size:0.9rem; margin-left:4px;">${AppUI.escapeHtml(levelId)}</strong>
         </div>
         <div>
           <span style="font-size:0.78rem; color:var(--text-muted);">Attendance Rate:</span>
-          <strong style="color:${student.percentage >= 80 ? 'var(--emerald-text)' : 'var(--amber-text)'}; font-size:1.1rem; margin-left:4px;">
+          <strong style="color:${student.percentage >= 80 ? 'var(--sage)' : 'var(--coral)'}; font-size:1.1rem; margin-left:4px;">
             ${student.percentage}%
           </strong>
           <span style="font-size:0.78rem; color:var(--text-muted);">(${student.presentCount}/${student.totalDays})</span>
