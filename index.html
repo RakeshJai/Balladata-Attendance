@@ -5,9 +5,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Baladatta Tamil School Attendance | பாலதத்தா தமிழ்ப்பள்ளி</title>
-  <meta name="description" content="Modern mobile attendance tracking app for Baladatta Tamil School." />
+  <meta name="description" content="Attendance tracking portal for Baladatta Tamil School." />
 
-  <!-- Google Fonts: Plus Jakarta Sans -->
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -16,22 +16,22 @@
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://apis.google.com/js/api.js" async defer></script>
 
-  <!-- PWA Manifest & Theme Color -->
+  <!-- PWA Manifest & Icons -->
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#121316">
+  <meta name="theme-color" content="#0f1117">
   <link rel="icon" type="image/png" href="Logo.png">
 
-  <!-- Figma-Inspired Design System -->
+  <!-- Clean Design System -->
   <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body>
-  <!-- Offline Alert -->
+  <!-- Offline Notice -->
   <div id="offlineBanner" class="offline-banner">
-    ⚠️ Offline Mode: Changes saved locally.
+    Offline Mode: Changes saved locally and will sync when reconnected.
   </div>
 
-  <!-- Header (Figma Mobile App Style) -->
+  <!-- Header -->
   <header class="app-header">
     <div class="header-container">
       <div class="brand-section">
@@ -39,30 +39,30 @@
           <img src="Logo.png" alt="Baladatta Logo" onerror="this.outerHTML='<span>🏫</span>'">
         </div>
         <div class="brand-text">
-          <span class="brand-greeting">Hello, <strong id="teacherDisplay">Teacher</strong> 👋</span>
+          <span class="brand-greeting">Hello, <strong id="teacherDisplay">Teacher</strong></span>
           <h1 class="brand-title">Baladatta Tamil School</h1>
         </div>
       </div>
 
       <div class="header-actions">
         <button id="googleLoginBtn" class="sync-button" title="Connect Google Sheets">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          Sync Sheets
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span id="googleLoginBtnText">Connect Sheets</span>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- Segmented Navigation Pills (Figma Pill Bar) -->
+  <!-- Segmented Navigation -->
   <div class="nav-pill-container">
     <nav class="segmented-pill-bar" aria-label="App Navigation">
       <button id="navAttendanceTab" class="nav-pill-btn active">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
         <span>Mark Attendance</span>
       </button>
       <button id="navDashboardTab" class="nav-pill-btn">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
-        <span>Summary Dashboard</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+        <span>Analytics Dashboard</span>
       </button>
     </nav>
   </div>
@@ -73,89 +73,45 @@
     <!-- ATTENDANCE VIEW -->
     <section id="attendanceViewSection">
       
-      <!-- Horizontal Nilai Chips (Figma Category Chips) -->
+      <!-- Nilai Horizontal Selector -->
       <div class="level-scroll-section">
-        <div class="section-label">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--primary);"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-          Select Nilai / Level (வகுப்பு நிலை)
-        </div>
         <div id="levelPillsRow" class="level-pills-row">
           <!-- Populated dynamically via JS -->
         </div>
       </div>
 
-      <!-- Top Toolbar Card: Date Field at Top & Nilai Select (Requirements 1 & 5) -->
-      <div class="figma-card">
-        <div class="toolbar-layout">
-          
-          <!-- Nilai Dropdown (Requirement 5) -->
-          <div class="field-group">
-            <label class="field-label" for="nilaiSelect">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--primary);"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-              Nilai Dropdown
-            </label>
-            <div class="pill-select-wrapper">
-              <select id="nilaiSelect" class="pill-select" aria-label="Select Nilai">
-                <!-- Populated via JS -->
-              </select>
-              <div class="select-arrow-icon">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
-              </div>
-            </div>
-          </div>
+      <!-- Date & Status Toolbar -->
+      <div class="toolbar-card">
+        <div class="date-controls-group">
+          <button id="prevDateBtn" class="icon-btn" title="Previous Day">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <input type="date" id="attendanceDatePicker" class="pill-date-input" aria-label="Attendance Date" />
+          <button id="nextDateBtn" class="icon-btn" title="Next Day">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+          <button id="dateTodayBtn" class="btn-today" title="Set to Today">Today</button>
+        </div>
 
-          <!-- Date Field at Top (Requirement 1) -->
-          <div class="field-group">
-            <label class="field-label" for="attendanceDatePicker">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--primary);"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-              Session Date (தேதி)
-            </label>
-            <div class="date-controls-row">
-              <button id="prevDateBtn" class="pill-nav-btn" title="Previous Day">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="15 18 9 12 15 6"/></svg>
-              </button>
-              <input type="date" id="attendanceDatePicker" class="pill-date-input" aria-label="Attendance Date" />
-              <button id="nextDateBtn" class="pill-nav-btn" title="Next Day">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"/></svg>
-              </button>
-              <button id="dateTodayBtn" class="pill-today-btn" title="Today">Today</button>
-            </div>
-          </div>
-
+        <div>
+          <span id="existingDateBadge" class="date-status-badge fresh">● Fresh Session</span>
         </div>
       </div>
 
-      <!-- TOP SUBMIT ACTION BAR (Requirement 2) -->
-      <div class="action-banner top-banner">
-        <div class="counter-pills-group">
-          <span class="counter-chip present stat-present-count">0 Present</span>
-          <span class="counter-chip absent stat-absent-count">0 Absent</span>
-          <span class="counter-chip total stat-total-count">0 Total</span>
-          <span id="existingDateBadge" class="counter-chip saved" style="display:none;"></span>
+      <!-- Roster Header & Quick Mass Actions -->
+      <div class="roster-header-row">
+        <div class="roster-heading">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--primary);"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          <span>Students Roster</span>
         </div>
-
-        <div class="action-buttons-group">
-          <button id="markAllPresentTop" class="btn-outline-pill" title="Mark all Present">
+        <div class="roster-actions">
+          <button id="markAllPresentBtn" class="btn-ghost-action" title="Mark All Present">
             ✓ All Present
           </button>
-          <button id="markAllAbsentTop" class="btn-outline-pill" title="Mark all Absent">
+          <button id="markAllAbsentBtn" class="btn-ghost-action" title="Mark All Absent">
             ✗ All Absent
           </button>
-          <!-- Top Submit Button (Requirement 2) -->
-          <button id="submitBtnTop" class="btn-pill btn-coral" title="Submit Attendance">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-            Submit Attendance
-          </button>
         </div>
-      </div>
-
-      <!-- Roster Header -->
-      <div class="roster-header">
-        <h2 class="roster-title">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--primary);"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-          Students Roster
-        </h2>
-        <span class="roster-hint">Tap <strong>P</strong> (Present) or <strong>A</strong> (Absent)</span>
       </div>
 
       <!-- Student Cards Container -->
@@ -165,50 +121,28 @@
 
       <!-- Empty State -->
       <div id="emptyStudentState" class="empty-state-box" style="display:none;">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted); margin-bottom:8px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted); margin-bottom:8px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         <h3>No students found in this Nilai</h3>
         <p style="font-size:0.85rem;">Add a student below to get started.</p>
       </div>
 
-      <!-- Add Student Bar (Requirement 3) -->
-      <div class="add-student-banner">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--primary);"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        <input type="text" id="newStudentInput" class="add-student-field" placeholder="Enter student full name..." aria-label="Student name" />
-        <button id="addStudentBtn" class="btn-pill btn-coral" style="padding: 10px 20px; font-size:0.85rem;">
+      <!-- Add Student Bar -->
+      <div class="add-student-container">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--primary);"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <input type="text" id="newStudentInput" class="add-student-input" placeholder="Add student full name..." aria-label="Student name" />
+        <button id="addStudentBtn" class="btn-primary">
           + Add Student
         </button>
       </div>
 
-      <!-- BOTTOM SUBMIT ACTION BAR (Requirement 2) -->
-      <div class="action-banner bottom-banner">
-        <div class="counter-pills-group">
-          <span class="counter-chip present stat-present-count">0 Present</span>
-          <span class="counter-chip absent stat-absent-count">0 Absent</span>
-          <span class="counter-chip total stat-total-count">0 Total</span>
-        </div>
-
-        <div class="action-buttons-group">
-          <!-- Bottom Submit Button (Requirement 2) -->
-          <button id="submitBtnBottom" class="btn-pill btn-coral" title="Submit Attendance">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-            Submit Attendance
-          </button>
-        </div>
-      </div>
-
     </section>
 
-    <!-- DASHBOARD VIEW (Requirement 4) -->
+    <!-- DASHBOARD VIEW -->
     <section id="dashboardViewSection" class="dashboard-view">
-      <div class="roster-header" style="margin-bottom: 16px;">
-        <div>
-          <h2 class="roster-title">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--primary);"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-            Student Attendance Analytics & Summary
-          </h2>
-          <p class="roster-hint" style="margin-top:2px;">
-            Real-time attendance rates, student summaries, and session logs.
-          </p>
+      <div class="roster-header-row" style="margin-bottom: 16px;">
+        <div class="roster-heading">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--primary);"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          <span>Attendance Analytics & Reports</span>
         </div>
       </div>
 
@@ -219,19 +153,35 @@
 
   </main>
 
+  <!-- Single Unified Sticky Bottom Action Bar -->
+  <aside class="sticky-action-bar" id="stickyActionBar">
+    <div class="sticky-action-container">
+      <div class="tally-group">
+        <span class="tally-chip present stat-present-count">0 Present</span>
+        <span class="tally-chip absent stat-absent-count">0 Absent</span>
+        <span class="tally-chip total stat-total-count">0 Total</span>
+      </div>
+
+      <button id="submitAttendanceBtn" class="btn-submit-attendance" title="Save & Sync Attendance">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        <span>Submit Attendance</span>
+      </button>
+    </div>
+  </aside>
+
   <!-- Reusable Modal Dialog -->
   <div id="modalOverlay" class="modal-overlay" role="dialog" aria-modal="true">
     <div class="modal-box">
       <div class="modal-head">
         <h3 id="modalTitle" class="modal-title">Modal Title</h3>
-        <button id="modalCloseIcon" class="crud-btn" aria-label="Close modal">
+        <button id="modalCloseIcon" class="btn-icon-subtle" aria-label="Close modal">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
       <div id="modalBody" class="modal-body-area"></div>
       <div class="modal-foot">
-        <button id="modalCancelBtn" class="btn-outline-pill">Cancel</button>
-        <button id="modalConfirmBtn" class="btn-pill btn-coral" style="padding: 10px 20px;">Confirm</button>
+        <button id="modalCancelBtn" class="btn-ghost-action" style="padding:8px 16px;">Cancel</button>
+        <button id="modalConfirmBtn" class="btn-primary">Confirm</button>
       </div>
     </div>
   </div>

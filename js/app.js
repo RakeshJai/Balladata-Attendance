@@ -1,6 +1,5 @@
 /**
  * Baladatta Tamil School Attendance - Main Application Controller
- * Inspired by Figma Mobile Education UI Kit (E-Sekula)
  */
 
 const AppUI = (() => {
@@ -42,15 +41,15 @@ const AppUI = (() => {
 
     setTimeout(() => {
       toast.style.opacity = '0';
-      toast.style.transform = 'translateX(30px)';
-      toast.style.transition = 'all 0.3s ease';
-      setTimeout(() => toast.remove(), 300);
+      toast.style.transform = 'translateY(12px)';
+      toast.style.transition = 'all 0.2s ease';
+      setTimeout(() => toast.remove(), 200);
     }, duration);
   }
 
   let activeModalConfirmHandler = null;
 
-  function showModal({ title, bodyHtml, confirmText = 'Confirm', confirmClass = 'btn-coral', cancelText = 'Cancel', onConfirm }) {
+  function showModal({ title, bodyHtml, confirmText = 'Confirm', confirmClass = 'btn-primary', cancelText = 'Cancel', onConfirm }) {
     const overlay = document.getElementById('modalOverlay');
     const titleEl = document.getElementById('modalTitle');
     const bodyEl = document.getElementById('modalBody');
@@ -70,7 +69,7 @@ const AppUI = (() => {
     }
 
     confirmBtn.textContent = confirmText;
-    confirmBtn.className = `btn-pill ${confirmClass}`;
+    confirmBtn.className = confirmClass;
 
     activeModalConfirmHandler = async () => {
       if (onConfirm) {
@@ -121,13 +120,13 @@ const App = (() => {
 
     SheetsAPI.initGoogleAuth(
       (resp) => {
-        const teacher = Store.getTeacherName();
-        AppUI.showToast(`Google Sheets connected as ${teacher}`, 'success');
+        AppUI.showToast(`Google Sheets connected!`, 'success');
         updateAuthUI(true);
         loadCurrentAttendance();
       },
       (err) => {
-        AppUI.showToast('OAuth failed. Operating in local storage mode.', 'error');
+        AppUI.showToast('OAuth sign-in cancelled or failed.', 'error');
+        updateAuthUI(false);
       }
     );
 
@@ -142,22 +141,11 @@ const App = (() => {
   }
 
   function populateNilaiControls() {
-    // 1. Dropdown (Requirement 5)
-    const select = document.getElementById('nilaiSelect');
-    if (select) {
-      select.innerHTML = Store.LEVELS.map(lvl => `
-        <option value="${lvl.id}" ${lvl.id === currentLevel ? 'selected' : ''}>
-          ${lvl.label}
-        </option>
-      `).join('');
-    }
-
-    // 2. Horizontal Figma Category Chips
     const pillsRow = document.getElementById('levelPillsRow');
     if (pillsRow) {
       pillsRow.innerHTML = Store.LEVELS.map(lvl => `
         <button class="level-chip ${lvl.id === currentLevel ? 'active' : ''}" onclick="App.changeLevel('${lvl.id}')">
-          ${lvl.label.split('(')[0].trim()}
+          ${lvl.label}
         </button>
       `).join('');
     }
@@ -167,20 +155,12 @@ const App = (() => {
     const dateInput = document.getElementById('attendanceDatePicker');
     if (dateInput) {
       dateInput.value = currentDate;
-      dateInput.max = Store.formatDate(new Date(Date.now() + 86400000 * 30));
+      dateInput.max = Store.formatDate(new Date(Date.now() + 86400000 * 60));
     }
   }
 
   function setupEventListeners() {
-    // Nilai Select Change
-    const nilaiSelect = document.getElementById('nilaiSelect');
-    if (nilaiSelect) {
-      nilaiSelect.addEventListener('change', (e) => {
-        changeLevel(e.target.value);
-      });
-    }
-
-    // Date Picker Change (Requirement 1)
+    // Date Picker Change
     const dateInput = document.getElementById('attendanceDatePicker');
     if (dateInput) {
       dateInput.addEventListener('change', (e) => {
@@ -200,19 +180,17 @@ const App = (() => {
     if (prevDateBtn) prevDateBtn.addEventListener('click', () => stepDate(-1));
     if (nextDateBtn) nextDateBtn.addEventListener('click', () => stepDate(1));
 
-    // Dual Submit Buttons (Requirement 2: Top & Bottom)
-    const submitBtnTop = document.getElementById('submitBtnTop');
-    const submitBtnBottom = document.getElementById('submitBtnBottom');
-    if (submitBtnTop) submitBtnTop.addEventListener('click', submitCurrentAttendance);
-    if (submitBtnBottom) submitBtnBottom.addEventListener('click', submitCurrentAttendance);
+    // Submit Attendance Button (Unified sticky bar)
+    const submitBtn = document.getElementById('submitAttendanceBtn');
+    if (submitBtn) submitBtn.addEventListener('click', submitCurrentAttendance);
 
     // Mass Attendance Shortcuts
-    const markAllPresentTop = document.getElementById('markAllPresentTop');
-    const markAllAbsentTop = document.getElementById('markAllAbsentTop');
-    if (markAllPresentTop) markAllPresentTop.addEventListener('click', () => markAll('Present'));
-    if (markAllAbsentTop) markAllAbsentTop.addEventListener('click', () => markAll('Absent'));
+    const markAllPresentBtn = document.getElementById('markAllPresentBtn');
+    const markAllAbsentBtn = document.getElementById('markAllAbsentBtn');
+    if (markAllPresentBtn) markAllPresentBtn.addEventListener('click', () => markAll('Present'));
+    if (markAllAbsentBtn) markAllAbsentBtn.addEventListener('click', () => markAll('Absent'));
 
-    // Add Student (Requirement 3)
+    // Add Student
     const addStudentBtn = document.getElementById('addStudentBtn');
     const newStudentInput = document.getElementById('newStudentInput');
     if (addStudentBtn && newStudentInput) {
@@ -224,12 +202,13 @@ const App = (() => {
       });
     }
 
-    // Segmented Navigation
+    // Navigation Tabs
     const navAttendanceTab = document.getElementById('navAttendanceTab');
     const navDashboardTab = document.getElementById('navDashboardTab');
     if (navAttendanceTab) navAttendanceTab.addEventListener('click', () => switchView('attendance'));
     if (navDashboardTab) navDashboardTab.addEventListener('click', () => switchView('dashboard'));
 
+    // Google Login
     const googleLoginBtn = document.getElementById('googleLoginBtn');
     if (googleLoginBtn) {
       googleLoginBtn.addEventListener('click', () => {
@@ -237,6 +216,7 @@ const App = (() => {
       });
     }
 
+    // Modal Events
     const modalConfirmBtn = document.getElementById('modalConfirmBtn');
     const modalCancelBtn = document.getElementById('modalCancelBtn');
     const modalCloseIcon = document.getElementById('modalCloseIcon');
@@ -298,14 +278,13 @@ const App = (() => {
     if (emptyState) emptyState.style.display = 'none';
 
     if (existingDateBadge) {
+      existingDateBadge.style.display = 'inline-flex';
       if (hasExistingRecord) {
-        existingDateBadge.style.display = 'inline-flex';
-        existingDateBadge.className = 'counter-chip saved';
-        existingDateBadge.innerHTML = '✓ Saved Attendance';
+        existingDateBadge.className = 'date-status-badge saved';
+        existingDateBadge.innerHTML = '✓ Saved Session';
       } else {
-        existingDateBadge.style.display = 'inline-flex';
-        existingDateBadge.className = 'counter-chip total';
-        existingDateBadge.innerHTML = '● Fresh Date';
+        existingDateBadge.className = 'date-status-badge fresh';
+        existingDateBadge.innerHTML = '● Fresh Session';
       }
     }
 
@@ -313,40 +292,36 @@ const App = (() => {
     students.forEach((student, index) => {
       const status = currentAttendance[student] || 'Absent';
       const isPresent = status === 'Present';
-      const cardClass = isPresent ? 'student-row-card is-present' : 'student-row-card is-absent';
+      const cardClass = isPresent ? 'student-card is-present' : 'student-card';
       const initials = AppUI.getInitials(student);
 
       html += `
-        <div class="${cardClass}" id="student-card-${index}">
-          <div class="student-left-info">
-            <div class="avatar-ring">
+        <div class="${cardClass}" id="student-card-${index}" onclick="App.toggleAttendanceByIndex(${index})">
+          <div class="student-info">
+            <div class="student-avatar" id="avatar-${index}">
               ${initials}
             </div>
-            <div class="student-name-meta">
-              <span class="student-full-name">${AppUI.escapeHtml(student)}</span>
-              <span class="student-tag-status" id="status-hint-${index}">
+            <div class="student-meta">
+              <span class="student-name">${AppUI.escapeHtml(student)}</span>
+              <span class="student-status-hint" id="status-hint-${index}">
                 ${isPresent ? '● Present (வந்தார்)' : '○ Absent (வரவில்லை)'}
               </span>
             </div>
           </div>
 
-          <div class="student-right-actions">
-            <!-- Edit / Delete Student (Requirement 3) -->
-            <div class="student-crud-tools">
-              <button class="crud-btn" title="Edit Student Name" onclick="StudentMgr.promptEditStudent('${AppUI.escapeHtml(student)}')">
+          <div class="student-card-actions" onclick="event.stopPropagation()">
+            <div class="crud-btn-group">
+              <button class="btn-icon-subtle" title="Edit Student Name" onclick="StudentMgr.promptEditStudent('${AppUI.escapeHtml(student)}')">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
               </button>
-              <button class="crud-btn delete" title="Delete Student" onclick="StudentMgr.promptDeleteStudent('${AppUI.escapeHtml(student)}')">
+              <button class="btn-icon-subtle delete" title="Delete Student" onclick="StudentMgr.promptDeleteStudent('${AppUI.escapeHtml(student)}')">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
               </button>
             </div>
 
-            <!-- Figma Segmented Dual Pill Switch [ Absent | Present ] -->
-            <label class="figma-pill-switch" title="Toggle Present / Absent">
-              <input type="checkbox" ${isPresent ? 'checked' : ''} onchange="App.toggleAttendance('${AppUI.escapeHtml(student)}', this.checked, ${index})">
-              <span class="pill-option option-absent">Absent</span>
-              <span class="pill-option option-present">Present</span>
-            </label>
+            <button class="attendance-toggle-btn" id="toggle-btn-${index}" onclick="App.toggleAttendance('${AppUI.escapeHtml(student)}', ${index})">
+              ${isPresent ? '✓ Present' : 'Absent'}
+            </button>
           </div>
         </div>
       `;
@@ -355,16 +330,31 @@ const App = (() => {
     studentContainer.innerHTML = html;
   }
 
-  function toggleAttendance(studentName, isChecked, index) {
-    currentAttendance[studentName] = isChecked ? 'Present' : 'Absent';
-    
+  function toggleAttendanceByIndex(index) {
+    const students = Store.getStudentsForLevel(currentLevel);
+    if (students && students[index]) {
+      toggleAttendance(students[index], index);
+    }
+  }
+
+  function toggleAttendance(studentName, index) {
+    const current = currentAttendance[studentName] || 'Absent';
+    const next = current === 'Present' ? 'Absent' : 'Present';
+    currentAttendance[studentName] = next;
+
+    const isPresent = next === 'Present';
     const card = document.getElementById(`student-card-${index}`);
     const hint = document.getElementById(`status-hint-${index}`);
+    const btn = document.getElementById(`toggle-btn-${index}`);
+
     if (card) {
-      card.className = isChecked ? 'student-row-card is-present' : 'student-row-card is-absent';
+      card.className = isPresent ? 'student-card is-present' : 'student-card';
     }
     if (hint) {
-      hint.innerHTML = isChecked ? '● Present (வந்தார்)' : '○ Absent (வரவில்லை)';
+      hint.innerHTML = isPresent ? '● Present (வந்தார்)' : '○ Absent (வரவில்லை)';
+    }
+    if (btn) {
+      btn.innerHTML = isPresent ? '✓ Present' : 'Absent';
     }
 
     updateStatsPills();
@@ -380,7 +370,7 @@ const App = (() => {
     const studentsList = Store.getStudentsForLevel(currentLevel);
     renderStudentList(studentsList, true);
     updateStatsPills();
-    AppUI.showToast(`Marked all ${status.toLowerCase()} for ${currentDate}`, 'info');
+    AppUI.showToast(`Marked all as ${status.toLowerCase()} for ${currentDate}`, 'info');
   }
 
   function updateStatsPills() {
@@ -407,13 +397,13 @@ const App = (() => {
     }
 
     isSubmitting = true;
-    const submitBtnTop = document.getElementById('submitBtnTop');
-    const submitBtnBottom = document.getElementById('submitBtnBottom');
-    const origTop = submitBtnTop ? submitBtnTop.innerHTML : '';
-    const origBottom = submitBtnBottom ? submitBtnBottom.innerHTML : '';
+    const submitBtn = document.getElementById('submitAttendanceBtn');
+    const origHtml = submitBtn ? submitBtn.innerHTML : '';
 
-    if (submitBtnTop) submitBtnTop.innerHTML = 'Saving...';
-    if (submitBtnBottom) submitBtnBottom.innerHTML = 'Saving...';
+    if (submitBtn) {
+      submitBtn.innerHTML = `<span>Saving...</span>`;
+      submitBtn.disabled = true;
+    }
 
     try {
       const teacher = Store.getTeacherName();
@@ -421,8 +411,10 @@ const App = (() => {
 
       if (result.syncedWithSheet) {
         AppUI.showToast(`Attendance synced to Google Sheets for ${currentDate}!`, 'success');
+      } else if (result.offlineOnly) {
+        AppUI.showToast(`Saved locally. Connect Sheets to sync cloud.`, 'info');
       } else {
-        AppUI.showToast(`Attendance saved locally for ${currentDate}.`, 'success');
+        AppUI.showToast(`Saved locally (Sheets sync error: ${result.error?.message || 'Check connection'})`, 'error');
       }
 
       const studentsList = Store.getStudentsForLevel(currentLevel);
@@ -432,12 +424,14 @@ const App = (() => {
         Dashboard.render();
       }
     } catch (err) {
-      console.error('Submit error:', err);
+      console.error('[App] Submit error:', err);
       AppUI.showToast('Error saving attendance.', 'error');
     } finally {
       isSubmitting = false;
-      if (submitBtnTop) submitBtnTop.innerHTML = origTop;
-      if (submitBtnBottom) submitBtnBottom.innerHTML = origBottom;
+      if (submitBtn) {
+        submitBtn.innerHTML = origHtml;
+        submitBtn.disabled = false;
+      }
     }
   }
 
@@ -454,29 +448,36 @@ const App = (() => {
     const dashboardView = document.getElementById('dashboardViewSection');
     const navAttendance = document.getElementById('navAttendanceTab');
     const navDashboard = document.getElementById('navDashboardTab');
+    const stickyBar = document.getElementById('stickyActionBar');
 
     if (view === 'attendance') {
       if (attendanceView) attendanceView.style.display = 'block';
       if (dashboardView) dashboardView.style.display = 'none';
       if (navAttendance) navAttendance.classList.add('active');
       if (navDashboard) navDashboard.classList.remove('active');
+      if (stickyBar) stickyBar.style.display = 'block';
       loadCurrentAttendance();
     } else {
       if (attendanceView) attendanceView.style.display = 'none';
       if (dashboardView) dashboardView.style.display = 'block';
       if (navAttendance) navAttendance.classList.remove('active');
       if (navDashboard) navDashboard.classList.add('active');
+      if (stickyBar) stickyBar.style.display = 'none';
       Dashboard.init();
     }
   }
 
   function updateAuthUI(isSignedIn) {
     const googleLoginBtn = document.getElementById('googleLoginBtn');
-    if (isSignedIn && googleLoginBtn) {
-      googleLoginBtn.innerHTML = '✓ Sheets Connected';
-      googleLoginBtn.style.color = 'var(--mint-text)';
-      googleLoginBtn.style.background = 'var(--mint)';
-      googleLoginBtn.style.borderColor = 'var(--mint)';
+    const btnText = document.getElementById('googleLoginBtnText');
+    if (googleLoginBtn) {
+      if (isSignedIn) {
+        googleLoginBtn.classList.add('connected');
+        if (btnText) btnText.textContent = '✓ Sheets Connected';
+      } else {
+        googleLoginBtn.classList.remove('connected');
+        if (btnText) btnText.textContent = 'Connect Sheets';
+      }
     }
   }
 
@@ -502,6 +503,7 @@ const App = (() => {
     changeLevel,
     changeDate,
     toggleAttendance,
+    toggleAttendanceByIndex,
     markAll,
     submitCurrentAttendance,
     switchView

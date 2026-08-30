@@ -1,6 +1,5 @@
 /**
  * Baladatta Attendance - Attendance Analytics & Dashboard Module
- * Faithful to Figma Mobile Education UI Kit (E-Sekula) Cards & Pastel Blocks
  */
 
 const Dashboard = (() => {
@@ -28,70 +27,65 @@ const Dashboard = (() => {
     const stats = Store.getDashboardStats(selectedLevel);
 
     let html = `
-      <!-- Figma Style 4 Pastel Stat Cards (Coral, Cream, Mint, Peach) -->
-      <div class="figma-stats-grid">
-        <div class="figma-stat-card coral">
-          <div class="stat-header-line">
-            <span>Attendance Rate</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      <!-- High-Density Stat Cards -->
+      <div class="dashboard-stats-grid">
+        <div class="dashboard-stat-card">
+          <div class="stat-title-row">
+            <span>Overall Attendance</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--emerald-text);"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
           </div>
-          <div class="stat-huge-number">${stats.overallAttendanceRate}%</div>
-          <div class="stat-sub-text">${stats.totalPresent} Present / ${stats.totalPresent + stats.totalAbsent} Total</div>
+          <div class="stat-number rate">${stats.overallAttendanceRate}%</div>
+          <div class="stat-caption">${stats.totalPresent} Present / ${stats.totalPresent + stats.totalAbsent} Total</div>
         </div>
 
-        <div class="figma-stat-card cream">
-          <div class="stat-header-line">
+        <div class="dashboard-stat-card">
+          <div class="stat-title-row">
             <span>Enrolled Students</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--primary);"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
           </div>
-          <div class="stat-huge-number">${stats.totalStudents}</div>
-          <div class="stat-sub-text">${selectedLevel === 'ALL' ? 'All Nilais' : selectedLevel}</div>
+          <div class="stat-number">${stats.totalStudents}</div>
+          <div class="stat-caption">${selectedLevel === 'ALL' ? 'Across all Nilais' : selectedLevel}</div>
         </div>
 
-        <div class="figma-stat-card mint">
-          <div class="stat-header-line">
+        <div class="dashboard-stat-card">
+          <div class="stat-title-row">
             <span>Class Sessions</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--amber-text);"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
           </div>
-          <div class="stat-huge-number">${stats.totalSessions}</div>
-          <div class="stat-sub-text">Recorded dates</div>
+          <div class="stat-number">${stats.totalSessions}</div>
+          <div class="stat-caption">Recorded dates</div>
         </div>
 
-        <div class="figma-stat-card peach">
-          <div class="stat-header-line">
+        <div class="dashboard-stat-card">
+          <div class="stat-title-row">
             <span>Present / Absent</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--text-muted);"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
           </div>
-          <div class="stat-huge-number" style="font-size: 1.6rem; display:flex; gap:8px; align-items:center;">
-            <span>${stats.totalPresent} <small style="font-size:0.75rem;">P</small></span>
-            <span style="opacity:0.4;">/</span>
-            <span>${stats.totalAbsent} <small style="font-size:0.75rem;">A</small></span>
+          <div class="stat-number" style="font-size:1.5rem; display:flex; gap:8px; align-items:baseline;">
+            <span style="color:var(--emerald-text);">${stats.totalPresent} <small style="font-size:0.75rem;">P</small></span>
+            <span style="color:var(--text-muted); font-size:1rem;">/</span>
+            <span style="color:var(--text-secondary);">${stats.totalAbsent} <small style="font-size:0.75rem;">A</small></span>
           </div>
-          <div class="stat-sub-text">Deduplicated latest records</div>
+          <div class="stat-caption">Deduplicated latest records</div>
         </div>
       </div>
 
-      <!-- Search & Nilai Filter Bar -->
-      <div class="dashboard-controls-bar">
-        <div class="search-pill-container">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" id="dashboardSearchInput" class="search-pill-input" placeholder="Search student name..." value="${AppUI.escapeHtml(searchQuery)}" oninput="Dashboard.setSearchQuery(this.value)" />
+      <!-- Controls & Filter Toolbar -->
+      <div class="dashboard-toolbar">
+        <div class="search-field-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="dashboardSearchInput" class="search-input" placeholder="Search student name..." value="${AppUI.escapeHtml(searchQuery)}" oninput="Dashboard.setSearchQuery(this.value)" />
         </div>
 
         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-          <div class="pill-select-wrapper" style="width: auto; min-width: 170px;">
-            <select class="pill-select" style="padding-top:8px; padding-bottom:8px; font-size:0.85rem;" onchange="Dashboard.setFilterLevel(this.value)">
-              <option value="ALL" ${selectedLevel === 'ALL' ? 'selected' : ''}>All Nilais (அனைத்தும்)</option>
-              ${Store.LEVELS.map(l => `<option value="${l.id}" ${selectedLevel === l.id ? 'selected' : ''}>${l.label}</option>`).join('')}
-            </select>
-            <div class="select-arrow-icon">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-          </div>
+          <select class="select-filter" onchange="Dashboard.setFilterLevel(this.value)" aria-label="Filter by Nilai">
+            <option value="ALL" ${selectedLevel === 'ALL' ? 'selected' : ''}>All Nilais (அனைத்தும்)</option>
+            ${Store.LEVELS.map(l => `<option value="${l.id}" ${selectedLevel === l.id ? 'selected' : ''}>${l.label}</option>`).join('')}
+          </select>
 
-          <button class="btn-outline-pill" onclick="Dashboard.exportToCsv()" title="Download Attendance CSV" style="padding: 8px 16px;">
+          <button class="btn-ghost-action" onclick="Dashboard.exportToCsv()" title="Download Attendance CSV" style="padding: 8px 14px; display:inline-flex; align-items:center; gap:6px;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Export CSV
+            <span>Export CSV</span>
           </button>
         </div>
       </div>
@@ -121,7 +115,7 @@ const Dashboard = (() => {
     if (filtered.length === 0) {
       return `
         <div class="empty-state-box">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted); margin-bottom:8px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted); margin-bottom:8px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           <h3>No matching students</h3>
           <p style="font-size:0.85rem;">Try adjusting your search or Nilai filter.</p>
         </div>
@@ -129,37 +123,37 @@ const Dashboard = (() => {
     }
 
     return `
-      <div class="dashboard-cards-container">
-        ${filtered.map((s, idx) => {
+      <div>
+        ${filtered.map((s) => {
           const rateTier = s.percentage >= 80 ? 'high' : s.percentage >= 60 ? 'medium' : 'low';
           const initials = AppUI.getInitials(s.studentName);
 
           return `
-            <div class="dash-student-card">
-              <div class="dash-student-info">
-                <div class="avatar-ring" style="width:38px; height:38px; font-size:0.85rem; color:var(--cream); background:var(--bg-surface-elevated);">
+            <div class="dash-card">
+              <div class="dash-card-left">
+                <div class="student-avatar" style="width:36px; height:36px; font-size:0.8rem;">
                   ${initials}
                 </div>
                 <div>
-                  <div style="font-size:1rem; font-weight:800; color:var(--text-primary);">${AppUI.escapeHtml(s.studentName)}</div>
-                  <span class="dash-pill-stat level">${AppUI.escapeHtml(s.levelId)}</span>
+                  <div style="font-size:0.95rem; font-weight:700; color:var(--text-primary);">${AppUI.escapeHtml(s.studentName)}</div>
+                  <span class="dash-badge level">${AppUI.escapeHtml(s.levelId)}</span>
                 </div>
               </div>
 
-              <div class="dash-metrics-group">
-                <span class="dash-pill-stat present">${s.presentCount} Present</span>
-                <span class="dash-pill-stat absent">${s.absentCount} Absent</span>
+              <div class="dash-metrics">
+                <span class="dash-badge present">${s.presentCount} Present</span>
+                <span class="dash-badge absent">${s.absentCount} Absent</span>
 
-                <div class="dash-progress-wrap">
-                  <div class="dash-bar-track">
-                    <div class="dash-bar-fill ${rateTier}" style="width: ${s.percentage}%;"></div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div class="dash-progress-track">
+                    <div class="dash-progress-fill ${rateTier}" style="width: ${s.percentage}%;"></div>
                   </div>
-                  <span style="font-size:0.85rem; font-weight:800; color:var(--text-primary); min-width:36px; text-align:right;">
+                  <span style="font-size:0.85rem; font-weight:700; color:var(--text-primary); min-width:36px; text-align:right;">
                     ${s.percentage}%
                   </span>
                 </div>
 
-                <button class="btn-outline-pill" style="padding:6px 14px; font-size:0.8rem;" onclick="Dashboard.showStudentHistory('${AppUI.escapeHtml(s.levelId)}', '${AppUI.escapeHtml(s.studentName)}')">
+                <button class="btn-ghost-action" style="padding:6px 12px; font-size:0.78rem;" onclick="Dashboard.showStudentHistory('${AppUI.escapeHtml(s.levelId)}', '${AppUI.escapeHtml(s.studentName)}')">
                   History
                 </button>
               </div>
@@ -187,13 +181,13 @@ const Dashboard = (() => {
     const historyRows = student.history.map(h => {
       const isPresent = h.status === 'Present';
       return `
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 16px; border-bottom:1px solid var(--border-main);">
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-bottom:1px solid var(--border-subtle);">
           <div>
-            <div style="font-weight:800; color:var(--text-primary); font-size:0.95rem;">${h.date}</div>
-            <div style="font-size:0.775rem; color:var(--text-secondary);">Teacher: ${AppUI.escapeHtml(h.teacher || 'Teacher')}</div>
+            <div style="font-weight:700; color:var(--text-primary); font-size:0.9rem;">${h.date}</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">Teacher: ${AppUI.escapeHtml(h.teacher || 'Teacher')}</div>
           </div>
           <div>
-            <span class="counter-chip ${isPresent ? 'present' : 'absent'}" style="font-size:0.75rem; padding:4px 12px;">
+            <span class="dash-badge ${isPresent ? 'present' : 'absent'}">
               ${isPresent ? '✓ Present' : '✗ Absent'}
             </span>
           </div>
@@ -202,20 +196,20 @@ const Dashboard = (() => {
     }).join('');
 
     const bodyHtml = `
-      <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-surface-elevated); padding:14px 18px; border-radius:var(--radius-card); margin-bottom:16px; border:1px solid var(--border-main);">
+      <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-surface-elevated); padding:12px 16px; border-radius:var(--radius-md); margin-bottom:14px; border:1px solid var(--border-subtle);">
         <div>
-          <span style="font-size:0.8rem; color:var(--text-secondary);">Nilai:</span>
-          <strong style="color:var(--text-primary);">${AppUI.escapeHtml(levelId)}</strong>
+          <span style="font-size:0.78rem; color:var(--text-muted);">Nilai:</span>
+          <strong style="color:var(--text-primary); font-size:0.9rem; margin-left:4px;">${AppUI.escapeHtml(levelId)}</strong>
         </div>
         <div>
-          <span style="font-size:0.8rem; color:var(--text-secondary);">Attendance:</span>
-          <strong style="color:${student.percentage >= 80 ? 'var(--mint)' : 'var(--primary)'}; font-size:1.15rem; margin-left:4px;">
+          <span style="font-size:0.78rem; color:var(--text-muted);">Attendance Rate:</span>
+          <strong style="color:${student.percentage >= 80 ? 'var(--emerald-text)' : 'var(--amber-text)'}; font-size:1.1rem; margin-left:4px;">
             ${student.percentage}%
           </strong>
-          <span style="font-size:0.8rem; color:var(--text-secondary);">(${student.presentCount}/${student.totalDays})</span>
+          <span style="font-size:0.78rem; color:var(--text-muted);">(${student.presentCount}/${student.totalDays})</span>
         </div>
       </div>
-      <div style="max-height:350px; overflow-y:auto; border:1px solid var(--border-main); border-radius:var(--radius-card);">
+      <div style="max-height:300px; overflow-y:auto; border:1px solid var(--border-subtle); border-radius:var(--radius-md);">
         ${historyRows}
       </div>
     `;
