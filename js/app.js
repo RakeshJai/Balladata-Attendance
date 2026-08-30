@@ -1,6 +1,7 @@
 /**
  * Baladatta Tamil School Attendance - Main Application Controller
  * Neoclassical Indian Traditional Architecture
+ * Craftsman register rows, roll number indexing, and tactile status seals.
  */
 
 const AppUI = (() => {
@@ -102,6 +103,16 @@ const App = (() => {
   let currentView = 'attendance';
   let isSubmitting = false;
 
+  const TAMIL_NUMERALS = {
+    'Level1': '௧',
+    'Level2': '௨',
+    'Level3': '௩',
+    'Level4': '௪',
+    'Level5': '௫',
+    'Level6': '௬',
+    'Volunteers': '❖'
+  };
+
   async function init() {
     Store.seedSampleHistoryIfEmpty();
     populateNilaiControls();
@@ -130,11 +141,16 @@ const App = (() => {
   function populateNilaiControls() {
     const pillsRow = document.getElementById('levelPillsRow');
     if (pillsRow) {
-      pillsRow.innerHTML = Store.LEVELS.map(lvl => `
-        <button class="level-chip ${lvl.id === currentLevel ? 'active' : ''}" onclick="App.changeLevel('${lvl.id}')">
-          ${lvl.label}
-        </button>
-      `).join('');
+      pillsRow.innerHTML = Store.LEVELS.map(lvl => {
+        const numeral = TAMIL_NUMERALS[lvl.id] || '•';
+        const label = lvl.id === 'Volunteers' ? 'தொண்டர்கள்' : `நிலை ${lvl.id.replace('Level', '')}`;
+        return `
+          <button class="level-chip ${lvl.id === currentLevel ? 'active' : ''}" onclick="App.changeLevel('${lvl.id}')">
+            <span style="font-family:var(--serif); font-size:0.95rem; margin-right:4px; opacity:0.8;">${numeral}</span>
+            <span>${label}</span>
+          </button>
+        `;
+      }).join('');
     }
   }
 
@@ -267,10 +283,10 @@ const App = (() => {
       existingDateBadge.style.display = 'inline-flex';
       if (hasExistingRecord) {
         existingDateBadge.className = 'date-status-badge saved';
-        existingDateBadge.innerHTML = '✓ Saved Session';
+        existingDateBadge.innerHTML = '✓ பதிவு செய்யப்பட்டது (Saved)';
       } else {
         existingDateBadge.className = 'date-status-badge fresh';
-        existingDateBadge.innerHTML = '● Fresh Session';
+        existingDateBadge.innerHTML = '● புதிய பதிவு (Fresh)';
       }
     }
 
@@ -279,18 +295,18 @@ const App = (() => {
       const status = currentAttendance[student] || 'Absent';
       const isPresent = status === 'Present';
       const cardClass = isPresent ? 'student-card is-present' : 'student-card';
-      const initials = AppUI.getInitials(student);
+      const rollNumber = String(index + 1).padStart(2, '0');
 
       html += `
         <div class="${cardClass}" id="student-card-${index}" onclick="App.toggleAttendanceByIndex(${index})">
           <div class="student-info">
             <div class="student-avatar" id="avatar-${index}">
-              ${initials}
+              ${rollNumber}
             </div>
             <div class="student-meta">
               <span class="student-name">${AppUI.escapeHtml(student)}</span>
               <span class="student-status-hint" id="status-hint-${index}">
-                ${isPresent ? '● Present (வந்தார்)' : '○ Absent (வரவில்லை)'}
+                ${isPresent ? 'வந்தார் · Present' : 'வரவில்லை · Absent'}
               </span>
             </div>
           </div>
@@ -298,15 +314,15 @@ const App = (() => {
           <div class="student-card-actions" onclick="event.stopPropagation()">
             <div class="crud-btn-group">
               <button class="btn-icon-subtle" title="Edit Student Name" onclick="StudentMgr.promptEditStudent('${AppUI.escapeHtml(student)}')">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
               </button>
               <button class="btn-icon-subtle delete" title="Delete Student" onclick="StudentMgr.promptDeleteStudent('${AppUI.escapeHtml(student)}')">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
               </button>
             </div>
 
             <button class="attendance-toggle-btn" id="toggle-btn-${index}" onclick="App.toggleAttendance('${AppUI.escapeHtml(student)}', ${index})">
-              ${isPresent ? '✓ Present' : 'Absent'}
+              ${isPresent ? '● வந்தார்' : '○ வரவில்லை'}
             </button>
           </div>
         </div>
@@ -337,10 +353,10 @@ const App = (() => {
       card.className = isPresent ? 'student-card is-present' : 'student-card';
     }
     if (hint) {
-      hint.innerHTML = isPresent ? '● Present (வந்தார்)' : '○ Absent (வரவில்லை)';
+      hint.innerHTML = isPresent ? 'வந்தார் · Present' : 'வரவில்லை · Absent';
     }
     if (btn) {
-      btn.innerHTML = isPresent ? '✓ Present' : 'Absent';
+      btn.innerHTML = isPresent ? '● வந்தார்' : '○ வரவில்லை';
     }
 
     updateStatsPills();
@@ -356,7 +372,7 @@ const App = (() => {
     const studentsList = Store.getStudentsForLevel(currentLevel);
     renderStudentList(studentsList, true);
     updateStatsPills();
-    AppUI.showToast(`Marked all as ${status.toLowerCase()}`, 'info');
+    AppUI.showToast(isPresent ? 'அனைவரும் வருகை என குறிக்கப்பட்டது' : 'அனைவரும் வரவில்லை என குறிக்கப்பட்டது', 'info');
   }
 
   function updateStatsPills() {
@@ -369,9 +385,9 @@ const App = (() => {
     const absentEls = document.querySelectorAll('.stat-absent-count');
     const totalEls = document.querySelectorAll('.stat-total-count');
 
-    presentEls.forEach(el => el.textContent = `${presentCount} Present`);
-    absentEls.forEach(el => el.textContent = `${absentCount} Absent`);
-    totalEls.forEach(el => el.textContent = `${totalCount} Total`);
+    presentEls.forEach(el => el.textContent = `${presentCount} வந்தார்`);
+    absentEls.forEach(el => el.textContent = `${absentCount} வரவில்லை`);
+    totalEls.forEach(el => el.textContent = `${totalCount} மொத்தம்`);
   }
 
   async function submitCurrentAttendance() {
@@ -387,7 +403,7 @@ const App = (() => {
     const origHtml = submitBtn ? submitBtn.innerHTML : '';
 
     if (submitBtn) {
-      submitBtn.innerHTML = `<span>Saving...</span>`;
+      submitBtn.innerHTML = `<span>பதிவாகிறது...</span>`;
       submitBtn.disabled = true;
     }
 
@@ -396,9 +412,9 @@ const App = (() => {
       const result = await SheetsAPI.submitAttendance(currentLevel, currentDate, currentAttendance, teacher);
 
       if (result.syncedWithSheet) {
-        AppUI.showToast(`Saved & Synced to Google Sheets!`, 'success');
+        AppUI.showToast(`வருகை பதிவு வெற்றிகரமாக சேமிக்கப்பட்டது!`, 'success');
       } else if (result.offlineOnly) {
-        AppUI.showToast(`Saved locally. Connect Sheets to sync cloud.`, 'info');
+        AppUI.showToast(`உள்ளூரில் சேமிக்கப்பட்டது (Saved locally).`, 'info');
       } else {
         AppUI.showToast(`Saved locally (Sheets: ${result.error?.message || 'Offline'})`, 'info');
       }
