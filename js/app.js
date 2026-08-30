@@ -1,5 +1,6 @@
 /**
  * Baladatta Tamil School Attendance - Main Application Controller
+ * Ultra-Minimalist Claude Dark Theme
  */
 
 const AppUI = (() => {
@@ -20,28 +21,18 @@ const AppUI = (() => {
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   }
 
-  function showToast(message, type = 'info', duration = 3500) {
+  function showToast(message, type = 'info', duration = 3000) {
     const container = document.getElementById('toastContainer');
     if (!container) return;
 
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
-
-    let iconSvg = '';
-    if (type === 'success') {
-      iconSvg = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>';
-    } else if (type === 'error') {
-      iconSvg = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>';
-    } else {
-      iconSvg = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
-    }
-
-    toast.innerHTML = `${iconSvg}<span>${escapeHtml(message)}</span>`;
+    toast.textContent = message;
     container.appendChild(toast);
 
     setTimeout(() => {
       toast.style.opacity = '0';
-      toast.style.transform = 'translateY(12px)';
+      toast.style.transform = 'translateY(8px)';
       toast.style.transition = 'all 0.2s ease';
       setTimeout(() => toast.remove(), 200);
     }, duration);
@@ -49,7 +40,7 @@ const AppUI = (() => {
 
   let activeModalConfirmHandler = null;
 
-  function showModal({ title, bodyHtml, confirmText = 'Confirm', confirmClass = 'btn-primary', cancelText = 'Cancel', onConfirm }) {
+  function showModal({ title, bodyHtml, confirmText = 'Confirm', confirmClass = 'btn-coral-action', cancelText = 'Cancel', onConfirm }) {
     const overlay = document.getElementById('modalOverlay');
     const titleEl = document.getElementById('modalTitle');
     const bodyEl = document.getElementById('modalBody');
@@ -120,7 +111,7 @@ const App = (() => {
 
     SheetsAPI.initGoogleAuth(
       (resp) => {
-        AppUI.showToast(`Google Sheets connected!`, 'success');
+        AppUI.showToast(`Google Sheets connected`, 'success');
         updateAuthUI(true);
         loadCurrentAttendance();
       },
@@ -133,10 +124,6 @@ const App = (() => {
     setupEventListeners();
     await loadCurrentAttendance();
 
-    const teacher = Store.getTeacherName();
-    const teacherDisplay = document.getElementById('teacherDisplay');
-    if (teacherDisplay) teacherDisplay.textContent = teacher;
-
     registerServiceWorker();
   }
 
@@ -144,8 +131,8 @@ const App = (() => {
     const pillsRow = document.getElementById('levelPillsRow');
     if (pillsRow) {
       pillsRow.innerHTML = Store.LEVELS.map(lvl => `
-        <button class="level-chip ${lvl.id === currentLevel ? 'active' : ''}" onclick="App.changeLevel('${lvl.id}')">
-          ${lvl.label}
+        <button class="nilai-tab-btn ${lvl.id === currentLevel ? 'active' : ''}" onclick="App.changeLevel('${lvl.id}')">
+          ${lvl.label.split('(')[0].trim()}
         </button>
       `).join('');
     }
@@ -160,7 +147,6 @@ const App = (() => {
   }
 
   function setupEventListeners() {
-    // Date Picker Change
     const dateInput = document.getElementById('attendanceDatePicker');
     if (dateInput) {
       dateInput.addEventListener('change', (e) => {
@@ -180,7 +166,7 @@ const App = (() => {
     if (prevDateBtn) prevDateBtn.addEventListener('click', () => stepDate(-1));
     if (nextDateBtn) nextDateBtn.addEventListener('click', () => stepDate(1));
 
-    // Submit Attendance Button (Unified sticky bar)
+    // Submit Attendance Button
     const submitBtn = document.getElementById('submitAttendanceBtn');
     if (submitBtn) submitBtn.addEventListener('click', submitCurrentAttendance);
 
@@ -271,20 +257,17 @@ const App = (() => {
     if (!students || students.length === 0) {
       studentContainer.innerHTML = '';
       if (emptyState) emptyState.style.display = 'block';
-      if (existingDateBadge) existingDateBadge.style.display = 'none';
+      if (existingDateBadge) existingDateBadge.className = 'saved-dot';
       return;
     }
 
     if (emptyState) emptyState.style.display = 'none';
 
     if (existingDateBadge) {
-      existingDateBadge.style.display = 'inline-flex';
       if (hasExistingRecord) {
-        existingDateBadge.className = 'date-status-badge saved';
-        existingDateBadge.innerHTML = '✓ Saved Session';
+        existingDateBadge.className = 'saved-dot saved';
       } else {
-        existingDateBadge.className = 'date-status-badge fresh';
-        existingDateBadge.innerHTML = '● Fresh Session';
+        existingDateBadge.className = 'saved-dot';
       }
     }
 
@@ -292,34 +275,34 @@ const App = (() => {
     students.forEach((student, index) => {
       const status = currentAttendance[student] || 'Absent';
       const isPresent = status === 'Present';
-      const cardClass = isPresent ? 'student-card is-present' : 'student-card';
+      const rowClass = isPresent ? 'student-row is-present' : 'student-row';
       const initials = AppUI.getInitials(student);
 
       html += `
-        <div class="${cardClass}" id="student-card-${index}" onclick="App.toggleAttendanceByIndex(${index})">
-          <div class="student-info">
-            <div class="student-avatar" id="avatar-${index}">
+        <div class="${rowClass}" id="student-row-${index}" onclick="App.toggleAttendanceByIndex(${index})">
+          <div class="student-left">
+            <div class="student-avatar-dot" id="avatar-${index}">
               ${initials}
             </div>
-            <div class="student-meta">
-              <span class="student-name">${AppUI.escapeHtml(student)}</span>
-              <span class="student-status-hint" id="status-hint-${index}">
-                ${isPresent ? '● Present (வந்தார்)' : '○ Absent (வரவில்லை)'}
+            <div class="student-title-block">
+              <span class="student-name-text">${AppUI.escapeHtml(student)}</span>
+              <span class="student-tamil-hint" id="status-hint-${index}">
+                ${isPresent ? 'வந்தார்' : 'வரவில்லை'}
               </span>
             </div>
           </div>
 
-          <div class="student-card-actions" onclick="event.stopPropagation()">
-            <div class="crud-btn-group">
-              <button class="btn-icon-subtle" title="Edit Student Name" onclick="StudentMgr.promptEditStudent('${AppUI.escapeHtml(student)}')">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          <div class="student-right" onclick="event.stopPropagation()">
+            <div class="student-subtle-tools">
+              <button class="icon-subtle-btn" title="Edit name" onclick="StudentMgr.promptEditStudent('${AppUI.escapeHtml(student)}')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
               </button>
-              <button class="btn-icon-subtle delete" title="Delete Student" onclick="StudentMgr.promptDeleteStudent('${AppUI.escapeHtml(student)}')">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              <button class="icon-subtle-btn delete" title="Remove student" onclick="StudentMgr.promptDeleteStudent('${AppUI.escapeHtml(student)}')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
               </button>
             </div>
 
-            <button class="attendance-toggle-btn" id="toggle-btn-${index}" onclick="App.toggleAttendance('${AppUI.escapeHtml(student)}', ${index})">
+            <button class="state-pill" id="toggle-btn-${index}" onclick="App.toggleAttendance('${AppUI.escapeHtml(student)}', ${index})">
               ${isPresent ? '✓ Present' : 'Absent'}
             </button>
           </div>
@@ -343,15 +326,15 @@ const App = (() => {
     currentAttendance[studentName] = next;
 
     const isPresent = next === 'Present';
-    const card = document.getElementById(`student-card-${index}`);
+    const row = document.getElementById(`student-row-${index}`);
     const hint = document.getElementById(`status-hint-${index}`);
     const btn = document.getElementById(`toggle-btn-${index}`);
 
-    if (card) {
-      card.className = isPresent ? 'student-card is-present' : 'student-card';
+    if (row) {
+      row.className = isPresent ? 'student-row is-present' : 'student-row';
     }
     if (hint) {
-      hint.innerHTML = isPresent ? '● Present (வந்தார்)' : '○ Absent (வரவில்லை)';
+      hint.innerHTML = isPresent ? 'வந்தார்' : 'வரவில்லை';
     }
     if (btn) {
       btn.innerHTML = isPresent ? '✓ Present' : 'Absent';
@@ -370,7 +353,7 @@ const App = (() => {
     const studentsList = Store.getStudentsForLevel(currentLevel);
     renderStudentList(studentsList, true);
     updateStatsPills();
-    AppUI.showToast(`Marked all as ${status.toLowerCase()} for ${currentDate}`, 'info');
+    AppUI.showToast(`Marked all ${status.toLowerCase()}`, 'info');
   }
 
   function updateStatsPills() {
@@ -392,16 +375,16 @@ const App = (() => {
     if (isSubmitting) return;
     const students = Object.keys(currentAttendance);
     if (students.length === 0) {
-      AppUI.showToast('No students to submit attendance for.', 'error');
+      AppUI.showToast('No students to submit.', 'error');
       return;
     }
 
     isSubmitting = true;
     const submitBtn = document.getElementById('submitAttendanceBtn');
-    const origHtml = submitBtn ? submitBtn.innerHTML : '';
+    const origText = submitBtn ? submitBtn.textContent : '';
 
     if (submitBtn) {
-      submitBtn.innerHTML = `<span>Saving...</span>`;
+      submitBtn.textContent = 'Saving...';
       submitBtn.disabled = true;
     }
 
@@ -410,11 +393,11 @@ const App = (() => {
       const result = await SheetsAPI.submitAttendance(currentLevel, currentDate, currentAttendance, teacher);
 
       if (result.syncedWithSheet) {
-        AppUI.showToast(`Attendance synced to Google Sheets for ${currentDate}!`, 'success');
+        AppUI.showToast(`Saved & Synced to Google Sheets!`, 'success');
       } else if (result.offlineOnly) {
-        AppUI.showToast(`Saved locally. Connect Sheets to sync cloud.`, 'info');
+        AppUI.showToast(`Saved locally. Connect Sheets to sync.`, 'info');
       } else {
-        AppUI.showToast(`Saved locally (Sheets sync error: ${result.error?.message || 'Check connection'})`, 'error');
+        AppUI.showToast(`Saved locally (Sheets: ${result.error?.message || 'Offline'})`, 'info');
       }
 
       const studentsList = Store.getStudentsForLevel(currentLevel);
@@ -429,7 +412,7 @@ const App = (() => {
     } finally {
       isSubmitting = false;
       if (submitBtn) {
-        submitBtn.innerHTML = origHtml;
+        submitBtn.textContent = origText;
         submitBtn.disabled = false;
       }
     }
@@ -455,7 +438,7 @@ const App = (() => {
       if (dashboardView) dashboardView.style.display = 'none';
       if (navAttendance) navAttendance.classList.add('active');
       if (navDashboard) navDashboard.classList.remove('active');
-      if (stickyBar) stickyBar.style.display = 'block';
+      if (stickyBar) stickyBar.style.display = 'flex';
       loadCurrentAttendance();
     } else {
       if (attendanceView) attendanceView.style.display = 'none';
@@ -473,10 +456,10 @@ const App = (() => {
     if (googleLoginBtn) {
       if (isSignedIn) {
         googleLoginBtn.classList.add('connected');
-        if (btnText) btnText.textContent = '✓ Sheets Connected';
+        if (btnText) btnText.textContent = 'Sheets Synced';
       } else {
         googleLoginBtn.classList.remove('connected');
-        if (btnText) btnText.textContent = 'Connect Sheets';
+        if (btnText) btnText.textContent = 'Sync Sheets';
       }
     }
   }
@@ -492,8 +475,11 @@ const App = (() => {
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js')
-          .then(reg => console.log('SW Registered:', reg.scope))
-          .catch(err => console.warn('SW Registration error:', err));
+          .then(reg => {
+            console.log('SW Registered:', reg.scope);
+            reg.update();
+          })
+          .catch(err => console.warn('SW error:', err));
       });
     }
   }
