@@ -1,4 +1,4 @@
-const CACHE_NAME = 'baladatta-attendance-v5';
+const CACHE_NAME = 'baladatta-attendance-v7';
 const urlsToCache = [
   './',
   './index.html',
@@ -25,7 +25,7 @@ self.addEventListener('activate', event => {
       return Promise.all(
         cacheNames.map(name => {
           if (name !== CACHE_NAME) {
-            console.log('[SW] Deleting old cache:', name);
+            console.log('[SW] Clearing old cache:', name);
             return caches.delete(name);
           }
         })
@@ -34,7 +34,7 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Network-First strategy: Always fetch fresh code from server if online, fallback to cache if offline
+// Network-First: Always fetch latest from server if online, fallback to cache if offline
 self.addEventListener('fetch', event => {
   if (event.request.url.includes('googleapis.com') || event.request.url.includes('google.com')) {
     return;

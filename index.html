@@ -4,13 +4,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Baladatta Attendance | பாலதத்தா</title>
-  <meta name="description" content="Minimalist attendance portal for Baladatta Tamil School." />
-
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>Baladatta Tamil School Attendance | பாலதத்தா தமிழ்ப்பள்ளி</title>
+  <meta name="description" content="Neoclassical Indian Traditional attendance portal for Baladatta Tamil School." />
 
   <!-- Google Identity Services & GAPI Client -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -18,91 +13,135 @@
 
   <!-- PWA Manifest & Icons -->
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#161513">
+  <meta name="theme-color" content="#0c0d11">
   <link rel="icon" type="image/png" href="Logo.png">
 
-  <!-- Ultra-Minimalist Claude Dark Theme (v6) -->
-  <link rel="stylesheet" href="css/styles.css?v=6">
+  <!-- Neoclassical Indian Traditional Theme (v7) -->
+  <link rel="stylesheet" href="css/styles.css?v=7">
 </head>
 
 <body>
+  <!-- Ambient Atmospheric & Traditional Carving Watermark Layers -->
+  <div class="bg-watermark-left" aria-hidden="true"></div>
+  <div class="bg-watermark-right" aria-hidden="true"></div>
+  <div class="bg-glow-radial" aria-hidden="true"></div>
+
   <!-- Offline Notice -->
   <div id="offlineBanner" class="offline-banner">
-    Offline — changes saved locally
+    Offline Mode: Changes saved locally and will sync when reconnected.
   </div>
 
-  <!-- Top Navigation Bar -->
-  <header class="top-nav">
-    <div class="nav-inner">
-      <div class="brand-group">
-        <span class="brand-name">Baladatta</span>
-        <span class="brand-sub">தமிழ்ப்பள்ளி</span>
+  <!-- Neoclassical Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-section">
+        <div class="brand-emblem" id="headerAvatar">
+          <img src="Logo.png" alt="Baladatta Emblem" onerror="this.outerHTML='<span>🏛️</span>'">
+        </div>
+        <div class="brand-titles">
+          <h1 class="brand-kirtimukha">Baladatta Tamil School</h1>
+          <span class="brand-subtamil">பாலதத்தா தமிழ்ப்பள்ளி வருகைப் பதிவு</span>
+        </div>
       </div>
 
-      <!-- Segmented View Switcher -->
-      <nav class="view-tabs" aria-label="App Navigation">
-        <button id="navAttendanceTab" class="view-tab active">Attendance</button>
-        <button id="navDashboardTab" class="view-tab">Analytics</button>
-      </nav>
-
-      <!-- Sync Status Pill -->
-      <button id="googleLoginBtn" class="sync-pill" title="Connect Google Sheets">
-        <span class="sync-dot"></span>
-        <span id="googleLoginBtnText">Sync Sheets</span>
-      </button>
+      <div class="header-actions">
+        <button id="googleLoginBtn" class="sync-button" title="Connect Google Sheets">
+          <span class="sync-dot"></span>
+          <span id="googleLoginBtnText">Sync Sheets</span>
+        </button>
+      </div>
     </div>
   </header>
 
-  <!-- Main Content Container -->
-  <main class="app-container">
+  <!-- Segmented Navigation -->
+  <div class="nav-pill-container">
+    <nav class="segmented-pill-bar" aria-label="App Navigation">
+      <button id="navAttendanceTab" class="nav-pill-btn active">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        <span>Mark Attendance</span>
+      </button>
+      <button id="navDashboardTab" class="nav-pill-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+        <span>Analytics Dashboard</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Main Container -->
+  <main class="main-wrapper">
 
     <!-- ATTENDANCE VIEW -->
     <section id="attendanceViewSection">
       
-      <!-- Date & Quick Actions Toolbar -->
-      <div class="control-row">
-        <div class="date-bar">
-          <button id="prevDateBtn" class="date-step-btn" title="Previous Day">‹</button>
-          <input type="date" id="attendanceDatePicker" class="date-native-input" aria-label="Attendance Date" />
-          <button id="nextDateBtn" class="date-step-btn" title="Next Day">›</button>
-          <button id="dateTodayBtn" class="date-today-link" title="Jump to Today">Today</button>
-          <span id="existingDateBadge" class="saved-dot" title="Session Saved"></span>
-        </div>
-
-        <div class="quick-actions">
-          <button id="markAllPresentBtn" class="action-link" title="Mark All Present">All Present</button>
-          <span class="action-divider">/</span>
-          <button id="markAllAbsentBtn" class="action-link" title="Mark All Absent">All Absent</button>
+      <!-- Nilai Horizontal Selector -->
+      <div class="level-scroll-section">
+        <div id="levelPillsRow" class="level-pills-row">
+          <!-- Populated dynamically via JS -->
         </div>
       </div>
 
-      <!-- Nilai Class Tabs (Clean Underline Style) -->
-      <div class="nilai-nav-wrap">
-        <div id="levelPillsRow" class="nilai-tabs-list">
-          <!-- Populated dynamically via App.populateNilaiControls -->
+      <!-- Date & Status Toolbar -->
+      <div class="toolbar-card">
+        <div class="date-controls-group">
+          <button id="prevDateBtn" class="icon-btn" title="Previous Day">‹</button>
+          <input type="date" id="attendanceDatePicker" class="pill-date-input" aria-label="Attendance Date" />
+          <button id="nextDateBtn" class="icon-btn" title="Next Day">›</button>
+          <button id="dateTodayBtn" class="btn-today" title="Set to Today">Today</button>
+        </div>
+
+        <div>
+          <span id="existingDateBadge" class="date-status-badge fresh">● Fresh Session</span>
         </div>
       </div>
 
-      <!-- Student List (Spacious Clean Rows) -->
-      <div id="studentListContainer" class="students-list">
+      <!-- Roster Header & Quick Mass Actions -->
+      <div class="roster-header-row">
+        <div class="roster-heading">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--gold-primary);"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          <span>Students Roster</span>
+        </div>
+        <div class="roster-actions">
+          <button id="markAllPresentBtn" class="btn-ghost-action" title="Mark All Present">
+            ✓ All Present
+          </button>
+          <button id="markAllAbsentBtn" class="btn-ghost-action" title="Mark All Absent">
+            ✗ All Absent
+          </button>
+        </div>
+      </div>
+
+      <!-- Student Cards Container -->
+      <div id="studentListContainer" class="student-cards-list">
         <!-- Rendered dynamically via App.renderStudentList -->
       </div>
 
       <!-- Empty State -->
-      <div id="emptyStudentState" class="empty-placeholder" style="display:none;">
-        <p>No students in this class</p>
+      <div id="emptyStudentState" class="empty-state-box" style="display:none;">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--gold-primary); margin-bottom:8px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <h3>No students found in this Nilai</h3>
+        <p style="font-size:0.85rem;">Add a student below to get started.</p>
       </div>
 
-      <!-- Add Student Row (Quiet, inline) -->
-      <div class="add-row">
-        <input type="text" id="newStudentInput" class="add-inline-input" placeholder="+ Add student full name..." aria-label="New student name" />
-        <button id="addStudentBtn" class="add-inline-btn">+ Add</button>
+      <!-- Add Student Bar -->
+      <div class="add-student-container">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--gold-primary);"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <input type="text" id="newStudentInput" class="add-student-input" placeholder="Add student full name..." aria-label="Student name" />
+        <button id="addStudentBtn" class="btn-primary">
+          + Add Student
+        </button>
       </div>
 
     </section>
 
     <!-- DASHBOARD VIEW -->
     <section id="dashboardViewSection" class="dashboard-section">
+      <div class="roster-header-row" style="margin-bottom: 16px;">
+        <div class="roster-heading">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--gold-primary);"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          <span>Attendance Analytics & Reports</span>
+        </div>
+      </div>
+
       <div id="dashboardContent">
         <!-- Rendered dynamically via Dashboard.render -->
       </div>
@@ -110,45 +149,46 @@
 
   </main>
 
-  <!-- Sleek Floating Bottom Action Bar -->
-  <footer class="floating-bar" id="stickyActionBar">
-    <div class="floating-inner">
-      <div class="floating-tally">
-        <span class="tally-count stat-present-count">0 Present</span>
-        <span class="tally-sep">·</span>
-        <span class="tally-count-muted stat-absent-count">0 Absent</span>
+  <!-- Sticky Bottom Action Bar with Gold Trim -->
+  <aside class="sticky-action-bar" id="stickyActionBar">
+    <div class="sticky-action-container">
+      <div class="tally-group">
+        <span class="tally-chip present stat-present-count">0 Present</span>
+        <span class="tally-chip absent stat-absent-count">0 Absent</span>
+        <span class="tally-chip total stat-total-count">0 Total</span>
       </div>
 
-      <button id="submitAttendanceBtn" class="submit-action-btn" title="Submit Attendance">
-        <span>Save Attendance</span>
+      <button id="submitAttendanceBtn" class="btn-submit-attendance" title="Save & Sync Attendance">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        <span>Submit Attendance</span>
       </button>
     </div>
-  </footer>
+  </aside>
 
   <!-- Reusable Modal Dialog -->
-  <div id="modalOverlay" class="modal-backdrop" role="dialog" aria-modal="true">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3 id="modalTitle">Modal</h3>
-        <button id="modalCloseIcon" class="modal-x" aria-label="Close">✕</button>
+  <div id="modalOverlay" class="modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3 id="modalTitle" class="modal-title">Modal Title</h3>
+        <button id="modalCloseIcon" class="btn-icon-subtle" aria-label="Close modal">✕</button>
       </div>
-      <div id="modalBody" class="modal-content"></div>
-      <div class="modal-actions">
-        <button id="modalCancelBtn" class="btn-subtle">Cancel</button>
-        <button id="modalConfirmBtn" class="btn-coral-action">Confirm</button>
+      <div id="modalBody" class="modal-body-area"></div>
+      <div class="modal-foot">
+        <button id="modalCancelBtn" class="btn-ghost-action" style="padding:8px 18px;">Cancel</button>
+        <button id="modalConfirmBtn" class="btn-primary">Confirm</button>
       </div>
     </div>
   </div>
 
   <!-- Toast Container -->
-  <div id="toastContainer" class="toast-area" aria-live="polite"></div>
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
-  <!-- Scripts (Cache Busted v6) -->
-  <script src="js/store.js?v=6"></script>
-  <script src="js/sheets-api.js?v=6"></script>
-  <script src="js/student-mgr.js?v=6"></script>
-  <script src="js/dashboard.js?v=6"></script>
-  <script src="js/app.js?v=6"></script>
+  <!-- Scripts (Cache Busted v7) -->
+  <script src="js/store.js?v=7"></script>
+  <script src="js/sheets-api.js?v=7"></script>
+  <script src="js/student-mgr.js?v=7"></script>
+  <script src="js/dashboard.js?v=7"></script>
+  <script src="js/app.js?v=7"></script>
 </body>
 
 </html>
