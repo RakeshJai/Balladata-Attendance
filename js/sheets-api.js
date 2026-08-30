@@ -17,40 +17,70 @@ const SheetsAPI = (() => {
   let currentUserEmail = "";
 
   function initGoogleAuth(onAuthSuccess, onAuthError) {
-    if (typeof gapi !== "undefined") {
-      gapi.load("client", async () => {
-        try {
-          await gapi.client.init({
-            discoveryDocs: CONFIG.DISCOVERY_DOCS
-          });
-          isGapiLoaded = true;
-          console.log("Google Sheets API client initialized");
-        } catch (e) {
-          console.warn("GAPI init error:", e);
-        }
-      });
+    function checkAndInit() {
+      if (typeof gapi !== "undefined" && !isGapiLoaded) {
+        gapi.load("client", async () => {
+          try {
+            await gapi.client.init({
+              discoveryDocs: CONFIG.DISCOVERY_DOCS
+            });
+            isGapiLoaded = true;
+            console.log("[SheetsAPI] Google Sheets API client initialized");
+
+            // Restore cached session if valid
+            const savedToken = sessionStorage.getItem("baladatta_oauth_token");
+            const tokenExpiry = sessionStorage.getItem("baladatta_oauth_expiry");
+            if (savedToken && tokenExpiry && Date.now() < parseInt(tokenExpiry, 10)) {
+              gapi.client.setToken({ access_token: savedToken });
+              isSignedIn = true;
+              if (onAuthSuccess) onAuthSuccess({ access_token: savedToken });
+            }
+          } catch (e) {
+            console.warn("[SheetsAPI] GAPI init error:", e);
+          }
+        });
+      }
+
+      if (typeof google !== "undefined" && google.accounts && google.accounts.oauth2 && !tokenClient) {
+        tokenClient = google.accounts.oauth2.initTokenClient({
+          client_id: CONFIG.CLIENT_ID,
+          scope: CONFIG.SCOPES,
+          callback: async (resp) => {
+            if (resp.error) {
+              console.error("[SheetsAPI] OAuth token error:", resp);
+              if (onAuthError) onAuthError(resp);
+              return;
+            }
+            // CRITICAL: Must pass token to gapi.client so requests are authorized
+            if (typeof gapi !== "undefined" && gapi.client) {
+              gapi.client.setToken(resp);
+            }
+            if (resp.access_token) {
+              sessionStorage.setItem("baladatta_oauth_token", resp.access_token);
+              const expiresIn = (resp.expires_in || 3599) * 1000;
+              sessionStorage.setItem("baladatta_oauth_expiry", String(Date.now() + expiresIn));
+            }
+            isSignedIn = true;
+            if (onAuthSuccess) onAuthSuccess(resp);
+          }
+        });
+      }
     }
 
-    if (typeof google !== "undefined" && google.accounts && google.accounts.oauth2) {
-      tokenClient = google.accounts.oauth2.initTokenClient({
-        client_id: CONFIG.CLIENT_ID,
-        scope: CONFIG.SCOPES,
-        callback: async (resp) => {
-          if (resp.error) {
-            console.error("OAuth token error:", resp);
-            if (onAuthError) onAuthError(resp);
-            return;
-          }
-          isSignedIn = true;
-          if (onAuthSuccess) onAuthSuccess(resp);
-        }
-      });
-    }
+    checkAndInit();
+    const pollInterval = setInterval(() => {
+      if (isGapiLoaded && tokenClient) {
+        clearInterval(pollInterval);
+      } else {
+        checkAndInit();
+      }
+    }, 500);
+    setTimeout(() => clearInterval(pollInterval), 10000);
   }
 
   function signIn() {
     if (!tokenClient) {
-      console.warn("Token client not initialized yet. Checking offline/mock mode.");
+      console.warn("[SheetsAPI] Token client not ready yet.");
       return false;
     }
     tokenClient.requestAccessToken({ prompt: "consent" });
@@ -81,7 +111,7 @@ const SheetsAPI = (() => {
       }
       return Store.getStudentsForLevel(levelId);
     } catch (err) {
-      console.warn(`Error fetching students from Sheet (${levelId}):`, err);
+      console.warn(`[SheetsAPI] Error fetching students from Sheet (${levelId}):`, err);
       return Store.getStudentsForLevel(levelId);
     }
   }
@@ -110,12 +140,11 @@ const SheetsAPI = (() => {
           timestamp: r[5] || (r[0] ? new Date(r[0]).toISOString() : new Date().toISOString())
         })).filter(l => l.student && l.date);
 
-        // Merge into local store
         Store.saveLogs(parsedLogs);
         return parsedLogs;
       }
     } catch (err) {
-      console.warn("Error fetching logs from sheet:", err);
+      console.warn("[SheetsAPI] Error fetching logs from sheet:", err);
     }
     return Store.getLogs();
   }
@@ -127,56 +156,56 @@ const SheetsAPI = (() => {
   async function submitAttendance(levelId, dateStr, attendanceMap, teacherName) {
     const students = Object.keys(attendanceMap);
     const nowIso = new Date().toISOString();
-    const formattedDate = Store.formatDate(dateStr);
 
-    const logEntries = students.map(student => ({
-      date: formattedDate,
-      timestamp: nowIso,
-      teacher: teacherName,
-      student: student,
-      status: attendanceMap[student] || "Absent",
-      level: levelId
+    // 1. Save locally in Store (offline-first)
+    const newLogs = students.map(studentName => ({
+      date: dateStr,
+      teacher: teacherName || Store.getTeacherName(),
+      student: studentName,
+      status: attendanceMap[studentName] || "Absent",
+      level: levelId,
+      timestamp: nowIso
     }));
 
-    // Always update local store first (immediate offline reactivity)
-    Store.appendLogs(logEntries);
+    Store.saveLogs(newLogs);
 
-    if (isSignedIn && isGapiLoaded) {
+    // 2. If online and authenticated with Google Sheets, sync to cloud
+    if (isSignedIn && isGapiLoaded && navigator.onLine) {
       try {
-        // 1. Append rows to Logs tab
-        const sheetRows = logEntries.map(l => [
-          l.date,
-          l.teacher,
-          l.student,
-          l.status,
-          l.level,
-          l.timestamp
+        const sheetRows = newLogs.map(log => [
+          log.date,
+          log.teacher,
+          log.student,
+          log.status,
+          log.level,
+          log.timestamp
         ]);
 
         await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId: CONFIG.SPREADSHEET_ID,
-          range: `Logs!A1`,
-          valueInputOption: "RAW",
+          range: `Logs!A:F`,
+          valueInputOption: "USER_ENTERED",
+          insertDataOption: "INSERT_ROWS",
           resource: { values: sheetRows }
         });
 
-        // 2. Update status column B in the level's specific sheet
+        // Update status column B in the level's specific sheet
         const statusColumnValues = students.map(s => [attendanceMap[s] || "Absent"]);
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId: CONFIG.SPREADSHEET_ID,
           range: `${levelId}!B2:B${students.length + 1}`,
-          valueInputOption: "RAW",
+          valueInputOption: "USER_ENTERED",
           resource: { values: statusColumnValues }
         });
 
         return { success: true, syncedWithSheet: true };
       } catch (err) {
-        console.error("Google Sheets submit error:", err);
+        console.error("[SheetsAPI] Google Sheets submit error:", err);
         return { success: true, syncedWithSheet: false, error: err };
       }
     }
 
-    return { success: true, syncedWithSheet: false };
+    return { success: true, syncedWithSheet: false, offlineOnly: true };
   }
 
   /**
@@ -185,37 +214,36 @@ const SheetsAPI = (() => {
   async function syncStudentListToSheet(levelId, studentList) {
     if (!isSignedIn || !isGapiLoaded) return false;
     try {
-      // Clear column A first
+      const rows = studentList.map(name => [name]);
       await gapi.client.sheets.spreadsheets.values.clear({
         spreadsheetId: CONFIG.SPREADSHEET_ID,
         range: `${levelId}!A2:A100`
       });
 
-      if (studentList.length > 0) {
-        const rows = studentList.map(s => [s]);
+      if (rows.length > 0) {
         await gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId: CONFIG.SPREADSHEET_ID,
           range: `${levelId}!A2:A${studentList.length + 1}`,
-          valueInputOption: "RAW",
+          valueInputOption: "USER_ENTERED",
           resource: { values: rows }
         });
       }
       return true;
     } catch (err) {
-      console.warn(`Error syncing student list to sheet for ${levelId}:`, err);
+      console.warn(`[SheetsAPI] Error syncing student list to sheet for ${levelId}:`, err);
       return false;
     }
   }
 
   return {
-    CONFIG,
     initGoogleAuth,
     signIn,
     getIsSignedIn,
     fetchStudentsFromSheet,
     fetchLogsFromSheet,
     submitAttendance,
-    syncStudentListToSheet
+    syncStudentListToSheet,
+    CONFIG
   };
 })();
 
