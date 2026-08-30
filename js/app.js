@@ -439,6 +439,7 @@ const App = (() => {
     const navAttendance = document.getElementById('navAttendanceTab');
     const navDashboard = document.getElementById('navDashboardTab');
     const stickyBar = document.getElementById('stickyActionBar');
+    const mainWrapper = document.querySelector('.main-wrapper');
 
     if (view === 'attendance') {
       if (attendanceView) attendanceView.style.display = 'block';
@@ -446,6 +447,7 @@ const App = (() => {
       if (navAttendance) navAttendance.classList.add('active');
       if (navDashboard) navDashboard.classList.remove('active');
       if (stickyBar) stickyBar.style.display = 'block';
+      if (mainWrapper) mainWrapper.classList.remove('dashboard-wide');
       loadCurrentAttendance();
     } else {
       if (attendanceView) attendanceView.style.display = 'none';
@@ -453,6 +455,7 @@ const App = (() => {
       if (navAttendance) navAttendance.classList.remove('active');
       if (navDashboard) navDashboard.classList.add('active');
       if (stickyBar) stickyBar.style.display = 'none';
+      if (mainWrapper) mainWrapper.classList.add('dashboard-wide');
       Dashboard.init();
     }
   }

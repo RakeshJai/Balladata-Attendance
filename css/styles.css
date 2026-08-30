@@ -757,6 +757,11 @@ body {
    ========================================================================== */
 .dashboard-section { display: none; }
 
+/* ponytail: dashboard needs wider canvas than the 760px attendance wrapper */
+.main-wrapper.dashboard-wide {
+  max-width: 1100px;
+}
+
 /* ─── 1. Top Greeting & Timeframe Filter Bar ─── */
 .dash-hero-header {
   display: flex;

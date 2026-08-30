@@ -126,6 +126,13 @@ const Store = (() => {
     const filtered = current.filter(s => s !== name);
     if (filtered.length === current.length) return false;
     setStudentsForLevel(levelId, filtered);
+
+    // ponytail: clean up orphaned attendance logs for deleted student
+    const logs = getLogs();
+    const cleaned = logs.filter(l => !(l.level === levelId && l.student === name));
+    if (cleaned.length !== logs.length) {
+      saveLogs(cleaned);
+    }
     return true;
   }
 
