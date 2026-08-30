@@ -19,7 +19,7 @@ const Store = (() => {
     { id: 'Level4', label: 'Nilai 4 (Level 4)' },
     { id: 'Level5', label: 'Nilai 5 (Level 5)' },
     { id: 'Level6', label: 'Nilai 6 (Level 6)' },
-    { id: 'Volunteers', label: 'Volunteers (தொண்டர்கள்)' }
+    { id: 'Volunteers', label: 'Volunteers' }
   ];
 
   // Default seed students per level for initial load or demo mode

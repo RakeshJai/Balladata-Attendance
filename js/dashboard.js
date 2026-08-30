@@ -36,7 +36,7 @@ const Dashboard = (() => {
       <div class="arch-metrics-grid">
         <div class="arch-metric-card">
           <div class="arch-metric-header">
-            <span class="arch-metric-tag">வருகை விகிதம்</span>
+            <span class="arch-metric-tag">Attendance Rate</span>
             <span class="arch-metric-title">Overall Rate</span>
           </div>
           <div class="arch-metric-val rate">${stats.overallAttendanceRate}%</div>
@@ -45,7 +45,7 @@ const Dashboard = (() => {
 
         <div class="arch-metric-card">
           <div class="arch-metric-header">
-            <span class="arch-metric-tag">மாணவர் எண்ணிக்கை</span>
+            <span class="arch-metric-tag">Student Count</span>
             <span class="arch-metric-title">Enrolled</span>
           </div>
           <div class="arch-metric-val">${stats.totalStudents}</div>
@@ -54,7 +54,7 @@ const Dashboard = (() => {
 
         <div class="arch-metric-card">
           <div class="arch-metric-header">
-            <span class="arch-metric-tag">வகுப்பு அமர்வுகள்</span>
+            <span class="arch-metric-tag">Class Sessions</span>
             <span class="arch-metric-title">Sessions Logged</span>
           </div>
           <div class="arch-metric-val">${stats.totalSessions}</div>
@@ -63,7 +63,7 @@ const Dashboard = (() => {
 
         <div class="arch-metric-card">
           <div class="arch-metric-header">
-            <span class="arch-metric-tag">பதிவுகள்</span>
+            <span class="arch-metric-tag">Logs Recorded</span>
             <span class="arch-metric-title">Total Records</span>
           </div>
           <div class="arch-metric-val" style="font-size: 1.5rem; display: flex; gap: 8px; align-items: baseline;">
@@ -89,11 +89,11 @@ const Dashboard = (() => {
             <div class="chakra-legend">
               <div class="chakra-legend-row">
                 <span class="chakra-dot sage"></span>
-                <span>Present (வந்தார்): <strong>${stats.totalPresent}</strong> (${stats.overallAttendanceRate}%)</span>
+                <span>Present: <strong>${stats.totalPresent}</strong> (${stats.overallAttendanceRate}%)</span>
               </div>
               <div class="chakra-legend-row">
                 <span class="chakra-dot stone"></span>
-                <span>Absent (வரவில்லை): <strong>${stats.totalAbsent}</strong> (${100 - stats.overallAttendanceRate}%)</span>
+                <span>Absent: <strong>${stats.totalAbsent}</strong> (${100 - stats.overallAttendanceRate}%)</span>
               </div>
               <div class="chakra-legend-note">
                 Wheel represents total recorded student sessions across all dates.
@@ -124,7 +124,7 @@ const Dashboard = (() => {
 
         <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
           <select class="arch-select" onchange="Dashboard.setFilterLevel(this.value)" aria-label="Filter by Nilai">
-            <option value="ALL" ${selectedLevel === 'ALL' ? 'selected' : ''}>All Classes (அனைத்து வகுப்புகள்)</option>
+            <option value="ALL" ${selectedLevel === 'ALL' ? 'selected' : ''}>All Classes</option>
             ${Store.LEVELS.map(l => `<option value="${l.id}" ${selectedLevel === l.id ? 'selected' : ''}>${l.label}</option>`).join('')}
           </select>
 
@@ -210,7 +210,7 @@ const Dashboard = (() => {
         <!-- Center Typography -->
         <div class="chakra-dial-center">
           <div class="chakra-dial-rate">${percentage}%</div>
-          <div class="chakra-dial-tamil">வருகை</div>
+          <div class="chakra-dial-tamil">Rate</div>
         </div>
       </div>
     `;
@@ -222,7 +222,6 @@ const Dashboard = (() => {
       return {
         id: lvl.id,
         label: lvl.label.split('(')[0].trim(),
-        tamilLabel: lvl.label.includes('(') ? lvl.label.split('(')[1].replace(')', '') : '',
         rate: stats.overallAttendanceRate,
         studentCount: stats.totalStudents
       };
@@ -237,7 +236,6 @@ const Dashboard = (() => {
       <div class="pillar-chart-row">
         <div class="pillar-label-group">
           <span class="pillar-class-name">${lvl.label}</span>
-          ${lvl.tamilLabel ? `<span class="pillar-tamil-sub">${lvl.tamilLabel}</span>` : ''}
         </div>
 
         <div class="pillar-stepped-track">
@@ -281,13 +279,13 @@ const Dashboard = (() => {
       <div class="arch-ledger-list">
         ${filtered.map(s => {
           const rateColor = s.percentage >= 80 ? 'var(--sage)' : 'var(--terra)';
-          const initials = AppUI.getInitials(s.studentName);
+          const rollNumber = String(s.studentName ? s.studentName.length : 1).padStart(2, '0');
 
           return `
             <div class="arch-ledger-row">
               <div class="arch-ledger-left">
                 <div class="arch-avatar-seal">
-                  ${initials}
+                  ${AppUI.getInitials(s.studentName)}
                 </div>
                 <div class="arch-ledger-names">
                   <div class="arch-student-name">${AppUI.escapeHtml(s.studentName)}</div>
@@ -340,7 +338,7 @@ const Dashboard = (() => {
           </div>
           <div>
             <span class="arch-status-seal ${isPresent ? 'present' : 'absent'}">
-              ${isPresent ? '✓ வந்தார் (Present)' : '○ வரவில்லை (Absent)'}
+              ${isPresent ? 'Present' : 'Absent'}
             </span>
           </div>
         </div>

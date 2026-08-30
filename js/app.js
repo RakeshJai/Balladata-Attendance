@@ -103,16 +103,6 @@ const App = (() => {
   let currentView = 'attendance';
   let isSubmitting = false;
 
-  const TAMIL_NUMERALS = {
-    'Level1': '௧',
-    'Level2': '௨',
-    'Level3': '௩',
-    'Level4': '௪',
-    'Level5': '௫',
-    'Level6': '௬',
-    'Volunteers': '❖'
-  };
-
   async function init() {
     Store.seedSampleHistoryIfEmpty();
     populateNilaiControls();
@@ -142,11 +132,9 @@ const App = (() => {
     const pillsRow = document.getElementById('levelPillsRow');
     if (pillsRow) {
       pillsRow.innerHTML = Store.LEVELS.map(lvl => {
-        const numeral = TAMIL_NUMERALS[lvl.id] || '•';
-        const label = lvl.id === 'Volunteers' ? 'தொண்டர்கள்' : `நிலை ${lvl.id.replace('Level', '')}`;
+        const label = lvl.id === 'Volunteers' ? 'Volunteers' : `Nilai ${lvl.id.replace('Level', '')}`;
         return `
           <button class="level-chip ${lvl.id === currentLevel ? 'active' : ''}" onclick="App.changeLevel('${lvl.id}')">
-            <span style="font-family:var(--serif); font-size:0.95rem; margin-right:4px; opacity:0.8;">${numeral}</span>
             <span>${label}</span>
           </button>
         `;
@@ -283,10 +271,10 @@ const App = (() => {
       existingDateBadge.style.display = 'inline-flex';
       if (hasExistingRecord) {
         existingDateBadge.className = 'date-status-badge saved';
-        existingDateBadge.innerHTML = '✓ பதிவு செய்யப்பட்டது (Saved)';
+        existingDateBadge.innerHTML = '✓ Saved Session';
       } else {
         existingDateBadge.className = 'date-status-badge fresh';
-        existingDateBadge.innerHTML = '● புதிய பதிவு (Fresh)';
+        existingDateBadge.innerHTML = '● Fresh Session';
       }
     }
 
@@ -306,7 +294,7 @@ const App = (() => {
             <div class="student-meta">
               <span class="student-name">${AppUI.escapeHtml(student)}</span>
               <span class="student-status-hint" id="status-hint-${index}">
-                ${isPresent ? 'வந்தார் · Present' : 'வரவில்லை · Absent'}
+                ${isPresent ? 'Present' : 'Absent'}
               </span>
             </div>
           </div>
@@ -322,7 +310,7 @@ const App = (() => {
             </div>
 
             <button class="attendance-toggle-btn" id="toggle-btn-${index}" onclick="App.toggleAttendance('${AppUI.escapeHtml(student)}', ${index})">
-              ${isPresent ? '● வந்தார்' : '○ வரவில்லை'}
+              ${isPresent ? '● Present' : '○ Absent'}
             </button>
           </div>
         </div>
@@ -353,10 +341,10 @@ const App = (() => {
       card.className = isPresent ? 'student-card is-present' : 'student-card';
     }
     if (hint) {
-      hint.innerHTML = isPresent ? 'வந்தார் · Present' : 'வரவில்லை · Absent';
+      hint.innerHTML = isPresent ? 'Present' : 'Absent';
     }
     if (btn) {
-      btn.innerHTML = isPresent ? '● வந்தார்' : '○ வரவில்லை';
+      btn.innerHTML = isPresent ? '● Present' : '○ Absent';
     }
 
     updateStatsPills();
@@ -372,7 +360,7 @@ const App = (() => {
     const studentsList = Store.getStudentsForLevel(currentLevel);
     renderStudentList(studentsList, true);
     updateStatsPills();
-    AppUI.showToast(isPresent ? 'அனைவரும் வருகை என குறிக்கப்பட்டது' : 'அனைவரும் வரவில்லை என குறிக்கப்பட்டது', 'info');
+    AppUI.showToast(`Marked all as ${status.toLowerCase()}`, 'info');
   }
 
   function updateStatsPills() {
@@ -385,9 +373,9 @@ const App = (() => {
     const absentEls = document.querySelectorAll('.stat-absent-count');
     const totalEls = document.querySelectorAll('.stat-total-count');
 
-    presentEls.forEach(el => el.textContent = `${presentCount} வந்தார்`);
-    absentEls.forEach(el => el.textContent = `${absentCount} வரவில்லை`);
-    totalEls.forEach(el => el.textContent = `${totalCount} மொத்தம்`);
+    presentEls.forEach(el => el.textContent = `${presentCount} Present`);
+    absentEls.forEach(el => el.textContent = `${absentCount} Absent`);
+    totalEls.forEach(el => el.textContent = `${totalCount} Total`);
   }
 
   async function submitCurrentAttendance() {
@@ -403,7 +391,7 @@ const App = (() => {
     const origHtml = submitBtn ? submitBtn.innerHTML : '';
 
     if (submitBtn) {
-      submitBtn.innerHTML = `<span>பதிவாகிறது...</span>`;
+      submitBtn.innerHTML = `<span>Saving...</span>`;
       submitBtn.disabled = true;
     }
 
@@ -412,9 +400,9 @@ const App = (() => {
       const result = await SheetsAPI.submitAttendance(currentLevel, currentDate, currentAttendance, teacher);
 
       if (result.syncedWithSheet) {
-        AppUI.showToast(`வருகை பதிவு வெற்றிகரமாக சேமிக்கப்பட்டது!`, 'success');
+        AppUI.showToast(`Attendance saved & synced to Google Sheets!`, 'success');
       } else if (result.offlineOnly) {
-        AppUI.showToast(`உள்ளூரில் சேமிக்கப்பட்டது (Saved locally).`, 'info');
+        AppUI.showToast(`Saved locally (offline mode).`, 'info');
       } else {
         AppUI.showToast(`Saved locally (Sheets: ${result.error?.message || 'Offline'})`, 'info');
       }

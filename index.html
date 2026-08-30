@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Baladatta Tamil School Attendance | பாலதத்தா தமிழ்ப்பள்ளி</title>
-  <meta name="description" content="Neoclassical Indian Traditional attendance portal for Baladatta Tamil School." />
+  <title>Baladatta Tamil School Attendance</title>
+  <meta name="description" content="Attendance portal for Baladatta Tamil School." />
 
   <!-- Google Identity Services & GAPI Client -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -16,15 +16,15 @@
   <meta name="theme-color" content="#120f0a">
   <link rel="icon" type="image/png" href="Logo.png">
 
-  <!-- Neoclassical Indian Traditional Theme (v15) -->
-  <link rel="stylesheet" href="css/styles.css?v=15">
+  <!-- Neoclassical Theme (v16) -->
+  <link rel="stylesheet" href="css/styles.css?v=16">
 </head>
 
 <body>
   <!-- Ambient Load-In Glow at Top of Screen -->
   <div class="top-ambient-glow" aria-hidden="true"></div>
 
-  <!-- Head-Turning Traditional Architectural Backdrop Layers -->
+  <!-- Traditional Architectural Backdrop Layers -->
   <div class="bg-watermark-left" aria-hidden="true"></div>
   <div class="bg-watermark-right" aria-hidden="true"></div>
   <div class="bg-architectural-center" aria-hidden="true"></div>
@@ -34,7 +34,7 @@
     Offline Mode: Changes saved locally and will sync when reconnected.
   </div>
 
-  <!-- Neoclassical Header -->
+  <!-- Header -->
   <header class="app-header">
     <div class="header-container">
       <div class="brand-section">
@@ -43,7 +43,7 @@
         </div>
         <div class="brand-titles">
           <h1 class="brand-kirtimukha">Baladatta Tamil School</h1>
-          <span class="brand-subtamil">பாலதத்தா தமிழ்ப்பள்ளி வருகைப் பதிவு</span>
+          <span class="brand-subtamil">Attendance Portal</span>
         </div>
       </div>
 
@@ -60,10 +60,10 @@
   <div class="nav-pill-container">
     <nav class="segmented-pill-bar" aria-label="App Navigation">
       <button id="navAttendanceTab" class="nav-pill-btn active">
-        <span>வருகைப் பதிவு (Attendance)</span>
+        <span>Attendance</span>
       </button>
       <button id="navDashboardTab" class="nav-pill-btn">
-        <span>பகுப்பாய்வு (Analytics)</span>
+        <span>Analytics</span>
       </button>
     </nav>
   </div>
@@ -90,26 +90,26 @@
             <button id="prevDateBtn" class="icon-btn" title="Previous Day">‹</button>
             <input type="date" id="attendanceDatePicker" class="pill-date-input" aria-label="Attendance Date" />
             <button id="nextDateBtn" class="icon-btn" title="Next Day">›</button>
-            <button id="dateTodayBtn" class="btn-today" title="Set to Today">இன்று (Today)</button>
+            <button id="dateTodayBtn" class="btn-today" title="Set to Today">Today</button>
           </div>
 
           <div>
-            <span id="existingDateBadge" class="date-status-badge fresh">● புதிய பதிவு (Fresh)</span>
+            <span id="existingDateBadge" class="date-status-badge fresh">● Fresh Session</span>
           </div>
         </div>
 
         <!-- Roster Header & Editorial Mass Actions -->
         <div class="roster-header-row">
           <div class="roster-heading">
-            <span>மாணவர் வருகை பட்டியல் (Roster)</span>
+            <span>Students Roster</span>
           </div>
           <div class="roster-actions">
             <button id="markAllPresentBtn" class="btn-ghost-action" title="Mark All Present">
-              அனைவரும் வந்தார்
+              Mark All Present
             </button>
             <span style="color: var(--rule-strong);">/</span>
             <button id="markAllAbsentBtn" class="btn-ghost-action" title="Mark All Absent">
-              வரவில்லை
+              Mark All Absent
             </button>
           </div>
         </div>
@@ -122,15 +122,15 @@
         <!-- Empty State -->
         <div id="emptyStudentState" class="empty-state-box" style="display:none;">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color:var(--terra); margin-bottom:8px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          <h3>இந்த வகுப்பில் மாணவர்கள் இல்லை</h3>
-          <p style="font-size:0.82rem;">கீழே உள்ள படிவத்தில் புதிய மாணவரைச் சேர்க்கவும்.</p>
+          <h3>No students in this class</h3>
+          <p style="font-size:0.82rem;">Add a student below to get started.</p>
         </div>
 
         <!-- Add Student Bar -->
         <div class="add-student-container">
-          <input type="text" id="newStudentInput" class="add-student-input" placeholder="+ புதிய மாணவர் பெயர் சேர்க்கவும் (Add student name)..." aria-label="Student name" />
+          <input type="text" id="newStudentInput" class="add-student-input" placeholder="+ Add student full name..." aria-label="Student name" />
           <button id="addStudentBtn" class="btn-primary">
-            + மாணவர் சேர்
+            + Add Student
           </button>
         </div>
 
@@ -140,7 +140,7 @@
       <section id="dashboardViewSection" class="dashboard-section">
         <div class="roster-header-row" style="margin-bottom: 16px;">
           <div class="roster-heading">
-            <span>வகுப்பு வருகை பகுப்பாய்வு & அறிக்கைகள்</span>
+            <span>Class Attendance Analytics & Reports</span>
           </div>
         </div>
 
@@ -157,13 +157,13 @@
   <aside class="sticky-action-bar" id="stickyActionBar">
     <div class="sticky-action-container">
       <div class="tally-group">
-        <span class="tally-chip present stat-present-count">0 வந்தார்</span>
-        <span class="tally-chip absent stat-absent-count">0 வரவில்லை</span>
-        <span class="tally-chip total stat-total-count">0 மொத்தம்</span>
+        <span class="tally-chip present stat-present-count">0 Present</span>
+        <span class="tally-chip absent stat-absent-count">0 Absent</span>
+        <span class="tally-chip total stat-total-count">0 Total</span>
       </div>
 
       <button id="submitAttendanceBtn" class="btn-submit-attendance" title="Save & Sync Attendance">
-        <span>பதிவு செய்க · Save Attendance</span>
+        <span>Submit Attendance</span>
       </button>
     </div>
   </aside>
@@ -177,8 +177,8 @@
       </div>
       <div id="modalBody" class="modal-body-area"></div>
       <div class="modal-foot">
-        <button id="modalCancelBtn" class="btn-ghost-action" style="padding:8px 18px;">ரத்து செய் (Cancel)</button>
-        <button id="modalConfirmBtn" class="btn-primary">உறுதிப்படுத்து (Confirm)</button>
+        <button id="modalCancelBtn" class="btn-ghost-action" style="padding:8px 18px;">Cancel</button>
+        <button id="modalConfirmBtn" class="btn-primary">Confirm</button>
       </div>
     </div>
   </div>
@@ -186,12 +186,12 @@
   <!-- Toast Container -->
   <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
-  <!-- Scripts (Cache Busted v14) -->
-  <script src="js/store.js?v=15"></script>
-  <script src="js/sheets-api.js?v=15"></script>
-  <script src="js/student-mgr.js?v=15"></script>
-  <script src="js/dashboard.js?v=15"></script>
-  <script src="js/app.js?v=15"></script>
+  <!-- Scripts (Cache Busted v16) -->
+  <script src="js/store.js?v=16"></script>
+  <script src="js/sheets-api.js?v=16"></script>
+  <script src="js/student-mgr.js?v=16"></script>
+  <script src="js/dashboard.js?v=16"></script>
+  <script src="js/app.js?v=16"></script>
 </body>
 
 </html>
