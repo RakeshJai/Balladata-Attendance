@@ -33,7 +33,7 @@ const Dashboard = (() => {
         <div class="figma-stat-card coral">
           <div class="stat-header-line">
             <span>Attendance Rate</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            <svg class="indian-motif" viewBox="0 0 32 24" aria-hidden="true"><use href="#motif-lotus" /></svg>
           </div>
           <div class="stat-huge-number">${stats.overallAttendanceRate}%</div>
           <div class="stat-sub-text">${stats.totalPresent} Present / ${stats.totalPresent + stats.totalAbsent} Total</div>
@@ -42,7 +42,7 @@ const Dashboard = (() => {
         <div class="figma-stat-card cream">
           <div class="stat-header-line">
             <span>Enrolled Students</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            <svg class="indian-motif" viewBox="0 0 24 24" aria-hidden="true"><use href="#motif-mandala" /></svg>
           </div>
           <div class="stat-huge-number">${stats.totalStudents}</div>
           <div class="stat-sub-text">${selectedLevel === 'ALL' ? 'All Nilais' : selectedLevel}</div>
@@ -51,7 +51,7 @@ const Dashboard = (() => {
         <div class="figma-stat-card mint">
           <div class="stat-header-line">
             <span>Class Sessions</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <svg class="indian-motif" viewBox="0 0 24 24" aria-hidden="true"><use href="#motif-diya" /></svg>
           </div>
           <div class="stat-huge-number">${stats.totalSessions}</div>
           <div class="stat-sub-text">Recorded dates</div>
@@ -60,7 +60,7 @@ const Dashboard = (() => {
         <div class="figma-stat-card peach">
           <div class="stat-header-line">
             <span>Present / Absent</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+            <svg class="indian-motif" viewBox="0 0 24 24" aria-hidden="true"><use href="#motif-diamond" /></svg>
           </div>
           <div class="stat-huge-number" style="font-size: 1.6rem; display:flex; gap:8px; align-items:center;">
             <span>${stats.totalPresent} <small style="font-size:0.75rem;">P</small></span>
@@ -89,8 +89,8 @@ const Dashboard = (() => {
             </div>
           </div>
 
-          <button class="btn-outline-pill" onclick="Dashboard.exportToCsv()" title="Download Attendance CSV" style="padding: 8px 16px;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <button class="btn-outline-pill motif-button" onclick="Dashboard.exportToCsv()" title="Download Attendance CSV" style="padding: 8px 16px;">
+            <svg class="motif-button-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#motif-diya" /></svg>
             Export CSV
           </button>
         </div>
@@ -122,7 +122,7 @@ const Dashboard = (() => {
       return `
         <div class="empty-state-box">
           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted); margin-bottom:8px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          <h3>No matching students</h3>
+          <h3><svg class="empty-motif" viewBox="0 0 32 24" aria-hidden="true"><use href="#motif-lotus" /></svg>No matching students</h3>
           <p style="font-size:0.85rem;">Try adjusting your search or Nilai filter.</p>
         </div>
       `;
@@ -159,7 +159,8 @@ const Dashboard = (() => {
                   </span>
                 </div>
 
-                <button class="btn-outline-pill" style="padding:6px 14px; font-size:0.8rem;" onclick="Dashboard.showStudentHistory('${AppUI.escapeHtml(s.levelId)}', '${AppUI.escapeHtml(s.studentName)}')">
+                <button class="btn-outline-pill motif-button" style="padding:6px 14px; font-size:0.8rem;" onclick="Dashboard.showStudentHistory('${AppUI.escapeHtml(s.levelId)}', '${AppUI.escapeHtml(s.studentName)}')">
+                  <svg class="motif-button-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#motif-mandala" /></svg>
                   History
                 </button>
               </div>

@@ -753,3 +753,81 @@ button { -webkit-tap-highlight-color: transparent; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+/* Traditional Indian motif accents */
+.motif-library {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.indian-motif {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+  color: currentColor;
+  opacity: 0.82;
+}
+
+.figma-stat-card .indian-motif {
+  width: 24px;
+  height: 24px;
+  opacity: 0.72;
+}
+
+.figma-stat-card.coral .indian-motif { color: var(--cream); }
+.figma-stat-card.cream .indian-motif { color: var(--primary); }
+.figma-stat-card.mint .indian-motif { color: #4d7151; }
+.figma-stat-card.peach .indian-motif { color: var(--primary); }
+
+.dashboard-view > .roster-header {
+  position: relative;
+  margin-bottom: 21px !important;
+  padding-bottom: 13px;
+  border-bottom: 1px solid var(--border-main);
+}
+
+.dashboard-view > .roster-header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 105px;
+  height: 2px;
+  background: var(--border-brass);
+}
+
+.dashboard-view > .roster-header .roster-title::before {
+  content: '✦';
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 23px;
+  height: 23px;
+  color: var(--cream-text);
+  background: var(--brass);
+  border-radius: 50%;
+  font-family: Georgia, serif;
+  font-size: 0.76rem;
+  line-height: 1;
+}
+
+.motif-button { min-height: 32px; }
+.motif-button-icon { width: 16px; height: 16px; color: var(--brass); }
+.btn-coral .motif-button-icon { color: var(--cream); }
+
+.empty-state-box h3 {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.empty-motif { width: 27px; height: 21px; color: var(--brass); }
+
+@media (max-width: 640px) {
+  .dashboard-view > .roster-header { margin-bottom: 17px !important; }
+  .dashboard-view > .roster-header .roster-title::before { width: 21px; height: 21px; }
+  .figma-stat-card .indian-motif { width: 21px; height: 21px; }
+  .motif-button-icon { width: 14px; height: 14px; }
+}
