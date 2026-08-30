@@ -753,437 +753,583 @@ body {
 }
 
 /* ==========================================================================
-   Creative Neoclassical Dashboard Visualizations
+   Luxury Analytics Dashboard (Inspired by Financial & Analytics Layout)
    ========================================================================== */
 .dashboard-section { display: none; }
 
-/* ─── 1. Inscription Metric Plaques ─── */
-.arch-metrics-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 10px;
-  margin-bottom: 22px;
+/* ─── 1. Top Greeting & Timeframe Filter Bar ─── */
+.dash-hero-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
 }
 
-.arch-metric-card {
-  background: var(--surface);
+.dash-hero-greeting {
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+.dash-hero-sub {
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+  margin-top: 3px;
+}
+
+.dash-timeframe-selector {
+  display: inline-flex;
+  background: var(--surface-raised);
   border: 1px solid var(--rule-strong);
-  border-radius: 8px;
-  padding: 14px 16px;
-  display: flex;
-  flex-direction: column;
+  border-radius: 20px;
+  padding: 3px;
   gap: 2px;
 }
 
-.arch-metric-header {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.arch-metric-tag {
-  font-size: 0.68rem;
-  font-weight: 600;
-  color: var(--terra);
-  letter-spacing: 0.02em;
-}
-
-.arch-metric-title {
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--ink-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.arch-metric-val {
-  font-family: var(--serif);
-  font-size: 1.8rem;
-  color: var(--ink);
-  line-height: 1.1;
-  margin: 4px 0 2px;
-}
-
-.arch-metric-val.rate { color: var(--terra); }
-
-.arch-metric-foot {
-  font-size: 0.72rem;
+.dash-tf-btn {
+  background: none;
+  border: none;
   color: var(--ink-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-family: var(--sans);
+  transition: all 0.15s ease;
 }
 
-/* ─── 2. Creative Visualizations Grid ─── */
-.arch-charts-grid {
+.dash-tf-btn:hover { color: var(--ink-secondary); }
+
+.dash-tf-btn.active {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+
+/* ─── 2. Hero Overview Row ─── */
+.dash-hero-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1.3fr 1fr 1fr;
   gap: 16px;
-  margin-bottom: 22px;
+  margin-bottom: 24px;
 }
 
-@media (min-width: 680px) {
-  .arch-charts-grid {
-    grid-template-columns: 1fr 1fr;
-  }
+@media (max-width: 900px) {
+  .dash-hero-grid { grid-template-columns: 1fr; }
 }
 
-.arch-chart-box {
+.dash-hero-card {
   background: var(--surface);
   border: 1px solid var(--rule-strong);
-  border-radius: 8px;
-  padding: 18px;
+  border-radius: 12px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
 }
 
-.arch-chart-heading {
-  font-family: var(--serif);
-  font-size: 0.95rem;
-  color: var(--ink);
+.dash-hero-card.primary {
+  background: #1e1913;
+  border-color: rgba(194, 102, 58, 0.35);
+}
+
+.dash-card-label-row {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 8px;
-  margin-bottom: 16px;
-  border-bottom: 1px solid var(--rule);
-  padding-bottom: 10px;
+  margin-bottom: 10px;
 }
 
-/* ─── Sudarshana Chakra Attendance Dial ─── */
-.chakra-dial-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  gap: 16px;
-  flex-wrap: wrap;
-  min-height: 150px;
-}
-
-.chakra-dial-svg-wrap {
-  position: relative;
-  width: 130px;
-  height: 130px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.chakra-dial-svg-wrap svg {
-  width: 100%;
-  height: 100%;
-}
-
-.chakra-dial-center {
-  position: absolute;
-  text-align: center;
-}
-
-.chakra-dial-rate {
-  font-family: var(--serif);
-  font-size: 1.4rem;
-  font-weight: 400;
-  color: var(--ink);
-  line-height: 1;
-}
-
-.chakra-dial-tamil {
-  font-size: 0.65rem;
-  color: var(--terra);
-  font-weight: 700;
+.dash-card-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+  text-transform: uppercase;
   letter-spacing: 0.04em;
 }
 
-.chakra-legend {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  flex: 1;
-  min-width: 160px;
-}
-
-.chakra-legend-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.8rem;
-  color: var(--ink-secondary);
-}
-
-.chakra-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 2px;
-  flex-shrink: 0;
-}
-
-.chakra-dot.sage { background: var(--sage); }
-.chakra-dot.stone { background: var(--ink-muted); }
-
-.chakra-legend-note {
-  font-size: 0.7rem;
-  color: var(--ink-muted);
-  line-height: 1.4;
-  margin-top: 4px;
-  border-top: 1px solid var(--rule);
-  padding-top: 6px;
-}
-
-/* ─── Stepped Temple Pillar Chart (Dravidian Adhishthana) ─── */
-.temple-pillars-container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.pillar-chart-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 0.8rem;
-}
-
-.pillar-label-group {
-  width: 84px;
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-}
-
-.pillar-class-name {
-  font-weight: 600;
-  color: var(--ink);
-  white-space: nowrap;
-}
-
-.pillar-tamil-sub {
-  font-size: 0.66rem;
-  color: var(--ink-muted);
-}
-
-.pillar-stepped-track {
-  flex: 1;
-  height: 12px;
-  background: var(--surface-raised);
-  border: 1px solid var(--rule);
-  border-radius: 2px;
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.pillar-plinth-base {
-  position: absolute;
-  left: -2px;
-  top: -2px;
-  bottom: -2px;
-  width: 4px;
-  background: var(--rule-strong);
-  border-radius: 1px;
-}
-
-.pillar-fill-bar {
-  height: 100%;
-  background: var(--terra);
-  transition: width 0.3s ease;
-}
-
-.pillar-capital-cap {
-  position: absolute;
-  right: -2px;
-  top: -2px;
-  bottom: -2px;
-  width: 4px;
-  background: var(--rule-strong);
-  border-radius: 1px;
-}
-
-.pillar-metric-tally {
-  width: 58px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  flex-shrink: 0;
-}
-
-.pillar-pct-val {
-  font-weight: 700;
+.dash-card-sublabel {
+  font-size: 0.74rem;
   color: var(--terra);
-  font-size: 0.84rem;
-}
-
-.pillar-students-count {
-  font-size: 0.68rem;
-  color: var(--ink-muted);
-}
-
-/* ─── 3. Search & Filter Ledger Bar ─── */
-.arch-toolbar {
-  border: 1px solid var(--rule-strong);
-  border-radius: 8px;
-  padding: 10px 12px;
-  margin-bottom: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  flex-wrap: wrap;
-  background: var(--surface);
-}
-
-.arch-search-field {
-  position: relative;
-  flex: 1;
-  min-width: 160px;
-}
-
-.arch-search-field svg {
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--ink-muted);
-  pointer-events: none;
-}
-
-.arch-input {
-  width: 100%;
-  background: var(--surface-raised);
-  color: var(--ink);
-  border: 1px solid var(--rule);
-  border-radius: 6px;
-  padding: 8px 10px 8px 32px;
-  min-height: 38px;
-  font-size: 0.84rem;
-  outline: none;
-  font-family: var(--sans);
-}
-
-.arch-input:focus { border-color: var(--terra); }
-
-.arch-select {
-  background: var(--surface-raised);
-  color: var(--ink);
-  border: 1px solid var(--rule);
-  border-radius: 6px;
-  padding: 8px 10px;
-  min-height: 38px;
-  font-size: 0.82rem;
-  outline: none;
-  font-family: var(--sans);
-  cursor: pointer;
-}
-
-/* ─── 4. Student Records Ledger ─── */
-.arch-ledger-list {
-  display: flex;
-  flex-direction: column;
-}
-
-.arch-ledger-row {
-  border-bottom: 1px solid var(--rule);
-  padding: 12px 4px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.arch-ledger-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 160px;
-}
-
-.arch-avatar-seal {
-  width: 36px;
-  height: 36px;
-  border-radius: 6px;
-  background: var(--surface-raised);
-  border: 1px solid var(--rule-strong);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--ink-muted);
-  flex-shrink: 0;
-}
-
-.arch-ledger-names {
-  display: flex;
-  flex-direction: column;
-}
-
-.arch-student-name {
-  font-size: 0.92rem;
   font-weight: 600;
-  color: var(--ink);
 }
 
-.arch-student-sub {
-  font-size: 0.72rem;
-  color: var(--ink-muted);
-}
-
-.arch-ledger-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.arch-tally-chips {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.arch-status-seal {
-  font-size: 0.72rem;
+.dash-badge-rate-positive {
+  font-size: 0.7rem;
   font-weight: 700;
-  padding: 4px 8px;
-  border-radius: 4px;
-  display: inline-flex;
-  align-items: center;
-}
-
-.arch-status-seal.present {
+  padding: 2px 8px;
+  border-radius: 12px;
   background: var(--sage-dim);
   color: var(--sage);
   border: 1px solid var(--sage-border);
 }
 
-.arch-status-seal.absent {
-  background: var(--surface-raised);
-  color: var(--ink-muted);
-  border: 1px solid var(--rule);
+.dash-highlight-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: var(--terra-dim);
+  color: var(--terra);
+  border: 1px solid var(--terra-border);
 }
 
-.arch-rate-stepper {
-  min-width: 44px;
-  text-align: right;
+.dash-hero-rate-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 4px;
 }
 
-.arch-rate-num {
+.dash-hero-rate-num {
   font-family: var(--serif);
-  font-size: 1.1rem;
-  font-weight: 400;
+  font-size: 2.2rem;
+  color: var(--ink);
+  line-height: 1;
 }
 
-.arch-btn-history {
-  background: var(--surface-raised);
-  color: var(--ink-secondary);
-  border: 1px solid var(--rule-strong);
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 0.75rem;
+.dash-hero-rate-sub {
+  font-size: 0.78rem;
   font-weight: 600;
+  color: var(--sage);
+}
+
+.dash-hero-stat-val {
+  font-family: var(--serif);
+  font-size: 1.8rem;
+  color: var(--ink);
+  line-height: 1.1;
+  margin-bottom: 12px;
+}
+
+.dash-hero-caption {
+  font-size: 0.74rem;
+  color: var(--ink-muted);
+  margin-bottom: 16px;
+}
+
+.dash-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: auto;
+}
+
+.dash-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
   cursor: pointer;
   font-family: var(--sans);
   transition: all 0.12s ease;
 }
 
-.arch-btn-history:active { transform: scale(0.96); }
+.dash-action-btn.primary {
+  background: var(--terra);
+  color: #fff;
+  border: 1px solid var(--terra-border);
+}
+
+.dash-action-btn.primary:active { transform: scale(0.96); }
+
+.dash-action-btn.secondary {
+  background: var(--surface-raised);
+  color: var(--ink-secondary);
+  border: 1px solid var(--rule-strong);
+}
+
+.dash-action-btn.secondary:active { transform: scale(0.96); }
+
+.dash-filter-dropdown-wrap {
+  margin-left: auto;
+}
+
+.dash-level-select {
+  background: var(--surface-raised);
+  color: var(--ink);
+  border: 1px solid var(--rule-strong);
+  border-radius: 16px;
+  padding: 6px 10px;
+  font-size: 0.74rem;
+  outline: none;
+  font-family: var(--sans);
+  cursor: pointer;
+}
+
+/* Middle Block Bar */
+.dash-block-bar-track {
+  width: 100%;
+  height: 28px;
+  background: var(--surface-raised);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.dash-block-bar-fill {
+  height: 100%;
+  background: var(--terra);
+  border-radius: 6px;
+  transition: width 0.4s ease;
+}
+
+.dash-bar-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: var(--ink-muted);
+}
+
+/* Right Pulse Bars Wrap */
+.dash-pulse-bars-wrap {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 6px;
+  height: 80px;
+  position: relative;
+  margin: 6px 0 10px;
+  padding-bottom: 2px;
+}
+
+.dash-benchmark-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1px dashed rgba(212, 163, 89, 0.45);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.dash-benchmark-tag {
+  position: absolute;
+  right: 0;
+  top: -14px;
+  font-size: 0.62rem;
+  color: #d4a359;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.dash-pulse-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.dash-pulse-bar-track {
+  width: 100%;
+  max-width: 14px;
+  height: 60px;
+  background: var(--surface-raised);
+  border-radius: 3px;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.dash-pulse-bar-fill {
+  width: 100%;
+  background: var(--terra);
+  border-radius: 3px;
+  transition: height 0.4s ease;
+}
+
+.dash-pulse-col:hover .dash-pulse-bar-fill {
+  background: var(--terra-hover);
+}
+
+.dash-pulse-label {
+  font-size: 0.65rem;
+  color: var(--ink-muted);
+  font-weight: 600;
+}
+
+/* ─── 3. Bottom 3-Card Grid ─── */
+.dash-bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.15fr;
+  gap: 16px;
+}
+
+@media (max-width: 960px) {
+  .dash-bottom-grid { grid-template-columns: 1fr; }
+}
+
+.dash-grid-box {
+  background: var(--surface);
+  border: 1px solid var(--rule-strong);
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+.dash-box-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 10px;
+}
+
+.dash-box-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dash-box-icon { font-size: 1rem; }
+
+.dash-box-title {
+  font-family: var(--serif);
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
+.dash-box-sub {
+  font-size: 0.72rem;
+  color: var(--ink-muted);
+}
+
+.dash-legend-pills {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  color: var(--ink-muted);
+}
+
+.dash-legend-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.dash-legend-dot.present { background: var(--terra); }
+.dash-legend-dot.avg { background: #d4a359; }
+
+.dash-legend-text { color: var(--ink-secondary); }
+
+/* Curve Chart SVG */
+.dash-curve-chart-container {
+  width: 100%;
+  min-height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dash-trend-svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+/* Heatmap Grid */
+.dash-heatmap-wrap {
+  width: 100%;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.dash-heatmap-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 220px;
+}
+
+.dash-hm-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dash-hm-time-label {
+  width: 38px;
+  font-size: 0.65rem;
+  color: var(--ink-muted);
+  text-align: right;
+  padding-right: 6px;
+}
+
+.dash-hm-day-head {
+  flex: 1;
+  font-size: 0.65rem;
+  color: var(--ink-muted);
+  text-align: center;
+  font-weight: 600;
+}
+
+.dash-hm-cell {
+  flex: 1;
+  height: 16px;
+  border-radius: 3px;
+  background: var(--surface-raised);
+  transition: transform 0.1s ease;
+}
+
+.dash-hm-cell:hover { transform: scale(1.15); }
+
+.dash-hm-cell.lvl-0 { background: #1a1610; }
+.dash-hm-cell.lvl-1 { background: rgba(194, 102, 58, 0.25); }
+.dash-hm-cell.lvl-2 { background: rgba(194, 102, 58, 0.5); }
+.dash-hm-cell.lvl-3 { background: rgba(194, 102, 58, 0.75); }
+.dash-hm-cell.lvl-4 { background: #c2663a; }
+
+.dash-heatmap-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px solid var(--rule);
+}
+
+.dash-hm-legend-label {
+  font-size: 0.65rem;
+  color: var(--ink-muted);
+  padding: 0 4px;
+}
+
+.dash-heatmap-footer .dash-hm-cell {
+  width: 12px;
+  height: 12px;
+  flex: none;
+}
+
+/* Card 3: Recent Student Logs List */
+.dash-search-mini {
+  position: relative;
+}
+
+.dash-mini-input {
+  background: var(--surface-raised);
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  padding: 4px 10px;
+  font-size: 0.74rem;
+  width: 100px;
+  outline: none;
+  font-family: var(--sans);
+}
+
+.dash-mini-input:focus {
+  border-color: var(--terra);
+  width: 130px;
+}
+
+.dash-logs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.dash-log-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--rule);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.dash-log-row:hover { background: var(--surface-hover); }
+
+.dash-log-left {
+  display: flex;
+  flex-direction: column;
+  min-width: 90px;
+}
+
+.dash-log-name {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dash-log-date {
+  font-size: 0.68rem;
+  color: var(--ink-muted);
+}
+
+.dash-log-center {
+  margin: 0 6px;
+}
+
+.dash-log-pill-level {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--surface-raised);
+  color: var(--ink-secondary);
+  border: 1px solid var(--rule);
+}
+
+.dash-log-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.dash-log-pill-status {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.dash-log-pill-status.present {
+  background: var(--sage-dim);
+  color: var(--sage);
+  border: 1px solid var(--sage-border);
+}
+
+.dash-log-pill-status.absent {
+  background: var(--terra-dim);
+  color: var(--terra);
+  border: 1px solid var(--terra-border);
+}
+
+.dash-btn-more {
+  background: none;
+  border: none;
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 2px 4px;
+}
 
 /* ─── Modal Dialog ─── */
 .modal-overlay {

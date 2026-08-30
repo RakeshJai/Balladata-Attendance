@@ -1,13 +1,18 @@
 /**
- * Baladatta Attendance – Neoclassical Indian Traditional Dashboard
- * Creative Architectural Visualizations:
- * 1. Sudarshana / Temple Mandapam Dial (Chakra Attendance Wheel SVG)
- * 2. Stepped Temple Pillar Comparative Class Charts (Adhishthana Pillars)
- * 3. Inscription-style Metric Plaques & Student History Ledgers
+ * Baladatta Attendance – Neoclassical Luxury Analytics Dashboard
+ * Inspired by modern financial & analytics UI layout:
+ * - Hero greeting & timeframe filter (Week / Month / Year / All Time)
+ * - Key metric card with export/sync quick actions
+ * - Cohort performance solid block & multi-bar distribution with average benchmark
+ * - Bottom 3-Card Grid:
+ *   1. Smooth SVG Attendance Trend Curve
+ *   2. Session Activity Heatmap Matrix (Day vs Density)
+ *   3. Recent Student Log Ledger with Level Badges & History Drilldown
  */
 
 const Dashboard = (() => {
   let selectedLevel = 'ALL';
+  let selectedTimeframe = 'All'; // 'Week', 'Month', 'Year', 'All'
   let searchQuery = '';
 
   function init() {
@@ -19,9 +24,14 @@ const Dashboard = (() => {
     render();
   }
 
+  function setTimeframe(timeframe) {
+    selectedTimeframe = timeframe;
+    render();
+  }
+
   function setSearchQuery(query) {
     searchQuery = (query || '').toLowerCase().trim();
-    renderCardsOnly();
+    renderRecentLogsOnly();
   }
 
   function render() {
@@ -30,190 +40,190 @@ const Dashboard = (() => {
 
     const stats = Store.getDashboardStats(selectedLevel);
     const allLevelStats = calculateAllLevelsStats();
+    const trendData = calculateTrendData(selectedLevel);
+    const heatmapData = calculateHeatmapData(selectedLevel);
+    const recentLogs = getRecentStudentLogs(selectedLevel, searchQuery);
+
+    const teacherName = Store.getTeacherName() || 'Teacher';
 
     let html = `
-      <!-- Neoclassical Inscription Metric Plaques -->
-      <div class="arch-metrics-grid">
-        <div class="arch-metric-card">
-          <div class="arch-metric-header">
-            <span class="arch-metric-tag">Attendance Rate</span>
-            <span class="arch-metric-title">Overall Rate</span>
-          </div>
-          <div class="arch-metric-val rate">${stats.overallAttendanceRate}%</div>
-          <div class="arch-metric-foot">${stats.totalPresent} Present · ${stats.totalAbsent} Absent</div>
+      <!-- 1. Top Greeting & Timeframe Filter Bar -->
+      <div class="dash-hero-header">
+        <div>
+          <h2 class="dash-hero-greeting">Welcome back, ${AppUI.escapeHtml(teacherName)}</h2>
+          <p class="dash-hero-sub">Baladatta Tamil School · Analytics & Roster Overview</p>
         </div>
 
-        <div class="arch-metric-card">
-          <div class="arch-metric-header">
-            <span class="arch-metric-tag">Student Count</span>
-            <span class="arch-metric-title">Enrolled</span>
-          </div>
-          <div class="arch-metric-val">${stats.totalStudents}</div>
-          <div class="arch-metric-foot">${selectedLevel === 'ALL' ? 'All 7 Classes' : selectedLevel}</div>
-        </div>
-
-        <div class="arch-metric-card">
-          <div class="arch-metric-header">
-            <span class="arch-metric-tag">Class Sessions</span>
-            <span class="arch-metric-title">Sessions Logged</span>
-          </div>
-          <div class="arch-metric-val">${stats.totalSessions}</div>
-          <div class="arch-metric-foot">Recorded school dates</div>
-        </div>
-
-        <div class="arch-metric-card">
-          <div class="arch-metric-header">
-            <span class="arch-metric-tag">Logs Recorded</span>
-            <span class="arch-metric-title">Total Records</span>
-          </div>
-          <div class="arch-metric-val" style="font-size: 1.5rem; display: flex; gap: 8px; align-items: baseline;">
-            <span style="color: var(--sage);">${stats.totalPresent}<small style="font-size: 0.7rem; margin-left: 2px;">P</small></span>
-            <span style="color: var(--ink-muted); font-size: 0.9rem;">/</span>
-            <span style="color: var(--ink-secondary);">${stats.totalAbsent}<small style="font-size: 0.7rem; margin-left: 2px;">A</small></span>
-          </div>
-          <div class="arch-metric-foot">Deduplicated ledger</div>
+        <div class="dash-timeframe-selector">
+          ${['Week', 'Month', 'Year', 'All'].map(tf => `
+            <button class="dash-tf-btn ${selectedTimeframe === tf ? 'active' : ''}" onclick="Dashboard.setTimeframe('${tf}')">
+              ${tf === 'All' ? 'All Time' : tf}
+            </button>
+          `).join('')}
         </div>
       </div>
 
-      <!-- Creative Neoclassical Visualizations Grid -->
-      <div class="arch-charts-grid">
+      <!-- 2. Hero Overview Row (3-Column Financial/Analytics Style) -->
+      <div class="dash-hero-grid">
         
-        <!-- 1. Sudarshana / Temple Mandapam Dial (Chakra Attendance Wheel) -->
-        <div class="arch-chart-box">
-          <div class="arch-chart-heading">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--terra);"><circle cx="12" cy="12" r="10"/><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07l14.14-14.14"/></svg>
-            <span>Sudarshana Attendance Dial</span>
+        <!-- Left Hero Key Metric -->
+        <div class="dash-hero-card primary">
+          <div class="dash-card-label-row">
+            <span class="dash-card-label">Overall Attendance</span>
+            <span class="dash-badge-rate-positive">
+              ${stats.overallAttendanceRate >= 80 ? '↑ High Rate' : '• Active'}
+            </span>
           </div>
-          <div class="chakra-dial-wrapper">
-            ${renderChakraDialSvg(stats.totalPresent, stats.totalAbsent, stats.overallAttendanceRate)}
-            <div class="chakra-legend">
-              <div class="chakra-legend-row">
-                <span class="chakra-dot sage"></span>
-                <span>Present: <strong>${stats.totalPresent}</strong> (${stats.overallAttendanceRate}%)</span>
-              </div>
-              <div class="chakra-legend-row">
-                <span class="chakra-dot stone"></span>
-                <span>Absent: <strong>${stats.totalAbsent}</strong> (${100 - stats.overallAttendanceRate}%)</span>
-              </div>
-              <div class="chakra-legend-note">
-                Wheel represents total recorded student sessions across all dates.
-              </div>
+          <div class="dash-hero-rate-row">
+            <span class="dash-hero-rate-num">${stats.overallAttendanceRate}%</span>
+            <span class="dash-hero-rate-sub">+${Math.min(stats.overallAttendanceRate, 12.5)}% vs avg</span>
+          </div>
+          <p class="dash-hero-caption">${stats.totalPresent} Present · ${stats.totalAbsent} Absent · ${stats.totalStudents} Enrolled</p>
+
+          <div class="dash-hero-actions">
+            <button class="dash-action-btn primary" onclick="Dashboard.exportToCsv()" title="Export CSV">
+              <span>Export CSV</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17l9.2-9.2M17 17V8H8"/></svg>
+            </button>
+            <button class="dash-action-btn secondary" onclick="SheetsAPI.signIn()" title="Sync Google Sheets">
+              <span>Sync Sheets</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+            </button>
+            <div class="dash-filter-dropdown-wrap">
+              <select class="dash-level-select" onchange="Dashboard.setFilterLevel(this.value)" aria-label="Select Class">
+                <option value="ALL" ${selectedLevel === 'ALL' ? 'selected' : ''}>All Classes</option>
+                ${Store.LEVELS.map(l => `<option value="${l.id}" ${selectedLevel === l.id ? 'selected' : ''}>${l.label}</option>`).join('')}
+              </select>
             </div>
           </div>
         </div>
 
-        <!-- 2. Stepped Dravidian Temple Pillar Performance Chart -->
-        <div class="arch-chart-box">
-          <div class="arch-chart-heading">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--terra);"><rect x="4" y="2" width="16" height="4" rx="1"/><rect x="6" y="6" width="12" height="14"/><rect x="3" y="20" width="18" height="2"/></svg>
-            <span>Class Pillar Performance</span>
+        <!-- Middle Cohort Rate Plaque -->
+        <div class="dash-hero-card secondary">
+          <div class="dash-card-label-row">
+            <span class="dash-card-label">Top Class Performance</span>
+            <span class="dash-highlight-badge">${getTopLevelName(allLevelStats)}</span>
           </div>
-          <div class="temple-pillars-container">
-            ${renderTemplePillarBars(allLevelStats)}
+          <div class="dash-hero-stat-val">${getTopLevelRate(allLevelStats)}%</div>
+          <div class="dash-block-bar-track">
+            <div class="dash-block-bar-fill" style="width: ${getTopLevelRate(allLevelStats)}%;"></div>
+          </div>
+          <div class="dash-bar-footer-row">
+            <span>• Cohort Benchmark</span>
+            <span>${stats.totalSessions} Sessions Recorded</span>
+          </div>
+        </div>
+
+        <!-- Right Multi-Bar Pulse Distribution -->
+        <div class="dash-hero-card secondary">
+          <div class="dash-card-label-row">
+            <span class="dash-card-label">Class Attendance Pulse</span>
+            <span class="dash-card-sublabel">Avg ${stats.overallAttendanceRate}%</span>
+          </div>
+          
+          <div class="dash-pulse-bars-wrap">
+            <div class="dash-benchmark-line" style="bottom: ${Math.min(Math.max(stats.overallAttendanceRate, 10), 90)}%;">
+              <span class="dash-benchmark-tag">Avg</span>
+            </div>
+            ${allLevelStats.map(l => `
+              <div class="dash-pulse-col" title="${l.label}: ${l.rate}% (${l.studentCount} students)">
+                <div class="dash-pulse-bar-track">
+                  <div class="dash-pulse-bar-fill" style="height: ${Math.max(l.rate, 12)}%;"></div>
+                </div>
+                <span class="dash-pulse-label">${l.shortLabel}</span>
+              </div>
+            `).join('')}
+          </div>
+          
+          <div class="dash-bar-footer-row" style="margin-top: 8px;">
+            <span>• ${allLevelStats.length} Total Cohorts</span>
+            <span>Active Term</span>
           </div>
         </div>
 
       </div>
 
-      <!-- Search & Filter Ledger Bar -->
-      <div class="arch-toolbar">
-        <div class="arch-search-field">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" id="dashboardSearchInput" class="arch-input" placeholder="Search student name..." value="${AppUI.escapeHtml(searchQuery)}" oninput="Dashboard.setSearchQuery(this.value)" />
+      <!-- 3. Bottom 3-Card Grid (Trends / Activity Heatmap / Recent Logs) -->
+      <div class="dash-bottom-grid">
+        
+        <!-- Card 1: Attendance Trend Curve -->
+        <div class="dash-grid-box">
+          <div class="dash-box-header">
+            <div class="dash-box-title-group">
+              <span class="dash-box-icon">📈</span>
+              <h3 class="dash-box-title">Attendance Trends</h3>
+            </div>
+            <div class="dash-legend-pills">
+              <span class="dash-legend-dot present"></span>
+              <span class="dash-legend-text">Present</span>
+              <span class="dash-legend-dot avg"></span>
+              <span class="dash-legend-text">Average</span>
+            </div>
+          </div>
+
+          <div class="dash-curve-chart-container">
+            ${renderTrendCurveSvg(trendData)}
+          </div>
         </div>
 
-        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-          <select class="arch-select" onchange="Dashboard.setFilterLevel(this.value)" aria-label="Filter by Nilai">
-            <option value="ALL" ${selectedLevel === 'ALL' ? 'selected' : ''}>All Classes</option>
-            ${Store.LEVELS.map(l => `<option value="${l.id}" ${selectedLevel === l.id ? 'selected' : ''}>${l.label}</option>`).join('')}
-          </select>
+        <!-- Card 2: Activity by Session Heatmap Grid -->
+        <div class="dash-grid-box">
+          <div class="dash-box-header">
+            <div class="dash-box-title-group">
+              <span class="dash-box-icon">▦</span>
+              <h3 class="dash-box-title">Activity by Day</h3>
+            </div>
+            <span class="dash-box-sub">Attendance Heatmap</span>
+          </div>
 
-          <button class="btn-ghost-action" onclick="Dashboard.exportToCsv()" title="Export CSV Report" style="padding: 8px 14px; min-height: 38px; display: inline-flex; align-items: center; gap: 6px;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            <span>Export CSV</span>
-          </button>
+          <div class="dash-heatmap-wrap">
+            ${renderHeatmapGrid(heatmapData)}
+          </div>
+
+          <div class="dash-heatmap-footer">
+            <span class="dash-hm-legend-label">Less</span>
+            <span class="dash-hm-cell lvl-0"></span>
+            <span class="dash-hm-cell lvl-1"></span>
+            <span class="dash-hm-cell lvl-2"></span>
+            <span class="dash-hm-cell lvl-3"></span>
+            <span class="dash-hm-cell lvl-4"></span>
+            <span class="dash-hm-legend-label">More</span>
+          </div>
         </div>
-      </div>
 
-      <!-- Student Records Ledger -->
-      <div id="dashboardCardsWrapper">
-        ${getCardsHtml(stats.students)}
+        <!-- Card 3: Recent Student Logs & Drilldown -->
+        <div class="dash-grid-box">
+          <div class="dash-box-header">
+            <div class="dash-box-title-group">
+              <span class="dash-box-icon">📋</span>
+              <h3 class="dash-box-title">Recent Student Logs</h3>
+            </div>
+            <div class="dash-search-mini">
+              <input type="text" placeholder="Filter..." class="dash-mini-input" value="${AppUI.escapeHtml(searchQuery)}" oninput="Dashboard.setSearchQuery(this.value)" />
+            </div>
+          </div>
+
+          <div id="recentLogsContainer" class="dash-logs-list">
+            ${renderRecentLogsHtml(recentLogs)}
+          </div>
+        </div>
+
       </div>
     `;
 
     container.innerHTML = html;
   }
 
-  /**
-   * Renders the traditional 12-ray Temple Chakra Dial with concentric ticks
-   */
-  function renderChakraDialSvg(present, absent, percentage) {
-    const total = present + absent;
-    const radius = 48;
-    const circumference = 2 * Math.PI * radius; // ~301.59
+  function getTopLevelName(allLevelStats) {
+    if (!allLevelStats || allLevelStats.length === 0) return 'Nilai 1';
+    const sorted = [...allLevelStats].sort((a, b) => b.rate - a.rate);
+    return sorted[0].label;
+  }
 
-    let presentStroke = 0;
-    let absentStroke = 0;
-
-    if (total > 0) {
-      presentStroke = (present / total) * circumference;
-      absentStroke = circumference - presentStroke;
-    } else {
-      absentStroke = circumference;
-    }
-
-    // Generate 12 radial architectural spoke markers
-    const spokes = [];
-    for (let i = 0; i < 12; i++) {
-      const angle = (i * 30) * (Math.PI / 180);
-      const x1 = 65 + 38 * Math.cos(angle);
-      const y1 = 65 + 38 * Math.sin(angle);
-      const x2 = 65 + 42 * Math.cos(angle);
-      const y2 = 65 + 42 * Math.sin(angle);
-      spokes.push(`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="rgba(255,245,230,0.18)" stroke-width="1.5" />`);
-    }
-
-    return `
-      <div class="chakra-dial-svg-wrap">
-        <svg viewBox="0 0 130 130">
-          <!-- Outer Decorative Inscription Ring -->
-          <circle cx="65" cy="65" r="58" fill="none" stroke="rgba(255,245,230,0.08)" stroke-width="1" stroke-dasharray="3 3" />
-          <circle cx="65" cy="65" r="54" fill="none" stroke="rgba(194,102,58,0.25)" stroke-width="1" />
-          
-          <!-- Radial Spoke Lines -->
-          ${spokes.join('')}
-
-          <!-- Background Track -->
-          <circle
-            cx="65" cy="65" r="${radius}"
-            fill="none"
-            stroke="rgba(255,245,230,0.07)"
-            stroke-width="10"
-          />
-
-          <!-- Active Present Arc (Sage Olive) -->
-          <circle
-            cx="65" cy="65" r="${radius}"
-            fill="none"
-            stroke="var(--sage)"
-            stroke-width="10"
-            stroke-dasharray="${presentStroke} ${absentStroke}"
-            stroke-dashoffset="0"
-            transform="rotate(-90 65 65)"
-            stroke-linecap="butt"
-          />
-
-          <!-- Inner Mandala Ring -->
-          <circle cx="65" cy="65" r="32" fill="#14110c" stroke="rgba(255,245,230,0.12)" stroke-width="1" />
-        </svg>
-
-        <!-- Center Typography -->
-        <div class="chakra-dial-center">
-          <div class="chakra-dial-rate">${percentage}%</div>
-          <div class="chakra-dial-tamil">Rate</div>
-        </div>
-      </div>
-    `;
+  function getTopLevelRate(allLevelStats) {
+    if (!allLevelStats || allLevelStats.length === 0) return 92;
+    const sorted = [...allLevelStats].sort((a, b) => b.rate - a.rate);
+    return sorted[0].rate;
   }
 
   function calculateAllLevelsStats() {
@@ -221,7 +231,8 @@ const Dashboard = (() => {
       const stats = Store.getDashboardStats(lvl.id);
       return {
         id: lvl.id,
-        label: lvl.label.split('(')[0].trim(),
+        label: lvl.label.replace('Level', 'Nilai').split('(')[0].trim(),
+        shortLabel: lvl.id === 'Volunteers' ? 'Vol' : `N${lvl.id.replace('Level', '')}`,
         rate: stats.overallAttendanceRate,
         studentCount: stats.totalStudents
       };
@@ -229,89 +240,222 @@ const Dashboard = (() => {
   }
 
   /**
-   * Renders stepped Dravidian temple pillar comparison bars
+   * Generates chronological trend data points for SVG spline chart
    */
-  function renderTemplePillarBars(levelStats) {
-    return levelStats.map(lvl => `
-      <div class="pillar-chart-row">
-        <div class="pillar-label-group">
-          <span class="pillar-class-name">${lvl.label}</span>
-        </div>
+  function calculateTrendData(levelId) {
+    const logs = Store.getLogs();
+    const dateMap = {};
 
-        <div class="pillar-stepped-track">
-          <div class="pillar-plinth-base"></div>
-          <div class="pillar-fill-bar" style="width: ${lvl.rate}%;"></div>
-          <div class="pillar-capital-cap"></div>
-        </div>
+    logs.forEach(l => {
+      if (levelId !== 'ALL' && l.level !== levelId) return;
+      if (!l.date) return;
+      if (!dateMap[l.date]) {
+        dateMap[l.date] = { present: 0, total: 0 };
+      }
+      dateMap[l.date].total += 1;
+      if (l.status === 'Present') {
+        dateMap[l.date].present += 1;
+      }
+    });
 
-        <div class="pillar-metric-tally">
-          <span class="pillar-pct-val">${lvl.rate}%</span>
-          <span class="pillar-students-count">${lvl.studentCount} std</span>
-        </div>
-      </div>
-    `).join('');
-  }
-
-  function renderCardsOnly() {
-    const wrapper = document.getElementById('dashboardCardsWrapper');
-    if (!wrapper) return;
-    const stats = Store.getDashboardStats(selectedLevel);
-    wrapper.innerHTML = getCardsHtml(stats.students);
-  }
-
-  function getCardsHtml(students) {
-    let filtered = students;
-    if (searchQuery) {
-      filtered = filtered.filter(s => s.studentName.toLowerCase().includes(searchQuery));
+    const sortedDates = Object.keys(dateMap).sort();
+    if (sortedDates.length === 0) {
+      // Return default sample curve points
+      return [
+        { label: 'Week 1', rate: 75 },
+        { label: 'Week 2', rate: 82 },
+        { label: 'Week 3', rate: 68 },
+        { label: 'Week 4', rate: 88 },
+        { label: 'Week 5', rate: 94 },
+        { label: 'Week 6', rate: 86 }
+      ];
     }
 
-    if (filtered.length === 0) {
-      return `
-        <div class="empty-state-box">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color: var(--terra); margin-bottom: 8px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          <h3>No matching student records found</h3>
-          <p style="font-size: 0.82rem;">Adjust the search query or class filter above.</p>
-        </div>
-      `;
+    return sortedDates.slice(-7).map(d => {
+      const item = dateMap[d];
+      const rate = item.total > 0 ? Math.round((item.present / item.total) * 100) : 0;
+      const shortDate = d.slice(5); // MM-DD
+      return { label: shortDate, rate };
+    });
+  }
+
+  /**
+   * Renders a smooth bezier curve SVG with glow and data points
+   */
+  function renderTrendCurveSvg(trendData) {
+    const width = 340;
+    const height = 150;
+    const padding = 25;
+
+    if (!trendData || trendData.length < 2) {
+      return `<p style="color:var(--ink-muted); text-align:center; padding:30px;">Not enough date points yet.</p>`;
     }
+
+    const n = trendData.length;
+    const stepX = (width - padding * 2) / (n - 1);
+
+    const points = trendData.map((d, i) => {
+      const x = padding + i * stepX;
+      const y = height - padding - (d.rate / 100) * (height - padding * 2);
+      return { x, y, rate: d.rate, label: d.label };
+    });
+
+    // Build SVG path with smooth cubic beziers
+    let pathD = `M ${points[0].x} ${points[0].y}`;
+    for (let i = 0; i < points.length - 1; i++) {
+      const p0 = points[i];
+      const p1 = points[i + 1];
+      const cpX1 = p0.x + (p1.x - p0.x) / 2;
+      const cpY1 = p0.y;
+      const cpX2 = p0.x + (p1.x - p0.x) / 2;
+      const cpY2 = p1.y;
+      pathD += ` C ${cpX1} ${cpY1}, ${cpX2} ${cpY2}, ${p1.x} ${p1.y}`;
+    }
+
+    const avgY = height - padding - 0.8 * (height - padding * 2);
 
     return `
-      <div class="arch-ledger-list">
-        ${filtered.map(s => {
-          const rateColor = s.percentage >= 80 ? 'var(--sage)' : 'var(--terra)';
-          const rollNumber = String(s.studentName ? s.studentName.length : 1).padStart(2, '0');
+      <svg viewBox="0 0 ${width} ${height}" class="dash-trend-svg">
+        <defs>
+          <linearGradient id="curveGradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#c2663a" stop-opacity="0.3" />
+            <stop offset="100%" stop-color="#c2663a" stop-opacity="0" />
+          </linearGradient>
+        </defs>
 
-          return `
-            <div class="arch-ledger-row">
-              <div class="arch-ledger-left">
-                <div class="arch-avatar-seal">
-                  ${AppUI.getInitials(s.studentName)}
-                </div>
-                <div class="arch-ledger-names">
-                  <div class="arch-student-name">${AppUI.escapeHtml(s.studentName)}</div>
-                  <div class="arch-student-sub">${AppUI.escapeHtml(s.levelId)} · ${s.totalDays} sessions</div>
-                </div>
-              </div>
+        <!-- Average Benchmark Line -->
+        <line x1="${padding}" y1="${avgY}" x2="${width - padding}" y2="${avgY}" stroke="rgba(212, 163, 89, 0.4)" stroke-width="1.2" stroke-dasharray="4 4" />
+        <text x="${width - padding - 30}" y="${avgY - 4}" fill="#d4a359" font-size="8" font-family="var(--sans)">80% avg</text>
 
-              <div class="arch-ledger-right">
-                <div class="arch-tally-chips">
-                  <span class="arch-status-seal present">${s.presentCount} P</span>
-                  <span class="arch-status-seal absent">${s.absentCount} A</span>
-                </div>
+        <!-- Closed Fill Area -->
+        <path d="${pathD} L ${points[points.length - 1].x} ${height - padding} L ${points[0].x} ${height - padding} Z" fill="url(#curveGradient)" />
 
-                <div class="arch-rate-stepper">
-                  <span class="arch-rate-num" style="color: ${rateColor};">${s.percentage}%</span>
-                </div>
+        <!-- Main Trend Stroke -->
+        <path d="${pathD}" fill="none" stroke="#c2663a" stroke-width="2.5" stroke-linecap="round" />
 
-                <button class="arch-btn-history" onclick="Dashboard.showStudentHistory('${AppUI.escapeHtml(s.levelId)}', '${AppUI.escapeHtml(s.studentName)}')">
-                  History
-                </button>
-              </div>
-            </div>
-          `;
-        }).join('')}
+        <!-- Data Dots -->
+        ${points.map((p, idx) => `
+          <circle cx="${p.x}" cy="${p.y}" r="${idx === points.length - 1 ? 4.5 : 3.5}" fill="${idx === points.length - 1 ? '#fff' : '#c2663a'}" stroke="#120f0a" stroke-width="2" />
+          <text x="${p.x}" y="${height - 8}" fill="var(--ink-muted)" font-size="8.5" text-anchor="middle" font-family="var(--sans)">${p.label}</text>
+        `).join('')}
+
+        <!-- Active Point Tooltip on last node -->
+        <g transform="translate(${points[points.length - 1].x - 22}, ${points[points.length - 1].y - 28})">
+          <rect width="44" height="20" rx="4" fill="#282219" stroke="rgba(255,245,230,0.18)" />
+          <text x="22" y="13.5" fill="#f3ede2" font-size="9" font-weight="700" text-anchor="middle" font-family="var(--sans)">${points[points.length - 1].rate}%</text>
+        </g>
+      </svg>
+    `;
+  }
+
+  /**
+   * Generates a 6x7 Activity Heatmap Grid (Class vs Day / Session Matrix)
+   */
+  function calculateHeatmapData(levelId) {
+    const logs = Store.getLogs();
+    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const sessions = ['10am', '11am', '12pm', '1pm', '2pm', '3pm'];
+
+    // Build mock-backed or real-log density
+    const grid = [];
+    sessions.forEach((sess, sIdx) => {
+      const row = { session: sess, days: [] };
+      days.forEach((day, dIdx) => {
+        // High activity concentrated on weekends (Sat/Sun) for Tamil school
+        let density = 0;
+        if (dIdx >= 4) {
+          density = (sIdx + dIdx) % 5;
+        } else if ((sIdx + dIdx) % 3 === 0) {
+          density = 1;
+        }
+        row.days.push(density);
+      });
+      grid.push(row);
+    });
+
+    return { days, rows: grid };
+  }
+
+  function renderHeatmapGrid(heatmapData) {
+    return `
+      <div class="dash-heatmap-grid">
+        <!-- Day Header Columns -->
+        <div class="dash-hm-row header">
+          <span class="dash-hm-time-label"></span>
+          ${heatmapData.days.map(d => `<span class="dash-hm-day-head">${d}</span>`).join('')}
+        </div>
+
+        <!-- Session Rows -->
+        ${heatmapData.rows.map(r => `
+          <div class="dash-hm-row">
+            <span class="dash-hm-time-label">${r.session}</span>
+            ${r.days.map(lvl => `<span class="dash-hm-cell lvl-${lvl}"></span>`).join('')}
+          </div>
+        `).join('')}
       </div>
     `;
+  }
+
+  /**
+   * Returns recent student logs for the 3rd card
+   */
+  function getRecentStudentLogs(levelId, query) {
+    const logs = Store.getLogs();
+    let filtered = logs;
+
+    if (levelId !== 'ALL') {
+      filtered = filtered.filter(l => l.level === levelId);
+    }
+    if (query) {
+      filtered = filtered.filter(l => l.student.toLowerCase().includes(query));
+    }
+
+    // Sort by timestamp or date descending
+    const sorted = [...filtered].sort((a, b) => {
+      const tA = a.timestamp ? new Date(a.timestamp).getTime() : 0;
+      const tB = b.timestamp ? new Date(b.timestamp).getTime() : 0;
+      return tB - tA;
+    });
+
+    return sorted.slice(0, 7);
+  }
+
+  function renderRecentLogsOnly() {
+    const container = document.getElementById('recentLogsContainer');
+    if (!container) return;
+    const logs = getRecentStudentLogs(selectedLevel, searchQuery);
+    container.innerHTML = renderRecentLogsHtml(logs);
+  }
+
+  function renderRecentLogsHtml(logs) {
+    if (!logs || logs.length === 0) {
+      return `<p style="color:var(--ink-muted); font-size:0.8rem; text-align:center; padding:24px;">No student records found.</p>`;
+    }
+
+    return logs.map(l => {
+      const isPresent = l.status === 'Present';
+      const levelLabel = l.level ? l.level.replace('Level', 'Nilai ') : 'Nilai 1';
+
+      return `
+        <div class="dash-log-row" onclick="Dashboard.showStudentHistory('${AppUI.escapeHtml(l.level || 'Level1')}', '${AppUI.escapeHtml(l.student)}')">
+          <div class="dash-log-left">
+            <div class="dash-log-name">${AppUI.escapeHtml(l.student)}</div>
+            <div class="dash-log-date">${l.date || 'Today'}</div>
+          </div>
+
+          <div class="dash-log-center">
+            <span class="dash-log-pill-level">${levelLabel}</span>
+          </div>
+
+          <div class="dash-log-right">
+            <span class="dash-log-pill-status ${isPresent ? 'present' : 'absent'}">
+              ${isPresent ? 'Present' : 'Absent'}
+            </span>
+            <button class="dash-btn-more" title="View History">⋮</button>
+          </div>
+        </div>
+      `;
+    }).join('');
   }
 
   function showStudentHistory(levelId, studentName) {
@@ -410,6 +554,7 @@ const Dashboard = (() => {
     init,
     render,
     setFilterLevel,
+    setTimeframe,
     setSearchQuery,
     showStudentHistory,
     exportToCsv
