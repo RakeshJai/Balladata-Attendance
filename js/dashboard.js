@@ -1,6 +1,9 @@
 /**
- * Baladatta Attendance - Attendance Analytics & Dashboard Module
- * Neoclassical Indian Traditional Architecture & Analytics
+ * Baladatta Attendance – Neoclassical Indian Traditional Dashboard
+ * Creative Architectural Visualizations:
+ * 1. Sudarshana / Temple Mandapam Dial (Chakra Attendance Wheel SVG)
+ * 2. Stepped Temple Pillar Comparative Class Charts (Adhishthana Pillars)
+ * 3. Inscription-style Metric Plaques & Student History Ledgers
  */
 
 const Dashboard = (() => {
@@ -29,107 +32,110 @@ const Dashboard = (() => {
     const allLevelStats = calculateAllLevelsStats();
 
     let html = `
-      <!-- Neoclassical Stat Cards -->
-      <div class="dashboard-stats-grid">
-        <div class="dashboard-stat-card">
-          <div class="stat-title-row">
-            <span>Overall Attendance</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--gold-primary);"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      <!-- Neoclassical Inscription Metric Plaques -->
+      <div class="arch-metrics-grid">
+        <div class="arch-metric-card">
+          <div class="arch-metric-header">
+            <span class="arch-metric-tag">வருகை விகிதம்</span>
+            <span class="arch-metric-title">Overall Rate</span>
           </div>
-          <div class="stat-number rate">${stats.overallAttendanceRate}%</div>
-          <div class="stat-caption">${stats.totalPresent} Present / ${stats.totalPresent + stats.totalAbsent} Total</div>
+          <div class="arch-metric-val rate">${stats.overallAttendanceRate}%</div>
+          <div class="arch-metric-foot">${stats.totalPresent} Present · ${stats.totalAbsent} Absent</div>
         </div>
 
-        <div class="dashboard-stat-card">
-          <div class="stat-title-row">
-            <span>Enrolled Students</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--gold-primary);"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        <div class="arch-metric-card">
+          <div class="arch-metric-header">
+            <span class="arch-metric-tag">மாணவர் எண்ணிக்கை</span>
+            <span class="arch-metric-title">Enrolled</span>
           </div>
-          <div class="stat-number">${stats.totalStudents}</div>
-          <div class="stat-caption">${selectedLevel === 'ALL' ? 'Across all Nilais' : selectedLevel}</div>
+          <div class="arch-metric-val">${stats.totalStudents}</div>
+          <div class="arch-metric-foot">${selectedLevel === 'ALL' ? 'All 7 Classes' : selectedLevel}</div>
         </div>
 
-        <div class="dashboard-stat-card">
-          <div class="stat-title-row">
-            <span>Class Sessions</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--gold-primary);"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <div class="arch-metric-card">
+          <div class="arch-metric-header">
+            <span class="arch-metric-tag">வகுப்பு அமர்வுகள்</span>
+            <span class="arch-metric-title">Sessions Logged</span>
           </div>
-          <div class="stat-number">${stats.totalSessions}</div>
-          <div class="stat-caption">Recorded dates</div>
+          <div class="arch-metric-val">${stats.totalSessions}</div>
+          <div class="arch-metric-foot">Recorded school dates</div>
         </div>
 
-        <div class="dashboard-stat-card">
-          <div class="stat-title-row">
-            <span>Present / Absent</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--gold-primary);"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+        <div class="arch-metric-card">
+          <div class="arch-metric-header">
+            <span class="arch-metric-tag">பதிவுகள்</span>
+            <span class="arch-metric-title">Total Records</span>
           </div>
-          <div class="stat-number" style="font-size:1.6rem; display:flex; gap:8px; align-items:baseline;">
-            <span style="color:var(--emerald-text);">${stats.totalPresent} <small style="font-size:0.75rem;">P</small></span>
-            <span style="color:var(--text-muted); font-size:1rem;">/</span>
-            <span style="color:var(--text-secondary);">${stats.totalAbsent} <small style="font-size:0.75rem;">A</small></span>
+          <div class="arch-metric-val" style="font-size: 1.5rem; display: flex; gap: 8px; align-items: baseline;">
+            <span style="color: var(--sage);">${stats.totalPresent}<small style="font-size: 0.7rem; margin-left: 2px;">P</small></span>
+            <span style="color: var(--ink-muted); font-size: 0.9rem;">/</span>
+            <span style="color: var(--ink-secondary);">${stats.totalAbsent}<small style="font-size: 0.7rem; margin-left: 2px;">A</small></span>
           </div>
-          <div class="stat-caption">Deduplicated records</div>
+          <div class="arch-metric-foot">Deduplicated ledger</div>
         </div>
       </div>
 
-      <!-- Neoclassical Charts Grid -->
-      <div class="dashboard-charts-grid">
+      <!-- Creative Neoclassical Visualizations Grid -->
+      <div class="arch-charts-grid">
         
-        <!-- 1. Donut Pie Chart: Attendance Split -->
-        <div class="chart-card">
-          <div class="chart-title">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--gold-primary);"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
-            <span>Attendance Distribution</span>
+        <!-- 1. Sudarshana / Temple Mandapam Dial (Chakra Attendance Wheel) -->
+        <div class="arch-chart-box">
+          <div class="arch-chart-heading">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--terra);"><circle cx="12" cy="12" r="10"/><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07l14.14-14.14"/></svg>
+            <span>Sudarshana Attendance Dial</span>
           </div>
-          <div class="chart-body-donut">
-            ${renderDonutChart(stats.totalPresent, stats.totalAbsent, stats.overallAttendanceRate)}
-            <div class="donut-legend">
-              <div class="legend-item">
-                <span class="legend-dot present"></span>
-                <span>Present: <strong>${stats.totalPresent}</strong> (${stats.overallAttendanceRate}%)</span>
+          <div class="chakra-dial-wrapper">
+            ${renderChakraDialSvg(stats.totalPresent, stats.totalAbsent, stats.overallAttendanceRate)}
+            <div class="chakra-legend">
+              <div class="chakra-legend-row">
+                <span class="chakra-dot sage"></span>
+                <span>Present (வந்தார்): <strong>${stats.totalPresent}</strong> (${stats.overallAttendanceRate}%)</span>
               </div>
-              <div class="legend-item">
-                <span class="legend-dot absent"></span>
-                <span>Absent: <strong>${stats.totalAbsent}</strong> (${100 - stats.overallAttendanceRate}%)</span>
+              <div class="chakra-legend-row">
+                <span class="chakra-dot stone"></span>
+                <span>Absent (வரவில்லை): <strong>${stats.totalAbsent}</strong> (${100 - stats.overallAttendanceRate}%)</span>
+              </div>
+              <div class="chakra-legend-note">
+                Wheel represents total recorded student sessions across all dates.
               </div>
             </div>
           </div>
         </div>
 
-        <!-- 2. Bar Chart: Level-by-Level Comparison -->
-        <div class="chart-card">
-          <div class="chart-title">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--gold-primary);"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-            <span>Class Performance Comparison</span>
+        <!-- 2. Stepped Dravidian Temple Pillar Performance Chart -->
+        <div class="arch-chart-box">
+          <div class="arch-chart-heading">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--terra);"><rect x="4" y="2" width="16" height="4" rx="1"/><rect x="6" y="6" width="12" height="14"/><rect x="3" y="20" width="18" height="2"/></svg>
+            <span>Class Pillar Performance</span>
           </div>
-          <div class="chart-body-bars">
-            ${renderLevelBars(allLevelStats)}
+          <div class="temple-pillars-container">
+            ${renderTemplePillarBars(allLevelStats)}
           </div>
         </div>
 
       </div>
 
-      <!-- Controls & Filter Toolbar -->
-      <div class="dashboard-toolbar">
-        <div class="search-field-wrap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" id="dashboardSearchInput" class="search-input" placeholder="Search student name..." value="${AppUI.escapeHtml(searchQuery)}" oninput="Dashboard.setSearchQuery(this.value)" />
+      <!-- Search & Filter Ledger Bar -->
+      <div class="arch-toolbar">
+        <div class="arch-search-field">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="dashboardSearchInput" class="arch-input" placeholder="Search student name..." value="${AppUI.escapeHtml(searchQuery)}" oninput="Dashboard.setSearchQuery(this.value)" />
         </div>
 
-        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-          <select class="select-filter" onchange="Dashboard.setFilterLevel(this.value)" aria-label="Filter by Nilai">
-            <option value="ALL" ${selectedLevel === 'ALL' ? 'selected' : ''}>All Nilais (அனைத்தும்)</option>
+        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+          <select class="arch-select" onchange="Dashboard.setFilterLevel(this.value)" aria-label="Filter by Nilai">
+            <option value="ALL" ${selectedLevel === 'ALL' ? 'selected' : ''}>All Classes (அனைத்து வகுப்புகள்)</option>
             ${Store.LEVELS.map(l => `<option value="${l.id}" ${selectedLevel === l.id ? 'selected' : ''}>${l.label}</option>`).join('')}
           </select>
 
-          <button class="btn-ghost-action" onclick="Dashboard.exportToCsv()" title="Download Attendance CSV" style="padding: 8px 16px; display:inline-flex; align-items:center; gap:6px;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <button class="btn-ghost-action" onclick="Dashboard.exportToCsv()" title="Export CSV Report" style="padding: 8px 14px; min-height: 38px; display: inline-flex; align-items: center; gap: 6px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             <span>Export CSV</span>
           </button>
         </div>
       </div>
 
-      <!-- Student Cards List -->
+      <!-- Student Records Ledger -->
       <div id="dashboardCardsWrapper">
         ${getCardsHtml(stats.students)}
       </div>
@@ -138,10 +144,13 @@ const Dashboard = (() => {
     container.innerHTML = html;
   }
 
-  function renderDonutChart(present, absent, percentage) {
+  /**
+   * Renders the traditional 12-ray Temple Chakra Dial with concentric ticks
+   */
+  function renderChakraDialSvg(present, absent, percentage) {
     const total = present + absent;
-    const radius = 45;
-    const circumference = 2 * Math.PI * radius; // ~282.74
+    const radius = 48;
+    const circumference = 2 * Math.PI * radius; // ~301.59
 
     let presentStroke = 0;
     let absentStroke = 0;
@@ -153,29 +162,55 @@ const Dashboard = (() => {
       absentStroke = circumference;
     }
 
+    // Generate 12 radial architectural spoke markers
+    const spokes = [];
+    for (let i = 0; i < 12; i++) {
+      const angle = (i * 30) * (Math.PI / 180);
+      const x1 = 65 + 38 * Math.cos(angle);
+      const y1 = 65 + 38 * Math.sin(angle);
+      const x2 = 65 + 42 * Math.cos(angle);
+      const y2 = 65 + 42 * Math.sin(angle);
+      spokes.push(`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="rgba(255,245,230,0.18)" stroke-width="1.5" />`);
+    }
+
     return `
-      <div class="donut-svg-wrap">
-        <svg viewBox="0 0 120 120">
+      <div class="chakra-dial-svg-wrap">
+        <svg viewBox="0 0 130 130">
+          <!-- Outer Decorative Inscription Ring -->
+          <circle cx="65" cy="65" r="58" fill="none" stroke="rgba(255,245,230,0.08)" stroke-width="1" stroke-dasharray="3 3" />
+          <circle cx="65" cy="65" r="54" fill="none" stroke="rgba(194,102,58,0.25)" stroke-width="1" />
+          
+          <!-- Radial Spoke Lines -->
+          ${spokes.join('')}
+
+          <!-- Background Track -->
           <circle
-            cx="60" cy="60" r="${radius}"
-            fill="transparent"
-            stroke="rgba(212, 163, 89, 0.15)"
-            stroke-width="12"
+            cx="65" cy="65" r="${radius}"
+            fill="none"
+            stroke="rgba(255,245,230,0.07)"
+            stroke-width="10"
           />
+
+          <!-- Active Present Arc (Sage Olive) -->
           <circle
-            cx="60" cy="60" r="${radius}"
-            fill="transparent"
-            stroke="var(--emerald)"
-            stroke-width="12"
+            cx="65" cy="65" r="${radius}"
+            fill="none"
+            stroke="var(--sage)"
+            stroke-width="10"
             stroke-dasharray="${presentStroke} ${absentStroke}"
             stroke-dashoffset="0"
-            stroke-linecap="round"
-            style="transition: stroke-dasharray 0.5s ease; filter: drop-shadow(0 0 6px var(--emerald));"
+            transform="rotate(-90 65 65)"
+            stroke-linecap="butt"
           />
+
+          <!-- Inner Mandala Ring -->
+          <circle cx="65" cy="65" r="32" fill="#14110c" stroke="rgba(255,245,230,0.12)" stroke-width="1" />
         </svg>
-        <div class="donut-center-text">
-          <div class="donut-center-pct">${percentage}%</div>
-          <div class="donut-center-sub">Rate</div>
+
+        <!-- Center Typography -->
+        <div class="chakra-dial-center">
+          <div class="chakra-dial-rate">${percentage}%</div>
+          <div class="chakra-dial-tamil">வருகை</div>
         </div>
       </div>
     `;
@@ -187,19 +222,34 @@ const Dashboard = (() => {
       return {
         id: lvl.id,
         label: lvl.label.split('(')[0].trim(),
-        rate: stats.overallAttendanceRate
+        tamilLabel: lvl.label.includes('(') ? lvl.label.split('(')[1].replace(')', '') : '',
+        rate: stats.overallAttendanceRate,
+        studentCount: stats.totalStudents
       };
     });
   }
 
-  function renderLevelBars(levelStats) {
+  /**
+   * Renders stepped Dravidian temple pillar comparison bars
+   */
+  function renderTemplePillarBars(levelStats) {
     return levelStats.map(lvl => `
-      <div class="level-bar-row">
-        <span class="level-bar-name" title="${lvl.label}">${lvl.label}</span>
-        <div class="level-bar-track">
-          <div class="level-bar-fill" style="width: ${lvl.rate}%;"></div>
+      <div class="pillar-chart-row">
+        <div class="pillar-label-group">
+          <span class="pillar-class-name">${lvl.label}</span>
+          ${lvl.tamilLabel ? `<span class="pillar-tamil-sub">${lvl.tamilLabel}</span>` : ''}
         </div>
-        <span class="level-bar-pct">${lvl.rate}%</span>
+
+        <div class="pillar-stepped-track">
+          <div class="pillar-plinth-base"></div>
+          <div class="pillar-fill-bar" style="width: ${lvl.rate}%;"></div>
+          <div class="pillar-capital-cap"></div>
+        </div>
+
+        <div class="pillar-metric-tally">
+          <span class="pillar-pct-val">${lvl.rate}%</span>
+          <span class="pillar-students-count">${lvl.studentCount} std</span>
+        </div>
       </div>
     `).join('');
   }
@@ -220,45 +270,42 @@ const Dashboard = (() => {
     if (filtered.length === 0) {
       return `
         <div class="empty-state-box">
-          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--gold-primary); margin-bottom:8px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          <h3>No matching students</h3>
-          <p style="font-size:0.85rem;">Try adjusting your search or Nilai filter.</p>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color: var(--terra); margin-bottom: 8px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <h3>No matching student records found</h3>
+          <p style="font-size: 0.82rem;">Adjust the search query or class filter above.</p>
         </div>
       `;
     }
 
     return `
-      <div>
+      <div class="arch-ledger-list">
         ${filtered.map(s => {
-          const rateTier = s.percentage >= 80 ? 'high' : s.percentage >= 60 ? 'medium' : 'low';
+          const rateColor = s.percentage >= 80 ? 'var(--sage)' : 'var(--terra)';
           const initials = AppUI.getInitials(s.studentName);
 
           return `
-            <div class="dash-card">
-              <div class="dash-card-left">
-                <div class="student-avatar" style="width:38px; height:38px; font-size:0.82rem;">
+            <div class="arch-ledger-row">
+              <div class="arch-ledger-left">
+                <div class="arch-avatar-seal">
                   ${initials}
                 </div>
-                <div>
-                  <div style="font-size:0.96rem; font-weight:700; color:var(--text-primary);">${AppUI.escapeHtml(s.studentName)}</div>
-                  <span class="dash-badge level">${AppUI.escapeHtml(s.levelId)}</span>
+                <div class="arch-ledger-names">
+                  <div class="arch-student-name">${AppUI.escapeHtml(s.studentName)}</div>
+                  <div class="arch-student-sub">${AppUI.escapeHtml(s.levelId)} · ${s.totalDays} sessions</div>
                 </div>
               </div>
 
-              <div class="dash-metrics">
-                <span class="dash-badge present">${s.presentCount} Present</span>
-                <span class="dash-badge absent">${s.absentCount} Absent</span>
-
-                <div style="display:flex; align-items:center; gap:8px;">
-                  <div class="dash-progress-track">
-                    <div class="dash-progress-fill ${rateTier}" style="width: ${s.percentage}%;"></div>
-                  </div>
-                  <span style="font-size:0.88rem; font-weight:800; color:var(--gold-light); min-width:38px; text-align:right;">
-                    ${s.percentage}%
-                  </span>
+              <div class="arch-ledger-right">
+                <div class="arch-tally-chips">
+                  <span class="arch-status-seal present">${s.presentCount} P</span>
+                  <span class="arch-status-seal absent">${s.absentCount} A</span>
                 </div>
 
-                <button class="btn-ghost-action" style="padding:6px 14px; font-size:0.78rem;" onclick="Dashboard.showStudentHistory('${AppUI.escapeHtml(s.levelId)}', '${AppUI.escapeHtml(s.studentName)}')">
+                <div class="arch-rate-stepper">
+                  <span class="arch-rate-num" style="color: ${rateColor};">${s.percentage}%</span>
+                </div>
+
+                <button class="arch-btn-history" onclick="Dashboard.showStudentHistory('${AppUI.escapeHtml(s.levelId)}', '${AppUI.escapeHtml(s.studentName)}')">
                   History
                 </button>
               </div>
@@ -275,8 +322,8 @@ const Dashboard = (() => {
 
     if (!student || !student.history || student.history.length === 0) {
       AppUI.showModal({
-        title: `${studentName} - History`,
-        bodyHtml: `<p style="color:var(--text-secondary); text-align:center; padding:20px;">No sessions logged yet for this student.</p>`,
+        title: `${studentName} – Attendance Ledger`,
+        bodyHtml: `<p style="color: var(--ink-secondary); text-align: center; padding: 24px;">No attendance sessions logged yet for this student.</p>`,
         confirmText: 'Close',
         cancelText: null
       });
@@ -286,14 +333,14 @@ const Dashboard = (() => {
     const historyRows = student.history.map(h => {
       const isPresent = h.status === 'Present';
       return `
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 14px; border-bottom:1px solid var(--gold-border-subtle);">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 6px; border-bottom: 1px solid var(--rule);">
           <div>
-            <div style="font-weight:700; color:var(--text-primary); font-size:0.92rem;">${h.date}</div>
-            <div style="font-size:0.75rem; color:var(--text-muted);">Teacher: ${AppUI.escapeHtml(h.teacher || 'Teacher')}</div>
+            <div style="font-weight: 600; color: var(--ink); font-size: 0.88rem;">${h.date}</div>
+            <div style="font-size: 0.72rem; color: var(--ink-muted);">Teacher: ${AppUI.escapeHtml(h.teacher || 'Teacher')}</div>
           </div>
           <div>
-            <span class="dash-badge ${isPresent ? 'present' : 'absent'}">
-              ${isPresent ? '✓ Present' : '✗ Absent'}
+            <span class="arch-status-seal ${isPresent ? 'present' : 'absent'}">
+              ${isPresent ? '✓ வந்தார் (Present)' : '○ வரவில்லை (Absent)'}
             </span>
           </div>
         </div>
@@ -301,26 +348,26 @@ const Dashboard = (() => {
     }).join('');
 
     const bodyHtml = `
-      <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(212, 163, 89, 0.08); padding:14px 18px; border-radius:var(--radius-md); margin-bottom:16px; border:1px solid var(--gold-border-subtle);">
+      <div style="background: var(--surface); padding: 14px 16px; border-radius: 8px; border: 1px solid var(--rule-strong); margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
         <div>
-          <span style="font-size:0.8rem; color:var(--text-muted);">Nilai:</span>
-          <strong style="color:var(--gold-light); font-size:0.92rem; margin-left:4px;">${AppUI.escapeHtml(levelId)}</strong>
+          <span style="font-size: 0.74rem; color: var(--ink-muted); text-transform: uppercase;">Class:</span>
+          <strong style="color: var(--ink); font-size: 0.88rem; margin-left: 4px;">${AppUI.escapeHtml(levelId)}</strong>
         </div>
         <div>
-          <span style="font-size:0.8rem; color:var(--text-muted);">Attendance Rate:</span>
-          <strong style="color:${student.percentage >= 80 ? 'var(--emerald-text)' : 'var(--gold-light)'}; font-size:1.15rem; margin-left:4px;">
+          <span style="font-size: 0.74rem; color: var(--ink-muted); text-transform: uppercase;">Rate:</span>
+          <strong style="color: ${student.percentage >= 80 ? 'var(--sage)' : 'var(--terra)'}; font-size: 1.1rem; margin-left: 4px; font-family: var(--serif);">
             ${student.percentage}%
           </strong>
-          <span style="font-size:0.78rem; color:var(--text-muted);">(${student.presentCount}/${student.totalDays})</span>
+          <span style="font-size: 0.74rem; color: var(--ink-muted);">(${student.presentCount}/${student.totalDays})</span>
         </div>
       </div>
-      <div style="max-height:300px; overflow-y:auto; border:1px solid var(--gold-border-subtle); border-radius:var(--radius-md);">
+      <div style="max-height: 280px; overflow-y: auto; padding-right: 4px;">
         ${historyRows}
       </div>
     `;
 
     AppUI.showModal({
-      title: `${studentName} - History`,
+      title: `${studentName} – Attendance History`,
       bodyHtml: bodyHtml,
       confirmText: 'Close',
       cancelText: null
@@ -330,7 +377,7 @@ const Dashboard = (() => {
   function exportToCsv() {
     const stats = Store.getDashboardStats(selectedLevel);
     if (!stats.students || stats.students.length === 0) {
-      AppUI.showToast('No student data to export.', 'error');
+      AppUI.showToast('No student records to export.', 'error');
       return;
     }
 
@@ -358,7 +405,7 @@ const Dashboard = (() => {
     link.click();
     document.body.removeChild(link);
 
-    AppUI.showToast('Exported attendance CSV report.', 'success');
+    AppUI.showToast('Exported CSV report.', 'success');
   }
 
   return {

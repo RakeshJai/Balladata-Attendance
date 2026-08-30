@@ -1,6 +1,7 @@
 /* ==========================================================================
    Baladatta Tamil School – Neoclassical Indian Traditional Design System
-   Mobile-First, Ergonomic Classroom Experience & Harmonized Architectural UI
+   Architectural Visualizations: Chakra Dial, Dravidian Stepped Pillars,
+   Carved Stone Seals, Inscription Plaques, and Mobile Ergonomics.
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700;800&display=swap');
@@ -17,12 +18,12 @@
   --terra: #c2663a;
   --terra-hover: #d27447;
   --terra-dim: rgba(194, 102, 58, 0.16);
-  --terra-border: rgba(194, 102, 58, 0.38);
+  --terra-border: rgba(194, 102, 58, 0.42);
 
   /* Bilva / Sage Olive (Present status) */
   --sage: #6b9e7a;
   --sage-dim: rgba(107, 158, 122, 0.16);
-  --sage-border: rgba(107, 158, 122, 0.4);
+  --sage-border: rgba(107, 158, 122, 0.42);
 
   /* Text & Ink */
   --ink: #f3ede2;
@@ -32,12 +33,12 @@
   /* Ruled lines & Architectural Borders */
   --rule: rgba(255, 245, 230, 0.09);
   --rule-strong: rgba(255, 245, 230, 0.18);
+  --rule-gold: rgba(194, 102, 58, 0.28);
 
   /* Typography */
   --serif: 'DM Serif Display', Georgia, serif;
   --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
-  /* Touch Ergonomics */
   --min-touch-target: 44px;
 }
 
@@ -59,18 +60,17 @@ body {
   flex-direction: column;
   position: relative;
   overflow-x: hidden;
-  /* Support iOS notch & bottom home bar */
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
-/* ─── Background Architectural Layers (Adaptive for Mobile & Desktop) ─── */
+/* ─── Architectural Watermark Canvas Layers ─── */
 .bg-watermark-left {
   position: fixed;
   top: 0;
   left: 0;
   bottom: 0;
-  width: 420px;
-  max-width: 30vw;
+  width: 440px;
+  max-width: 32vw;
   background-image: url('../assets/traditional/meenakshi_pillar_study.jpg');
   background-repeat: no-repeat;
   background-size: cover;
@@ -88,8 +88,8 @@ body {
   top: 0;
   right: 0;
   bottom: 0;
-  width: 500px;
-  max-width: 34vw;
+  width: 520px;
+  max-width: 36vw;
   background-image: url('../assets/traditional/temple_gopuram_study.jpg');
   background-repeat: no-repeat;
   background-size: cover;
@@ -114,7 +114,7 @@ body {
   z-index: 0;
 }
 
-/* ─── Offline Banner ─── */
+/* Offline Notice */
 .offline-banner {
   display: none;
   background: var(--terra);
@@ -128,15 +128,15 @@ body {
   z-index: 200;
 }
 
-/* ─── Top Header (Neoclassical Temple Identity) ─── */
+/* ─── Neoclassical Header ─── */
 .app-header {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(18, 15, 10, 0.94);
+  background: rgba(18, 15, 10, 0.95);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule-strong);
   padding-top: env(safe-area-inset-top, 0);
 }
 
@@ -160,8 +160,8 @@ body {
 }
 
 .brand-emblem {
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   border-radius: 8px;
   border: 1px solid var(--rule-strong);
   overflow: hidden;
@@ -186,31 +186,22 @@ body {
 
 .brand-kirtimukha {
   font-family: var(--serif);
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   font-weight: 400;
   color: var(--ink);
   letter-spacing: 0.01em;
   line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .brand-subtamil {
   font-size: 0.72rem;
   color: var(--terra);
   font-weight: 600;
-  letter-spacing: 0.01em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  letter-spacing: 0.02em;
 }
 
-.header-actions {
-  flex-shrink: 0;
-}
+.header-actions { flex-shrink: 0; }
 
-/* Harmonized Sync Pill */
 .sync-button {
   background: var(--surface);
   color: var(--ink-secondary);
@@ -224,13 +215,11 @@ body {
   align-items: center;
   gap: 6px;
   font-family: var(--sans);
-  min-height: 32px;
+  min-height: 34px;
   transition: all 0.12s ease;
 }
 
-.sync-button:active {
-  transform: scale(0.97);
-}
+.sync-button:active { transform: scale(0.97); }
 
 .sync-button.connected {
   color: var(--sage);
@@ -245,11 +234,9 @@ body {
   background: var(--ink-muted);
 }
 
-.sync-button.connected .sync-dot {
-  background: var(--sage);
-}
+.sync-button.connected .sync-dot { background: var(--sage); }
 
-/* ─── Navigation Tabs (Underline Editorial Style) ─── */
+/* ─── Navigation Tabs (Underline Editorial) ─── */
 .nav-pill-container {
   max-width: 760px;
   width: 100%;
@@ -273,7 +260,7 @@ body {
   gap: 8px;
   padding: 12px 10px;
   min-height: var(--min-touch-target);
-  font-size: 0.85rem;
+  font-size: 0.86rem;
   font-weight: 600;
   color: var(--ink-muted);
   background: none;
@@ -285,9 +272,7 @@ body {
   margin-bottom: -1px;
 }
 
-.nav-pill-btn:hover {
-  color: var(--ink-secondary);
-}
+.nav-pill-btn:hover { color: var(--ink-secondary); }
 
 .nav-pill-btn.active {
   color: var(--terra);
@@ -295,7 +280,7 @@ body {
   font-weight: 700;
 }
 
-/* ─── Main Content Container ─── */
+/* ─── Main Content Frame ─── */
 .main-wrapper {
   max-width: 760px;
   width: 100%;
@@ -306,7 +291,6 @@ body {
   z-index: 1;
 }
 
-/* Editorial Sheet (Warm Framing Container) */
 .editorial-sheet {
   background: var(--sheet);
   border: 1px solid var(--rule-strong);
@@ -315,15 +299,11 @@ body {
 }
 
 @media (min-width: 640px) {
-  .editorial-sheet {
-    padding: 24px;
-  }
+  .editorial-sheet { padding: 24px; }
 }
 
-/* ─── Nilai Level Tablets (Touch-Friendly Horizontal Rail) ─── */
-.level-scroll-section {
-  margin-bottom: 18px;
-}
+/* ─── Nilai Tablet Selector ─── */
+.level-scroll-section { margin-bottom: 18px; }
 
 .level-pills-row {
   display: flex;
@@ -339,7 +319,7 @@ body {
 .level-chip {
   padding: 8px 14px;
   min-height: 38px;
-  border-radius: 8px;
+  border-radius: 6px;
   font-size: 0.82rem;
   font-weight: 600;
   background: var(--surface);
@@ -354,9 +334,7 @@ body {
   transition: all 0.12s ease;
 }
 
-.level-chip:active {
-  transform: scale(0.96);
-}
+.level-chip:active { transform: scale(0.96); }
 
 .level-chip.active {
   background: var(--terra-dim);
@@ -365,7 +343,7 @@ body {
   font-weight: 700;
 }
 
-/* ─── Date Toolbar & Quick Controls ─── */
+/* ─── Date Toolbar ─── */
 .toolbar-card {
   border-bottom: 1px solid var(--rule);
   padding: 0 0 14px;
@@ -397,9 +375,7 @@ body {
   color-scheme: dark;
 }
 
-.pill-date-input:focus {
-  border-color: var(--terra);
-}
+.pill-date-input:focus { border-color: var(--terra); }
 
 .icon-btn {
   width: var(--min-touch-target);
@@ -417,9 +393,7 @@ body {
   transition: all 0.12s ease;
 }
 
-.icon-btn:active {
-  transform: scale(0.94);
-}
+.icon-btn:active { transform: scale(0.94); }
 
 .btn-today {
   background: none;
@@ -431,13 +405,9 @@ body {
   font-weight: 700;
   cursor: pointer;
   font-family: var(--sans);
-  display: inline-flex;
-  align-items: center;
 }
 
-.btn-today:active {
-  opacity: 0.8;
-}
+.btn-today:active { opacity: 0.8; }
 
 .date-status-badge {
   display: inline-flex;
@@ -461,7 +431,7 @@ body {
   border: 1px solid var(--terra-border);
 }
 
-/* ─── Roster Header & Mass Actions ─── */
+/* ─── Roster Header & Actions ─── */
 .roster-header-row {
   display: flex;
   align-items: center;
@@ -503,11 +473,9 @@ body {
   transition: all 0.12s ease;
 }
 
-.btn-ghost-action:active {
-  transform: scale(0.96);
-}
+.btn-ghost-action:active { transform: scale(0.96); }
 
-/* ─── Student Register Rows (Optimized Touch Targets for Phone) ─── */
+/* ─── Student Register Rows ─── */
 .student-cards-list {
   display: flex;
   flex-direction: column;
@@ -529,9 +497,7 @@ body {
   transition: background 0.12s ease;
 }
 
-.student-card:active {
-  background: var(--surface-hover);
-}
+.student-card:active { background: var(--surface-hover); }
 
 .student-info {
   display: flex;
@@ -584,9 +550,7 @@ body {
   color: var(--ink-muted);
 }
 
-.is-present .student-status-hint {
-  color: var(--sage);
-}
+.is-present .student-status-hint { color: var(--sage); }
 
 .student-card-actions {
   display: flex;
@@ -620,11 +584,9 @@ body {
   color: var(--ink-secondary);
 }
 
-.btn-icon-subtle.delete:active {
-  color: #c55;
-}
+.btn-icon-subtle.delete:active { color: #c55; }
 
-/* Status Toggle Badge Button (Harmonized Traditional Stamp Style) */
+/* Traditional Stamp Seal Status Toggle */
 .attendance-toggle-btn {
   min-width: 90px;
   padding: 8px 14px;
@@ -632,7 +594,6 @@ body {
   border-radius: 6px;
   font-size: 0.82rem;
   font-weight: 700;
-  letter-spacing: 0.01em;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -644,9 +605,7 @@ body {
   transition: all 0.12s ease;
 }
 
-.attendance-toggle-btn:active {
-  transform: scale(0.96);
-}
+.attendance-toggle-btn:active { transform: scale(0.96); }
 
 .is-present .attendance-toggle-btn {
   background: var(--sage-dim);
@@ -654,7 +613,7 @@ body {
   color: var(--sage);
 }
 
-/* ─── Add Student Row (Clean & Quick on Mobile) ─── */
+/* ─── Add Student Row ─── */
 .add-student-container {
   border-top: 1px solid var(--rule);
   padding-top: 16px;
@@ -677,13 +636,8 @@ body {
   font-family: var(--sans);
 }
 
-.add-student-input:focus {
-  border-bottom-color: var(--terra);
-}
-
-.add-student-input::placeholder {
-  color: var(--ink-muted);
-}
+.add-student-input:focus { border-bottom-color: var(--terra); }
+.add-student-input::placeholder { color: var(--ink-muted); }
 
 .btn-primary {
   background: var(--terra);
@@ -708,7 +662,7 @@ body {
   background: var(--terra-hover);
 }
 
-/* ─── Sticky Bottom Action Bar (Safe for iOS & Android Notches) ─── */
+/* ─── Sticky Bottom Action Bar ─── */
 .sticky-action-bar {
   position: fixed;
   bottom: 0;
@@ -738,10 +692,7 @@ body {
   font-size: 0.86rem;
 }
 
-.tally-chip {
-  font-weight: 700;
-}
-
+.tally-chip { font-weight: 700; }
 .tally-chip.present { color: var(--sage); }
 .tally-chip.absent { color: var(--ink-muted); }
 .tally-chip.total { color: var(--ink-secondary); font-weight: 500; }
@@ -769,213 +720,271 @@ body {
   background: var(--terra-hover);
 }
 
-/* ─── Empty State ─── */
-.empty-state-box {
-  text-align: center;
-  padding: 44px 16px;
-  color: var(--ink-muted);
-}
-
-.empty-state-box h3 {
-  font-family: var(--serif);
-  font-size: 1.05rem;
-  color: var(--ink-secondary);
-  margin-bottom: 4px;
-}
-
 /* ==========================================================================
-   Dashboard View & Responsive Charts
+   Creative Neoclassical Dashboard Visualizations
    ========================================================================== */
 .dashboard-section { display: none; }
 
-.dashboard-stats-grid {
+/* ─── 1. Inscription Metric Plaques ─── */
+.arch-metrics-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 1px;
-  background: var(--rule-strong);
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.arch-metric-card {
+  background: var(--surface);
   border: 1px solid var(--rule-strong);
   border-radius: 8px;
-  overflow: hidden;
-  margin-bottom: 24px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
-.dashboard-stat-card {
-  background: var(--surface);
-  padding: 16px;
+.arch-metric-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
 }
 
-.stat-title-row {
-  font-size: 0.72rem;
+.arch-metric-tag {
+  font-size: 0.68rem;
   font-weight: 600;
-  color: var(--ink-muted);
+  color: var(--terra);
+  letter-spacing: 0.02em;
+}
+
+.arch-metric-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--ink-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 }
 
-.stat-number {
+.arch-metric-val {
   font-family: var(--serif);
-  font-size: 1.75rem;
+  font-size: 1.8rem;
   color: var(--ink);
   line-height: 1.1;
+  margin: 4px 0 2px;
 }
 
-.stat-number.rate {
-  color: var(--terra);
-}
+.arch-metric-val.rate { color: var(--terra); }
 
-.stat-caption {
+.arch-metric-foot {
   font-size: 0.72rem;
   color: var(--ink-muted);
-  margin-top: 2px;
 }
 
-/* Charts Grid */
-.dashboard-charts-grid {
+/* ─── 2. Creative Visualizations Grid ─── */
+.arch-charts-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 22px;
 }
 
-@media (min-width: 640px) {
-  .dashboard-charts-grid {
+@media (min-width: 680px) {
+  .arch-charts-grid {
     grid-template-columns: 1fr 1fr;
   }
 }
 
-.chart-card {
-  border: 1px solid var(--rule);
+.arch-chart-box {
+  background: var(--surface);
+  border: 1px solid var(--rule-strong);
   border-radius: 8px;
   padding: 18px;
-  background: var(--surface);
+  display: flex;
+  flex-direction: column;
 }
 
-.chart-title {
+.arch-chart-heading {
   font-family: var(--serif);
-  font-size: 0.94rem;
+  font-size: 0.95rem;
   color: var(--ink);
-  margin-bottom: 16px;
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 10px;
 }
 
-.chart-body-donut {
+/* ─── Sudarshana Chakra Attendance Dial ─── */
+.chakra-dial-wrapper {
   display: flex;
   align-items: center;
   justify-content: space-around;
   gap: 16px;
   flex-wrap: wrap;
-  min-height: 130px;
+  min-height: 150px;
 }
 
-.donut-svg-wrap {
+.chakra-dial-svg-wrap {
   position: relative;
-  width: 110px;
-  height: 110px;
+  width: 130px;
+  height: 130px;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
-.donut-svg-wrap svg {
-  transform: rotate(-90deg);
+.chakra-dial-svg-wrap svg {
   width: 100%;
   height: 100%;
 }
 
-.donut-center-text {
+.chakra-dial-center {
   position: absolute;
   text-align: center;
 }
 
-.donut-center-pct {
+.chakra-dial-rate {
   font-family: var(--serif);
-  font-size: 1.3rem;
+  font-size: 1.4rem;
+  font-weight: 400;
   color: var(--ink);
   line-height: 1;
 }
 
-.donut-center-sub {
+.chakra-dial-tamil {
   font-size: 0.65rem;
-  color: var(--ink-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  color: var(--terra);
+  font-weight: 700;
+  letter-spacing: 0.04em;
 }
 
-.donut-legend {
+.chakra-legend {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  flex: 1;
+  min-width: 160px;
 }
 
-.legend-item {
+.chakra-legend-row {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   color: var(--ink-secondary);
 }
 
-.legend-dot {
+.chakra-dot {
   width: 8px;
   height: 8px;
-  border-radius: 50%;
+  border-radius: 2px;
+  flex-shrink: 0;
 }
 
-.legend-dot.present { background: var(--sage); }
-.legend-dot.absent { background: var(--ink-muted); }
+.chakra-dot.sage { background: var(--sage); }
+.chakra-dot.stone { background: var(--ink-muted); }
 
-/* Bar Chart */
-.chart-body-bars {
+.chakra-legend-note {
+  font-size: 0.7rem;
+  color: var(--ink-muted);
+  line-height: 1.4;
+  margin-top: 4px;
+  border-top: 1px solid var(--rule);
+  padding-top: 6px;
+}
+
+/* ─── Stepped Temple Pillar Chart (Dravidian Adhishthana) ─── */
+.temple-pillars-container {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
-.level-bar-row {
+.pillar-chart-row {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
 }
 
-.level-bar-name {
-  width: 72px;
-  color: var(--ink-muted);
-  font-weight: 500;
+.pillar-label-group {
+  width: 84px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.pillar-class-name {
+  font-weight: 600;
+  color: var(--ink);
   white-space: nowrap;
 }
 
-.level-bar-track {
-  flex: 1;
-  height: 6px;
-  background: var(--surface-raised);
-  border-radius: 3px;
-  overflow: hidden;
+.pillar-tamil-sub {
+  font-size: 0.66rem;
+  color: var(--ink-muted);
 }
 
-.level-bar-fill {
+.pillar-stepped-track {
+  flex: 1;
+  height: 12px;
+  background: var(--surface-raised);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.pillar-plinth-base {
+  position: absolute;
+  left: -2px;
+  top: -2px;
+  bottom: -2px;
+  width: 4px;
+  background: var(--rule-strong);
+  border-radius: 1px;
+}
+
+.pillar-fill-bar {
   height: 100%;
-  border-radius: 3px;
   background: var(--terra);
   transition: width 0.3s ease;
 }
 
-.level-bar-pct {
-  width: 40px;
-  text-align: right;
-  font-weight: 600;
-  color: var(--ink-secondary);
+.pillar-capital-cap {
+  position: absolute;
+  right: -2px;
+  top: -2px;
+  bottom: -2px;
+  width: 4px;
+  background: var(--rule-strong);
+  border-radius: 1px;
 }
 
-/* Dashboard Filter Bar */
-.dashboard-toolbar {
-  border: 1px solid var(--rule);
+.pillar-metric-tally {
+  width: 58px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+
+.pillar-pct-val {
+  font-weight: 700;
+  color: var(--terra);
+  font-size: 0.84rem;
+}
+
+.pillar-students-count {
+  font-size: 0.68rem;
+  color: var(--ink-muted);
+}
+
+/* ─── 3. Search & Filter Ledger Bar ─── */
+.arch-toolbar {
+  border: 1px solid var(--rule-strong);
   border-radius: 8px;
   padding: 10px 12px;
   margin-bottom: 14px;
@@ -987,26 +996,24 @@ body {
   background: var(--surface);
 }
 
-.search-field-wrap {
+.arch-search-field {
   position: relative;
   flex: 1;
   min-width: 160px;
 }
 
-.search-field-wrap svg {
+.arch-search-field svg {
   position: absolute;
   left: 10px;
   top: 50%;
   transform: translateY(-50%);
-  width: 14px;
-  height: 14px;
   color: var(--ink-muted);
   pointer-events: none;
 }
 
-.search-input {
+.arch-input {
   width: 100%;
-  background: none;
+  background: var(--surface-raised);
   color: var(--ink);
   border: 1px solid var(--rule);
   border-radius: 6px;
@@ -1017,9 +1024,9 @@ body {
   font-family: var(--sans);
 }
 
-.search-input:focus { border-color: var(--terra); }
+.arch-input:focus { border-color: var(--terra); }
 
-.select-filter {
+.arch-select {
   background: var(--surface-raised);
   color: var(--ink);
   border: 1px solid var(--rule);
@@ -1032,8 +1039,13 @@ body {
   cursor: pointer;
 }
 
-/* Dashboard Student Cards */
-.dash-card {
+/* ─── 4. Student Records Ledger ─── */
+.arch-ledger-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.arch-ledger-row {
   border-bottom: 1px solid var(--rule);
   padding: 12px 4px;
   display: flex;
@@ -1043,61 +1055,103 @@ body {
   flex-wrap: wrap;
 }
 
-.dash-card:last-child { border-bottom: none; }
-
-.dash-card-left {
+.arch-ledger-left {
   display: flex;
   align-items: center;
   gap: 10px;
-  min-width: 150px;
+  min-width: 160px;
 }
 
-.dash-metrics {
+.arch-avatar-seal {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  background: var(--surface-raised);
+  border: 1px solid var(--rule-strong);
   display: flex;
   align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
+  justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--ink-muted);
+  flex-shrink: 0;
 }
 
-.dash-badge {
-  font-size: 0.72rem;
+.arch-ledger-names {
+  display: flex;
+  flex-direction: column;
+}
+
+.arch-student-name {
+  font-size: 0.92rem;
   font-weight: 600;
-  padding: 4px 8px;
-  border-radius: 4px;
+  color: var(--ink);
 }
 
-.dash-badge.present {
-  background: var(--sage-dim);
-  color: var(--sage);
-}
-
-.dash-badge.absent {
-  background: var(--surface);
+.arch-student-sub {
+  font-size: 0.72rem;
   color: var(--ink-muted);
 }
 
-.dash-badge.level {
-  background: var(--terra-dim);
-  color: var(--terra);
+.arch-ledger-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
-.dash-progress-track {
-  width: 70px;
-  height: 4px;
+.arch-tally-chips {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.arch-status-seal {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.arch-status-seal.present {
+  background: var(--sage-dim);
+  color: var(--sage);
+  border: 1px solid var(--sage-border);
+}
+
+.arch-status-seal.absent {
   background: var(--surface-raised);
-  border-radius: 2px;
-  overflow: hidden;
+  color: var(--ink-muted);
+  border: 1px solid var(--rule);
 }
 
-.dash-progress-fill {
-  height: 100%;
-  border-radius: 2px;
-  transition: width 0.3s ease;
+.arch-rate-stepper {
+  min-width: 44px;
+  text-align: right;
 }
 
-.dash-progress-fill.high { background: var(--sage); }
-.dash-progress-fill.medium { background: var(--terra); }
-.dash-progress-fill.low { background: #c55; }
+.arch-rate-num {
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  font-weight: 400;
+}
+
+.arch-btn-history {
+  background: var(--surface-raised);
+  color: var(--ink-secondary);
+  border: 1px solid var(--rule-strong);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--sans);
+  transition: all 0.12s ease;
+}
+
+.arch-btn-history:active { transform: scale(0.96); }
 
 /* ─── Modal Dialog ─── */
 .modal-overlay {
@@ -1188,22 +1242,20 @@ body {
   .main-wrapper { padding: 12px 14px 130px; }
   .editorial-sheet { padding: 14px 12px; }
   
-  /* Make watermarks gentle corner atmospheres on mobile so content is front-and-center */
   .bg-watermark-left {
-    width: 220px;
+    width: 200px;
     opacity: 0.09;
     max-width: 45vw;
   }
   .bg-watermark-right {
-    width: 220px;
+    width: 200px;
     opacity: 0.08;
     max-width: 45vw;
   }
   
-  /* Sticky footer stacks into ergonomic thumb reach */
   .sticky-action-bar { padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0)); }
   .sticky-action-container { flex-direction: column; gap: 8px; align-items: stretch; }
   .btn-submit-attendance { width: 100%; height: 46px; }
   .tally-group { width: 100%; justify-content: space-between; padding: 0 4px; }
-  .dashboard-stats-grid { grid-template-columns: 1fr 1fr; }
+  .arch-metrics-grid { grid-template-columns: 1fr 1fr; }
 }
