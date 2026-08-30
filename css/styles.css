@@ -63,6 +63,38 @@ body {
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
+/* ─── Ambient Top Load-In Glow ─── */
+.top-ambient-glow {
+  position: fixed;
+  top: -120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 580px;
+  max-width: 90vw;
+  height: 220px;
+  background: radial-gradient(ellipse at center, rgba(194, 102, 58, 0.3) 0%, rgba(212, 163, 89, 0.12) 45%, transparent 72%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  animation: ambientGlowFadeIn 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes ambientGlowFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-24px) scale(0.85);
+  }
+  60% {
+    opacity: 0.95;
+    transform: translateX(-50%) translateY(0) scale(1.05);
+  }
+  100% {
+    opacity: 0.65;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
 /* ─── Architectural Watermark Canvas Layers ─── */
 .bg-watermark-left {
   position: fixed;
