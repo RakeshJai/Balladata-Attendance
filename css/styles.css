@@ -584,20 +584,20 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   border: 1px solid var(--terra-border);
 }
 
-/* Roster Header & Quiet Text Actions */
+/* Roster Header & Action Buttons */
 .roster-header-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: 14px;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
   padding-bottom: 8px;
 }
 
 .roster-heading {
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 1.05rem;
+  font-weight: 700;
   color: var(--ink);
   font-family: var(--sans);
 }
@@ -605,30 +605,61 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 .roster-actions {
   display: flex;
   align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-roster-pill {
+  display: inline-flex;
+  align-items: center;
   gap: 6px;
-}
-
-.btn-link-action {
-  background: none;
-  border: none;
-  color: var(--ink-secondary);
-  font-size: 0.75rem;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.8125rem;
   font-weight: 600;
-  cursor: pointer;
-  padding: 2px 4px;
   font-family: var(--sans);
-  transition: color 0.12s ease;
+  cursor: pointer;
+  border: 1px solid var(--rule-strong);
+  background: var(--surface-raised);
+  color: var(--ink-secondary);
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease, transform 0.08s ease;
 }
 
-.btn-link-action:hover {
-  color: var(--terra);
-  text-decoration: underline;
+.btn-roster-pill:hover {
+  background: var(--surface-hover);
+  color: var(--ink);
 }
 
-.action-separator {
-  color: var(--ink-muted);
-  font-size: 0.75rem;
-  user-select: none;
+.btn-roster-pill:active {
+  transform: scale(0.97);
+}
+
+.btn-roster-pill.present {
+  color: #6B9E7A;
+  background: rgba(107, 158, 122, 0.12);
+  border-color: rgba(107, 158, 122, 0.35);
+}
+
+.btn-roster-pill.present:hover {
+  background: rgba(107, 158, 122, 0.22);
+  color: #ffffff;
+  border-color: #6B9E7A;
+}
+
+.btn-roster-pill.absent {
+  color: var(--ink-secondary);
+  background: var(--surface-raised);
+}
+
+.btn-roster-pill.analytics {
+  color: var(--ink);
+  background: var(--surface-raised);
+  border-color: var(--rule-strong);
+}
+
+.btn-roster-pill.analytics:hover {
+  border-color: var(--terra);
+  background: var(--surface-hover);
 }
 
 /* Tactile Student Tiles Grid (Modern App Feel, Zero Spreadsheet Clutter) */
@@ -936,6 +967,54 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 /* ==========================================================================
    SCREEN 4: DASHBOARD ANALYTICS & STUDENT LOOKUP
    ========================================================================== */
+/* Top Nav in Screen 4 (Analytics) */
+.attendance-top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.btn-back-hub {
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--rule-strong);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--sans);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease, transform 0.08s ease;
+}
+
+.btn-back-hub:hover {
+  background: var(--surface-hover);
+  border-color: var(--terra);
+  color: #ffffff;
+}
+
+.btn-back-hub:active {
+  transform: scale(0.97);
+}
+
+.attendance-class-badge {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--terra);
+  background: var(--terra-dim);
+  border: 1px solid var(--terra-border);
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-family: var(--serif);
+}
+
 /* Dashboard Autocomplete Lookup Bar */
 .dash-lookup-card {
   margin-bottom: 16px;

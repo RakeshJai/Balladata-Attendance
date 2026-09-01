@@ -17,7 +17,7 @@
     if ('caches' in window) {
       caches.keys().then(names => {
         names.forEach(name => {
-          if (name !== 'baladatta-attendance-v31') caches.delete(name);
+          if (name !== 'baladatta-attendance-v32') caches.delete(name);
         });
       });
     }
@@ -32,8 +32,8 @@
   <meta name="theme-color" content="#1f1e1b">
   <link rel="icon" type="image/png" href="Logo.png">
 
-  <!-- Claude Warm Dark Neoclassical Theme (v31) -->
-  <link rel="stylesheet" href="css/styles.css?v=31">
+  <!-- Claude Warm Dark Neoclassical Theme (v32) -->
+  <link rel="stylesheet" href="css/styles.css?v=32">
 </head>
 
 <body>
@@ -127,16 +127,15 @@
             </div>
             
             <div class="roster-actions">
-              <button id="markAllPresentBtn" class="btn-link-action" title="Mark All Present">
-                Mark all present
+              <button id="markAllPresentBtn" class="btn-roster-pill present" title="Mark All Present">
+                <span>Mark All Present</span>
               </button>
-              <span class="action-separator">·</span>
-              <button id="markAllAbsentBtn" class="btn-link-action" title="Mark All Absent">
-                Mark all absent
+              <button id="markAllAbsentBtn" class="btn-roster-pill absent" title="Mark All Absent">
+                <span>Mark All Absent</span>
               </button>
-              <span class="action-separator">·</span>
-              <button class="btn-link-action" onclick="App.navigateTo('analytics')" title="View School Analytics">
-                Analytics
+              <button class="btn-roster-pill analytics" onclick="App.navigateTo('analytics')" title="View School Analytics">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+                <span>Analytics</span>
               </button>
             </div>
           </div>
@@ -277,12 +276,12 @@
   <!-- Toast Container -->
   <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
-  <!-- Scripts (Cache Busted v31) -->
-  <script src="js/store.js?v=31"></script>
-  <script src="js/sheets-api.js?v=31"></script>
-  <script src="js/student-mgr.js?v=31"></script>
-  <script src="js/dashboard.js?v=31"></script>
-  <script src="js/app.js?v=31"></script>
+  <!-- Scripts (Cache Busted v32) -->
+  <script src="js/store.js?v=32"></script>
+  <script src="js/sheets-api.js?v=32"></script>
+  <script src="js/student-mgr.js?v=32"></script>
+  <script src="js/dashboard.js?v=32"></script>
+  <script src="js/app.js?v=32"></script>
 </body>
 
 </html>
