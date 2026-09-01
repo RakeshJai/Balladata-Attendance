@@ -631,48 +631,64 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   user-select: none;
 }
 
-/* Streamlined Student Row */
-.student-cards-list {
-  display: flex;
-  flex-direction: column;
+/* Tactile Student Tiles Grid (Modern App Feel, Zero Spreadsheet Clutter) */
+.student-tiles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 10px;
+  margin-bottom: 8px;
 }
 
-.student-card {
-  background: transparent;
-  border-bottom: 1px solid var(--rule);
-  padding: 10px 4px;
-  min-height: 46px;
+.student-tile {
+  background: var(--surface);
+  border: 1px solid var(--rule-strong);
+  border-radius: 10px;
+  padding: 12px 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   cursor: pointer;
   user-select: none;
-  border-radius: 4px;
-  transition: background 0.1s ease;
+  transition: background 0.12s ease, border-color 0.12s ease, transform 0.08s ease;
 }
 
-.student-card:hover { background: rgba(244, 243, 238, 0.03); }
-.student-card:active { background: rgba(244, 243, 238, 0.06); }
+.student-tile:hover {
+  background: var(--surface-raised);
+  border-color: var(--rule-cloudy);
+}
 
-.student-info {
+.student-tile:active {
+  transform: scale(0.98);
+}
+
+.student-tile.is-present {
+  background: rgba(107, 158, 122, 0.12);
+  border-color: var(--sage-border);
+}
+
+.tile-content {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   min-width: 0;
   flex: 1;
 }
 
-.student-idx {
+.tile-roll {
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--ink-muted);
   width: 22px;
   flex-shrink: 0;
   font-family: var(--sans);
 }
 
-.student-name {
+.is-present .tile-roll {
+  color: var(--sage);
+}
+
+.tile-name {
   font-size: 0.9375rem;
   font-weight: 600;
   color: var(--ink);
@@ -681,22 +697,22 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   text-overflow: ellipsis;
 }
 
-.student-card-actions {
+.tile-right {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex-shrink: 0;
 }
 
-.crud-btn-group {
+.tile-crud {
   display: flex;
   align-items: center;
   gap: 2px;
 }
 
 .btn-icon-subtle {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   background: none;
   border: none;
   border-radius: 4px;
@@ -718,41 +734,32 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   background: var(--danger-dim);
 }
 
-.attendance-toggle-btn {
+.tile-pill-btn {
   min-width: 76px;
-  padding: 6px 12px;
-  min-height: 32px;
+  padding: 5px 10px;
   border-radius: 6px;
   font-size: 0.75rem;
   font-weight: 700;
+  border: 1px solid var(--rule-strong);
+  background: var(--surface-raised);
+  color: var(--ink-muted);
+  cursor: pointer;
+  font-family: var(--sans);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--rule-strong);
-  background: var(--surface-raised);
-  color: var(--ink-secondary);
-  cursor: pointer;
-  font-family: var(--sans);
-  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease, transform 0.08s ease;
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
 }
 
-.attendance-toggle-btn:hover {
+.tile-pill-btn:hover {
   background: var(--surface-hover);
   color: var(--ink);
 }
 
-.attendance-toggle-btn:active {
-  transform: scale(0.97);
-}
-
-.is-present .attendance-toggle-btn {
-  background: var(--sage-dim);
-  border-color: var(--sage-border);
-  color: var(--sage);
-}
-
-.is-present .attendance-toggle-btn:hover {
-  background: rgba(107, 158, 122, 0.25);
+.is-present .tile-pill-btn {
+  background: var(--sage);
+  color: #ffffff;
+  border-color: var(--sage);
 }
 
 /* Subtle Add Student Input */

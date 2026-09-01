@@ -17,7 +17,7 @@
     if ('caches' in window) {
       caches.keys().then(names => {
         names.forEach(name => {
-          if (name !== 'baladatta-attendance-v29') caches.delete(name);
+          if (name !== 'baladatta-attendance-v30') caches.delete(name);
         });
       });
     }
@@ -32,8 +32,8 @@
   <meta name="theme-color" content="#1f1e1b">
   <link rel="icon" type="image/png" href="Logo.png">
 
-  <!-- Claude Warm Dark Neoclassical Theme (v29) -->
-  <link rel="stylesheet" href="css/styles.css?v=29">
+  <!-- Claude Warm Dark Neoclassical Theme (v30) -->
+  <link rel="stylesheet" href="css/styles.css?v=30">
 </head>
 
 <body>
@@ -108,39 +108,24 @@
     </section>
 
     <!-- =========================================================================
-         SCREEN 2: STREAMLINED ATTENDANCE WORKSPACE
+         SCREEN 2: TACTILE ATTENDANCE DECK (NO SPREADSHEET MATRIX)
          ========================================================================= -->
     <section id="screenAttendance" class="app-screen">
       <div class="editorial-sheet">
 
-        <!-- Unified Single Top Bar: Date controls & Analytics link -->
-        <div class="workspace-top-bar">
-          <div class="date-controls-group">
-            <button id="prevDateBtn" class="icon-btn" title="Previous Day">‹</button>
-            <input type="date" id="attendanceDatePicker" class="pill-date-input" aria-label="Attendance Date" />
-            <button id="nextDateBtn" class="icon-btn" title="Next Day">›</button>
-            <button id="dateTodayBtn" class="btn-today" title="Set to Today">Today</button>
-            <span id="existingDateBadge" class="date-status-badge fresh">Fresh Session</span>
-          </div>
-
-          <button class="btn-ghost-action" onclick="App.navigateTo('analytics')" title="View School Analytics">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
-            <span>Analytics & Reports</span>
-          </button>
-        </div>
-
-        <!-- Clean Animated Tabs Bar for Classes (Nilais) -->
+        <!-- Top Nilai Tabs Bar -->
         <div class="animated-tabs-bar" id="animatedTabsBar">
           <!-- Rendered dynamically via App.renderNilaiTabs -->
         </div>
 
         <!-- Tab Content Area -->
         <div class="animated-tab-content" id="animatedTabContent">
-          <!-- Roster Header & Quiet Text Actions -->
+          <!-- Roster Header & Actions -->
           <div class="roster-header-row">
             <div class="roster-heading">
               <span id="rosterClassNameTitle">Nilai Roster</span>
             </div>
+            
             <div class="roster-actions">
               <button id="markAllPresentBtn" class="btn-link-action" title="Mark All Present">
                 Mark all present
@@ -149,17 +134,21 @@
               <button id="markAllAbsentBtn" class="btn-link-action" title="Mark All Absent">
                 Mark all absent
               </button>
+              <span class="action-separator">·</span>
+              <button class="btn-link-action" onclick="App.navigateTo('analytics')" title="View School Analytics">
+                Analytics
+              </button>
             </div>
           </div>
 
-          <!-- Clean Student Cards Container -->
-          <div id="studentListContainer" class="student-cards-list">
+          <!-- Tactile Student Tiles Grid (App Feel) -->
+          <div id="studentListContainer" class="student-tiles-grid">
             <!-- Rendered dynamically via App.renderStudentList -->
           </div>
 
           <!-- Empty State -->
           <div id="emptyStudentState" class="empty-state-box" style="display:none;">
-            <p style="font-size:0.875rem; color:var(--ink-muted);">No students in this class yet.</p>
+            <p style="font-size:0.875rem; color:var(--ink-muted);">No students enrolled in this Nilai yet.</p>
           </div>
 
           <!-- Clean Inline Add Student Bar -->
@@ -240,7 +229,7 @@
         <!-- Top Back Navigation -->
         <div class="attendance-top-nav" style="margin-bottom: 16px;">
           <button class="btn-back-hub" onclick="App.navigateTo('attendance')" title="Back to Attendance">
-            <span>← Back to Classes</span>
+            <span>← Back to Attendance</span>
           </button>
           <div class="attendance-class-badge">
             School Analytics
@@ -288,12 +277,12 @@
   <!-- Toast Container -->
   <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
-  <!-- Scripts (Cache Busted v29) -->
-  <script src="js/store.js?v=29"></script>
-  <script src="js/sheets-api.js?v=29"></script>
-  <script src="js/student-mgr.js?v=29"></script>
-  <script src="js/dashboard.js?v=29"></script>
-  <script src="js/app.js?v=29"></script>
+  <!-- Scripts (Cache Busted v30) -->
+  <script src="js/store.js?v=30"></script>
+  <script src="js/sheets-api.js?v=30"></script>
+  <script src="js/student-mgr.js?v=30"></script>
+  <script src="js/dashboard.js?v=30"></script>
+  <script src="js/app.js?v=30"></script>
 </body>
 
 </html>
