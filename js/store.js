@@ -13,17 +13,19 @@ const Store = (() => {
   };
 
   const LEVELS = [
+    { id: 'Level0', label: 'Nilai 0 (Level 0)' },
     { id: 'Level1', label: 'Nilai 1 (Level 1)' },
     { id: 'Level2', label: 'Nilai 2 (Level 2)' },
     { id: 'Level3', label: 'Nilai 3 (Level 3)' },
     { id: 'Level4', label: 'Nilai 4 (Level 4)' },
     { id: 'Level5', label: 'Nilai 5 (Level 5)' },
     { id: 'Level6', label: 'Nilai 6 (Level 6)' },
-    { id: 'Volunteers', label: 'Volunteers (தொண்டர்கள்)' }
+    { id: 'Volunteers', label: 'Volunteers' }
   ];
 
   // Default seed students per level for initial load or demo mode
   const DEFAULT_STUDENTS = {
+    Level0: ['Aadhya Ramesh', 'Dev Karthik', 'Inba Selvam', 'Kavin Kumar', 'Prisha Nair', 'Sai Pranav'],
     Level1: ['Aarav Kumar', 'Ananya Ramesh', 'Dhruv Patel', 'Kavya Sundaram', 'Madhavan Nair', 'Nila Selvan', 'Siddharth Iyer'],
     Level2: ['Aditi Venkatesh', 'Arjun Bala', 'Diya Natarajan', 'Ishaan Shankar', 'Maya Krishnan', 'Pranav Murugan', 'Tanvi Raj'],
     Level3: ['Abhinav Swaminathan', 'Harini Prakash', 'Karthik Raja', 'Meera Subramaniam', 'Rohan Sethuraman', 'Sneha Vijay'],
@@ -126,6 +128,13 @@ const Store = (() => {
     const filtered = current.filter(s => s !== name);
     if (filtered.length === current.length) return false;
     setStudentsForLevel(levelId, filtered);
+
+    // ponytail: clean up orphaned attendance logs for deleted student
+    const logs = getLogs();
+    const cleaned = logs.filter(l => !(l.level === levelId && l.student === name));
+    if (cleaned.length !== logs.length) {
+      saveLogs(cleaned);
+    }
     return true;
   }
 

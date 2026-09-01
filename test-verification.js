@@ -96,6 +96,15 @@ assert(s1 !== undefined, 'Student 1 should be in dashboard stats');
 assert.strictEqual(s1.totalDays, 1, 'Student 1 should have exactly 1 recorded session (deduplicated)');
 assert.strictEqual(s1.presentCount, 1, 'Student 1 latest status on freshDate was Present');
 assert.strictEqual(s1.percentage, 100, 'Student 1 attendance percentage should be 100%');
-console.log('✓ Requirement 4 (Dashboard analytics & summary) verified');
+// TEST 7: Nilai 0 (Level 0) Presence & Student Lookup
+const l0Students = Store.getStudentsForLevel('Level0');
+assert(Array.isArray(l0Students) && l0Students.length > 0, 'Level 0 (Nilai 0) should have seeded students');
+console.log('✓ Nilai 0 (Level 0) verified:', l0Students.length, 'students in Nilai 0');
 
-console.log('\n🎉 ALL 7 REQUIREMENTS & BUSINESS RULES SUCCESSFULLY PASSED!');
+const allStats = Store.getDashboardStats('ALL');
+const lookupTarget = l0Students[0];
+const lookupResult = allStats.students.find(s => s.studentName === lookupTarget);
+assert(lookupResult !== undefined, 'Lookup target should be found in allStats');
+console.log('✓ Autocomplete student lookup verified for:', lookupTarget);
+
+console.log('\n🎉 ALL REQUIREMENTS & BUSINESS RULES SUCCESSFULLY PASSED!');

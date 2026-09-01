@@ -1,13 +1,18 @@
 /**
- * Baladatta Attendance - Attendance Analytics & Dashboard Module
- * Faithful to Figma Mobile Education UI Kit (E-Sekula) Cards & Pastel Blocks
+ * Baladatta Attendance – Analytics & Personal Student Dashboard
+ * Neoclassical Indian traditional aesthetic.
+ * Features: School-wide overview metrics, class bars, student lookup autocomplete,
+ * and individual student personal dashboards.
  */
 
 const Dashboard = (() => {
   let selectedLevel = 'ALL';
   let searchQuery = '';
+  let activeStudentView = null; // null or { levelId, studentName }
 
   function init() {
+    activeStudentView = null;
+    searchQuery = '';
     render();
   }
 
@@ -18,249 +23,306 @@ const Dashboard = (() => {
 
   function setSearchQuery(query) {
     searchQuery = (query || '').toLowerCase().trim();
-    renderCardsOnly();
+    renderLedgerOnly();
+  }
+
+  function handleLookupInput(val) {
+    const query = (val || '').toLowerCase().trim();
+    const dropdown = document.getElementById('lookupSuggestionsDropdown');
+    if (!dropdown) return;
+
+    if (!query) {
+      dropdown.style.display = 'none';
+      dropdown.innerHTML = '';
+      return;
+    }
+
+    const allStats = Store.getDashboardStats('ALL');
+    const matches = allStats.students.filter(s => 
+      s.studentName.toLowerCase().includes(query) ||
+      s.levelLabel.toLowerCase().includes(query)
+    ).slice(0, 8);
+
+    if (matches.length === 0) {
+      dropdown.style.display = 'block';
+      dropdown.innerHTML = `<div class="lookup-empty">No matching students or volunteers found</div>`;
+      return;
+    }
+
+    dropdown.style.display = 'block';
+    dropdown.innerHTML = matches.map(s => {
+      const rateColor = s.percentage >= 80 ? 'var(--sage)' : 'var(--terra)';
+      return `
+        <div class="lookup-item" onclick="Dashboard.openPersonalDashboard('${AppUI.escapeHtml(s.levelId)}', '${AppUI.escapeHtml(s.studentName)}')">
+          <div class="lookup-item-left">
+            <span class="lookup-item-name">${AppUI.escapeHtml(s.studentName)}</span>
+            <span class="lookup-item-class">${AppUI.escapeHtml(s.levelLabel)}</span>
+          </div>
+          <div class="lookup-item-right">
+            <span class="lookup-item-rate" style="color: ${rateColor};">${s.percentage}%</span>
+            <span class="lookup-item-sub">${s.presentCount}/${s.totalDays} sessions</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function openPersonalDashboard(levelId, studentName) {
+    activeStudentView = { levelId, studentName };
+    render();
+  }
+
+  function backToOverview() {
+    activeStudentView = null;
+    searchQuery = '';
+    render();
   }
 
   function render() {
     const container = document.getElementById('dashboardContent');
     if (!container) return;
 
-    const stats = Store.getDashboardStats(selectedLevel);
-
-    let html = `
-      <!-- Figma Style 4 Pastel Stat Cards (Coral, Cream, Mint, Peach) -->
-      <div class="figma-stats-grid">
-        <div class="figma-stat-card coral">
-          <div class="stat-header-line">
-            <span>Attendance Rate</span>
-            <svg class="indian-motif" viewBox="0 0 32 24" aria-hidden="true"><use href="#motif-lotus" /></svg>
-          </div>
-          <div class="stat-huge-number">${stats.overallAttendanceRate}%</div>
-          <div class="stat-sub-text">${stats.totalPresent} Present / ${stats.totalPresent + stats.totalAbsent} Total</div>
-        </div>
-
-        <div class="figma-stat-card cream">
-          <div class="stat-header-line">
-            <span>Enrolled Students</span>
-            <svg class="indian-motif" viewBox="0 0 24 24" aria-hidden="true"><use href="#motif-mandala" /></svg>
-          </div>
-          <div class="stat-huge-number">${stats.totalStudents}</div>
-          <div class="stat-sub-text">${selectedLevel === 'ALL' ? 'All Nilais' : selectedLevel}</div>
-        </div>
-
-        <div class="figma-stat-card mint">
-          <div class="stat-header-line">
-            <span>Class Sessions</span>
-            <svg class="indian-motif" viewBox="0 0 24 24" aria-hidden="true"><use href="#motif-diya" /></svg>
-          </div>
-          <div class="stat-huge-number">${stats.totalSessions}</div>
-          <div class="stat-sub-text">Recorded dates</div>
-        </div>
-
-        <div class="figma-stat-card peach">
-          <div class="stat-header-line">
-            <span>Present / Absent</span>
-            <svg class="indian-motif" viewBox="0 0 24 24" aria-hidden="true"><use href="#motif-diamond" /></svg>
-          </div>
-          <div class="stat-huge-number" style="font-size: 1.6rem; display:flex; gap:8px; align-items:center;">
-            <span>${stats.totalPresent} <small style="font-size:0.75rem;">P</small></span>
-            <span style="opacity:0.4;">/</span>
-            <span>${stats.totalAbsent} <small style="font-size:0.75rem;">A</small></span>
-          </div>
-          <div class="stat-sub-text">Deduplicated latest records</div>
-        </div>
-      </div>
-
-      <!-- Search & Nilai Filter Bar -->
-      <div class="dashboard-controls-bar">
-        <div class="search-pill-container">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" id="dashboardSearchInput" class="search-pill-input" placeholder="Search student name..." value="${AppUI.escapeHtml(searchQuery)}" oninput="Dashboard.setSearchQuery(this.value)" />
-        </div>
-
-        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-          <div class="pill-select-wrapper" style="width: auto; min-width: 170px;">
-            <select class="pill-select" style="padding-top:8px; padding-bottom:8px; font-size:0.85rem;" onchange="Dashboard.setFilterLevel(this.value)">
-              <option value="ALL" ${selectedLevel === 'ALL' ? 'selected' : ''}>All Nilais (அனைத்தும்)</option>
-              ${Store.LEVELS.map(l => `<option value="${l.id}" ${selectedLevel === l.id ? 'selected' : ''}>${l.label}</option>`).join('')}
-            </select>
-            <div class="select-arrow-icon">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-          </div>
-
-          <button class="btn-outline-pill motif-button" onclick="Dashboard.exportToCsv()" title="Download Attendance CSV" style="padding: 8px 16px;">
-            <svg class="motif-button-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#motif-diya" /></svg>
-            Export CSV
-          </button>
-        </div>
-      </div>
-
-      <!-- Student Cards List -->
-      <div id="dashboardCardsWrapper">
-        ${getCardsHtml(stats.students)}
-      </div>
-    `;
-
-    container.innerHTML = html;
-  }
-
-  function renderCardsOnly() {
-    const wrapper = document.getElementById('dashboardCardsWrapper');
-    if (!wrapper) return;
-    const stats = Store.getDashboardStats(selectedLevel);
-    wrapper.innerHTML = getCardsHtml(stats.students);
-  }
-
-  function getCardsHtml(students) {
-    let filtered = students;
-    if (searchQuery) {
-      filtered = filtered.filter(s => s.studentName.toLowerCase().includes(searchQuery));
-    }
-
-    if (filtered.length === 0) {
-      return `
-        <div class="empty-state-box">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted); margin-bottom:8px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          <h3><svg class="empty-motif" viewBox="0 0 32 24" aria-hidden="true"><use href="#motif-lotus" /></svg>No matching students</h3>
-          <p style="font-size:0.85rem;">Try adjusting your search or Nilai filter.</p>
-        </div>
-      `;
-    }
-
-    return `
-      <div class="dashboard-cards-container">
-        ${filtered.map((s, idx) => {
-          const rateTier = s.percentage >= 80 ? 'high' : s.percentage >= 60 ? 'medium' : 'low';
-          const initials = AppUI.getInitials(s.studentName);
-
-          return `
-            <div class="dash-student-card">
-              <div class="dash-student-info">
-                <div class="avatar-ring" style="width:38px; height:38px; font-size:0.85rem; color:var(--cream); background:var(--bg-surface-elevated);">
-                  ${initials}
-                </div>
-                <div>
-                  <div style="font-size:1rem; font-weight:800; color:var(--text-primary);">${AppUI.escapeHtml(s.studentName)}</div>
-                  <span class="dash-pill-stat level">${AppUI.escapeHtml(s.levelId)}</span>
-                </div>
-              </div>
-
-              <div class="dash-metrics-group">
-                <span class="dash-pill-stat present">${s.presentCount} Present</span>
-                <span class="dash-pill-stat absent">${s.absentCount} Absent</span>
-
-                <div class="dash-progress-wrap">
-                  <div class="dash-bar-track">
-                    <div class="dash-bar-fill ${rateTier}" style="width: ${s.percentage}%;"></div>
-                  </div>
-                  <span style="font-size:0.85rem; font-weight:800; color:var(--text-primary); min-width:36px; text-align:right;">
-                    ${s.percentage}%
-                  </span>
-                </div>
-
-                <button class="btn-outline-pill motif-button" style="padding:6px 14px; font-size:0.8rem;" onclick="Dashboard.showStudentHistory('${AppUI.escapeHtml(s.levelId)}', '${AppUI.escapeHtml(s.studentName)}')">
-                  <svg class="motif-button-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#motif-mandala" /></svg>
-                  History
-                </button>
-              </div>
-            </div>
-          `;
-        }).join('')}
-      </div>
-    `;
-  }
-
-  function showStudentHistory(levelId, studentName) {
-    const stats = Store.getDashboardStats(levelId);
-    const student = stats.students.find(s => s.studentName === studentName);
-
-    if (!student || !student.history || student.history.length === 0) {
-      AppUI.showModal({
-        title: `${studentName} - History`,
-        bodyHtml: `<p style="color:var(--text-secondary); text-align:center; padding:20px;">No sessions logged yet for this student.</p>`,
-        confirmText: 'Close',
-        cancelText: null
-      });
+    if (activeStudentView) {
+      container.innerHTML = renderPersonalDashboardHtml(activeStudentView.levelId, activeStudentView.studentName);
       return;
     }
 
-    const historyRows = student.history.map(h => {
-      const isPresent = h.status === 'Present';
-      return `
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 16px; border-bottom:1px solid var(--border-main);">
-          <div>
-            <div style="font-weight:800; color:var(--text-primary); font-size:0.95rem;">${h.date}</div>
-            <div style="font-size:0.775rem; color:var(--text-secondary);">Teacher: ${AppUI.escapeHtml(h.teacher || 'Teacher')}</div>
+    const stats = Store.getDashboardStats(selectedLevel);
+    const allLevelStats = calculateAllLevelsStats();
+
+    container.innerHTML = `
+      <!-- Student & Volunteer Lookup Search Bar with Autocomplete -->
+      <div class="dash-lookup-card">
+        <div class="lookup-input-wrap">
+          <svg class="lookup-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input 
+            type="text" 
+            id="analyticsStudentLookup" 
+            class="analytics-lookup-input" 
+            placeholder="Search student or volunteer for personal dashboard..." 
+            oninput="Dashboard.handleLookupInput(this.value)"
+            autocomplete="off" 
+          />
+          <div id="lookupSuggestionsDropdown" class="lookup-dropdown" style="display: none;"></div>
+        </div>
+      </div>
+
+      <!-- School-Wide Metric Plaques -->
+      <div class="dash-metrics-row">
+        <div class="dash-metric-plaque">
+          <span class="dash-metric-label">Attendance Rate</span>
+          <span class="dash-metric-value accent">${stats.overallAttendanceRate}%</span>
+          <span class="dash-metric-sub">${stats.totalPresent} present · ${stats.totalAbsent} absent</span>
+        </div>
+        <div class="dash-metric-plaque">
+          <span class="dash-metric-label">Enrolled</span>
+          <span class="dash-metric-value">${stats.totalStudents}</span>
+          <span class="dash-metric-sub">${selectedLevel === 'ALL' ? 'All classes' : selectedLevel}</span>
+        </div>
+        <div class="dash-metric-plaque">
+          <span class="dash-metric-label">Sessions Logged</span>
+          <span class="dash-metric-value">${stats.totalSessions}</span>
+          <span class="dash-metric-sub">Recorded dates</span>
+        </div>
+      </div>
+
+      <!-- Class Comparison Performance Bars -->
+      <div class="dash-section-card">
+        <h3 class="dash-section-title">Class Performance</h3>
+        <div class="dash-bars-list">
+          ${allLevelStats.map(lvl => `
+            <div class="dash-bar-row" onclick="Dashboard.setFilterLevel('${lvl.id}')" style="cursor: pointer;" title="Filter by ${lvl.label}">
+              <span class="dash-bar-label">${lvl.label}</span>
+              <div class="dash-bar-track">
+                <div class="dash-bar-fill" style="width: ${Math.max(lvl.rate, 4)}%;"></div>
+              </div>
+              <span class="dash-bar-pct">${lvl.rate}%</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- Student Ledger Table -->
+      <div class="dash-section-card">
+        <div class="dash-ledger-header">
+          <h3 class="dash-section-title">Student Records</h3>
+          <div class="dash-ledger-controls">
+            <input type="text" placeholder="Filter list..." class="dash-search-input" value="${AppUI.escapeHtml(searchQuery)}" oninput="Dashboard.setSearchQuery(this.value)" />
+            <select class="dash-filter-select" onchange="Dashboard.setFilterLevel(this.value)">
+              <option value="ALL" ${selectedLevel === 'ALL' ? 'selected' : ''}>All Classes</option>
+              ${Store.LEVELS.map(l => `<option value="${l.id}" ${selectedLevel === l.id ? 'selected' : ''}>${l.label}</option>`).join('')}
+            </select>
+            <button class="dash-export-btn" onclick="Dashboard.exportToCsv()" title="Export CSV">Export CSV</button>
           </div>
-          <div>
-            <span class="counter-chip ${isPresent ? 'present' : 'absent'}" style="font-size:0.75rem; padding:4px 12px;">
-              ${isPresent ? '✓ Present' : '✗ Absent'}
+        </div>
+        <div id="dashLedgerContainer">
+          ${renderLedgerHtml(stats.students)}
+        </div>
+      </div>
+    `;
+
+    // Click outside to close lookup dropdown
+    document.addEventListener('click', (e) => {
+      const lookupWrap = document.querySelector('.lookup-input-wrap');
+      const dropdown = document.getElementById('lookupSuggestionsDropdown');
+      if (dropdown && lookupWrap && !lookupWrap.contains(e.target)) {
+        dropdown.style.display = 'none';
+      }
+    });
+  }
+
+  function renderPersonalDashboardHtml(levelId, studentName) {
+    const stats = Store.getDashboardStats(levelId);
+    const student = stats.students.find(s => s.studentName === studentName) || {
+      studentName: studentName,
+      levelLabel: levelId,
+      percentage: 0,
+      presentCount: 0,
+      absentCount: 0,
+      totalDays: 0,
+      history: []
+    };
+
+    const rateColor = student.percentage >= 80 ? 'var(--sage)' : 'var(--terra)';
+    const historyRows = student.history && student.history.length > 0 ? student.history.map(h => {
+      const isPres = h.status === 'Present';
+      return `
+        <div class="personal-history-row">
+          <div class="personal-history-date">
+            <span class="p-date-main">${h.date}</span>
+            <span class="p-date-sub">Recorded by ${AppUI.escapeHtml(h.teacher || 'Teacher')}</span>
+          </div>
+          <div class="personal-history-status">
+            <span class="personal-status-pill ${isPres ? 'present' : 'absent'}">
+              ${isPres ? '✓ Present' : 'Absent'}
             </span>
           </div>
         </div>
       `;
-    }).join('');
+    }).join('') : `<p class="dash-empty">No attendance sessions logged for this person yet.</p>`;
 
-    const bodyHtml = `
-      <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-surface-elevated); padding:14px 18px; border-radius:var(--radius-card); margin-bottom:16px; border:1px solid var(--border-main);">
-        <div>
-          <span style="font-size:0.8rem; color:var(--text-secondary);">Nilai:</span>
-          <strong style="color:var(--text-primary);">${AppUI.escapeHtml(levelId)}</strong>
+    return `
+      <div class="personal-dashboard-view">
+        <!-- Top Back Navigation -->
+        <div class="personal-nav-bar">
+          <button class="btn-back-hub" onclick="Dashboard.backToOverview()">
+            <span>← Back to All Analytics</span>
+          </button>
+          <span class="personal-level-badge">${AppUI.escapeHtml(student.levelLabel)}</span>
         </div>
-        <div>
-          <span style="font-size:0.8rem; color:var(--text-secondary);">Attendance:</span>
-          <strong style="color:${student.percentage >= 80 ? 'var(--mint)' : 'var(--primary)'}; font-size:1.15rem; margin-left:4px;">
-            ${student.percentage}%
-          </strong>
-          <span style="font-size:0.8rem; color:var(--text-secondary);">(${student.presentCount}/${student.totalDays})</span>
+
+        <!-- Student Profile Header Card -->
+        <div class="personal-profile-card">
+          <div class="personal-avatar">
+            ${AppUI.getInitials(student.studentName)}
+          </div>
+          <div class="personal-meta">
+            <h2 class="personal-name">${AppUI.escapeHtml(student.studentName)}</h2>
+            <p class="personal-sub">${AppUI.escapeHtml(student.levelLabel)} · Total ${student.totalDays} sessions</p>
+          </div>
         </div>
-      </div>
-      <div style="max-height:350px; overflow-y:auto; border:1px solid var(--border-main); border-radius:var(--radius-card);">
-        ${historyRows}
+
+        <!-- 3 Personal Metric Plaques -->
+        <div class="dash-metrics-row">
+          <div class="dash-metric-plaque">
+            <span class="dash-metric-label">Attendance Rate</span>
+            <span class="dash-metric-value" style="color: ${rateColor};">${student.percentage}%</span>
+            <span class="dash-metric-sub">${student.presentCount} of ${student.totalDays} sessions</span>
+          </div>
+          <div class="dash-metric-plaque">
+            <span class="dash-metric-label">Present Sessions</span>
+            <span class="dash-metric-value" style="color: var(--sage);">${student.presentCount}</span>
+            <span class="dash-metric-sub">Attended</span>
+          </div>
+          <div class="dash-metric-plaque">
+            <span class="dash-metric-label">Absent Sessions</span>
+            <span class="dash-metric-value" style="color: var(--terra);">${student.absentCount}</span>
+            <span class="dash-metric-sub">Missed</span>
+          </div>
+        </div>
+
+        <!-- Attendance History Log Trail -->
+        <div class="dash-section-card">
+          <h3 class="dash-section-title">Session History Log</h3>
+          <div class="personal-history-list">
+            ${historyRows}
+          </div>
+        </div>
       </div>
     `;
+  }
 
-    AppUI.showModal({
-      title: `${studentName} - History`,
-      bodyHtml: bodyHtml,
-      confirmText: 'Close',
-      cancelText: null
+  function calculateAllLevelsStats() {
+    return Store.LEVELS.map(lvl => {
+      const s = Store.getDashboardStats(lvl.id);
+      return {
+        id: lvl.id,
+        label: lvl.id === 'Volunteers' ? 'Volunteers' : `Nilai ${lvl.id.replace('Level', '')}`,
+        rate: s.overallAttendanceRate,
+        studentCount: s.totalStudents
+      };
     });
+  }
+
+  function renderLedgerOnly() {
+    const el = document.getElementById('dashLedgerContainer');
+    if (!el) return;
+    const stats = Store.getDashboardStats(selectedLevel);
+    el.innerHTML = renderLedgerHtml(stats.students);
+  }
+
+  function renderLedgerHtml(students) {
+    let filtered = students;
+    if (searchQuery) {
+      filtered = filtered.filter(s => 
+        s.studentName.toLowerCase().includes(searchQuery) ||
+        s.levelLabel.toLowerCase().includes(searchQuery)
+      );
+    }
+
+    if (filtered.length === 0) {
+      return `<p class="dash-empty">No student records found.</p>`;
+    }
+
+    return filtered.map(s => {
+      const rateColor = s.percentage >= 80 ? 'var(--sage)' : 'var(--terra)';
+      return `
+        <div class="dash-ledger-row" onclick="Dashboard.openPersonalDashboard('${AppUI.escapeHtml(s.levelId)}', '${AppUI.escapeHtml(s.studentName)}')">
+          <div class="dash-ledger-name">
+            <span class="dash-ledger-student">${AppUI.escapeHtml(s.studentName)}</span>
+            <span class="dash-ledger-sub">${AppUI.escapeHtml(s.levelLabel)} · ${s.totalDays} sessions</span>
+          </div>
+          <div class="dash-ledger-stats">
+            <span class="dash-pill present">${s.presentCount}P</span>
+            <span class="dash-pill absent">${s.absentCount}A</span>
+            <span class="dash-ledger-rate" style="color: ${rateColor};">${s.percentage}%</span>
+          </div>
+        </div>
+      `;
+    }).join('');
   }
 
   function exportToCsv() {
     const stats = Store.getDashboardStats(selectedLevel);
     if (!stats.students || stats.students.length === 0) {
-      AppUI.showToast('No student data to export.', 'error');
+      AppUI.showToast('No student data to export.', 'info');
       return;
     }
 
-    const headers = ['Nilai', 'Student Name', 'Total Sessions', 'Present Count', 'Absent Count', 'Attendance Percentage'];
-    const csvRows = [headers.join(',')];
-
+    let csvContent = 'data:text/csv;charset=utf-8,Level,Student Name,Present Days,Absent Days,Total Days,Attendance Rate\n';
     stats.students.forEach(s => {
-      const row = [
-        `"${s.levelId}"`,
-        `"${s.studentName.replace(/"/g, '""')}"`,
-        s.totalDays,
-        s.presentCount,
-        s.absentCount,
-        `"${s.percentage}%"`
-      ];
-      csvRows.push(row.join(','));
+      csvContent += `"${s.levelLabel}","${s.studentName}",${s.presentCount},${s.absentCount},${s.totalDays},"${s.percentage}%"\n`;
     });
 
-    const csvContent = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvRows.join('\n'));
+    const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
-    link.setAttribute('href', csvContent);
-    const dateStr = Store.getTodayString();
-    link.setAttribute('download', `Baladatta_Attendance_${selectedLevel}_${dateStr}.csv`);
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `baladatta_attendance_${selectedLevel}_${Store.getTodayString()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 
-    AppUI.showToast('Exported attendance CSV report.', 'success');
+    AppUI.showToast('CSV export started', 'success');
   }
 
   return {
@@ -268,7 +330,9 @@ const Dashboard = (() => {
     render,
     setFilterLevel,
     setSearchQuery,
-    showStudentHistory,
+    handleLookupInput,
+    openPersonalDashboard,
+    backToOverview,
     exportToCsv
   };
 })();
