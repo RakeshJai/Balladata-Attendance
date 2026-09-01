@@ -17,7 +17,7 @@
     if ('caches' in window) {
       caches.keys().then(names => {
         names.forEach(name => {
-          if (name !== 'baladatta-attendance-v25') caches.delete(name);
+          if (name !== 'baladatta-attendance-v26') caches.delete(name);
         });
       });
     }
@@ -32,8 +32,8 @@
   <meta name="theme-color" content="#1f1e1b">
   <link rel="icon" type="image/png" href="Logo.png">
 
-  <!-- Claude Warm Dark Neoclassical Theme (v25) -->
-  <link rel="stylesheet" href="css/styles.css?v=25">
+  <!-- Claude Warm Dark Neoclassical Theme (v26) -->
+  <link rel="stylesheet" href="css/styles.css?v=26">
 </head>
 
 <body>
@@ -50,7 +50,7 @@
   <!-- Top App Header -->
   <header class="app-header">
     <div class="header-container">
-      <div class="brand-section" onclick="App.navigateTo('classes')" style="cursor: pointer;" title="Go to Classes">
+      <div class="brand-section" onclick="App.navigateTo('attendance')" style="cursor: pointer;" title="Go to Attendance">
         <div class="brand-emblem" id="headerAvatar">
           <img src="Logo.png" alt="Baladatta Emblem" onerror="this.outerHTML='<span class=\'brand-monogram\'>B</span>'">
         </div>
@@ -76,7 +76,7 @@
   <main class="main-wrapper">
 
     <!-- =========================================================================
-         SCREEN 1: SIGN-IN GATE (Glass Card - Active by default)
+         SCREEN 1: SIGN-IN GATE (Glass Card - Google Sign In Only)
          ========================================================================= -->
     <section id="screenAuth" class="app-screen active">
       <div class="auth-glass-container">
@@ -87,7 +87,7 @@
 
           <div class="auth-glass-header">
             <h2 class="auth-glass-title">Welcome back.</h2>
-            <p class="auth-glass-desc">Baladatta Tamil School Teacher Attendance Portal</p>
+            <p class="auth-glass-desc">Sign in with your Google account to record attendance and sync with school records.</p>
           </div>
 
           <div class="auth-glass-content">
@@ -100,14 +100,6 @@
               </svg>
               <span>Sign in with Google</span>
             </button>
-
-            <div class="glass-divider">
-              <span>or</span>
-            </div>
-
-            <button id="authGateGuestBtn" class="btn-guest-continue">
-              Continue as Guest (Offline Mode)
-            </button>
           </div>
 
           <div class="auth-glass-footer">
@@ -118,20 +110,20 @@
     </section>
 
     <!-- =========================================================================
-         SCREEN 2: WELCOME BACK & CLASS SELECTION HUB
+         SCREEN 2: ANIMATED TABS ATTENDANCE WORKSPACE
          ========================================================================= -->
-    <section id="screenClassSelect" class="app-screen">
+    <section id="screenAttendance" class="app-screen">
       <div class="editorial-sheet">
-        
-        <!-- Welcome Greeting Banner -->
+
+        <!-- Top Greeting & Analytics Button -->
         <div class="hub-welcome-banner">
           <div class="hub-greeting-text">
             <h2 class="hub-title" id="hubTeacherGreeting">Welcome back, Teacher</h2>
-            <p class="hub-subtitle">Select a class to take attendance for this session</p>
+            <p class="hub-subtitle">Select a Nilai tab below to record weekly attendance</p>
           </div>
           
           <div class="hub-quick-nav">
-            <button class="btn-ghost-action" onclick="App.navigateTo('analytics')" title="View Analytics">
+            <button class="btn-ghost-action" onclick="App.navigateTo('analytics')" title="View School Analytics">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
               <span>Analytics & Reports</span>
             </button>
@@ -139,45 +131,6 @@
         </div>
 
         <!-- Date & Session Selector Bar -->
-        <div class="hub-date-toolbar">
-          <div class="date-controls-group">
-            <button id="hubPrevDateBtn" class="icon-btn" title="Previous Day">‹</button>
-            <input type="date" id="hubDatePicker" class="pill-date-input" aria-label="Session Date" />
-            <button id="hubNextDateBtn" class="icon-btn" title="Next Day">›</button>
-            <button id="hubDateTodayBtn" class="btn-today" title="Set to Today">Today</button>
-          </div>
-
-          <div class="hub-session-note" id="hubSessionNote">
-            Recording session for <strong id="hubFormattedDateText">Today</strong>
-          </div>
-        </div>
-
-        <!-- Class Selection Cards Grid -->
-        <div class="class-selection-grid" id="classSelectionGrid">
-          <!-- Populated dynamically via JS -->
-        </div>
-
-      </div>
-    </section>
-
-    <!-- =========================================================================
-         SCREEN 3: FOCUSED ATTENDANCE TAKING FLOW
-         ========================================================================= -->
-    <section id="screenAttendance" class="app-screen">
-      <div class="editorial-sheet">
-
-        <!-- Back to Hub Navigation Bar -->
-        <div class="attendance-top-nav">
-          <button class="btn-back-hub" onclick="App.navigateTo('classes')" title="Back to Class List">
-            <span>← All Classes</span>
-          </button>
-
-          <div class="attendance-class-badge" id="attendanceClassBadge">
-            Nilai 1
-          </div>
-        </div>
-
-        <!-- Date & Status Toolbar -->
         <div class="toolbar-card">
           <div class="date-controls-group">
             <button id="prevDateBtn" class="icon-btn" title="Previous Day">‹</button>
@@ -191,47 +144,55 @@
           </div>
         </div>
 
-        <!-- Roster Header & Editorial Mass Actions -->
-        <div class="roster-header-row">
-          <div class="roster-heading">
-            <span id="rosterClassNameTitle">Students Roster</span>
+        <!-- Animated Tabs Bar for Classes (Nilais) -->
+        <div class="animated-tabs-bar" id="animatedTabsBar">
+          <!-- Rendered dynamically via App.renderNilaiTabs -->
+        </div>
+
+        <!-- Tab Content Area (Smooth Animated Transition) -->
+        <div class="animated-tab-content" id="animatedTabContent">
+          <!-- Roster Header & Editorial Mass Actions -->
+          <div class="roster-header-row">
+            <div class="roster-heading">
+              <span id="rosterClassNameTitle">Students Roster</span>
+            </div>
+            <div class="roster-actions">
+              <button id="markAllPresentBtn" class="btn-ghost-action" title="Mark All Present">
+                Mark All Present
+              </button>
+              <span class="action-separator">/</span>
+              <button id="markAllAbsentBtn" class="btn-ghost-action" title="Mark All Absent">
+                Mark All Absent
+              </button>
+            </div>
           </div>
-          <div class="roster-actions">
-            <button id="markAllPresentBtn" class="btn-ghost-action" title="Mark All Present">
-              Mark All Present
-            </button>
-            <span class="action-separator">/</span>
-            <button id="markAllAbsentBtn" class="btn-ghost-action" title="Mark All Absent">
-              Mark All Absent
+
+          <!-- Student Cards Container -->
+          <div id="studentListContainer" class="student-cards-list">
+            <!-- Rendered dynamically via App.renderStudentList -->
+          </div>
+
+          <!-- Empty State -->
+          <div id="emptyStudentState" class="empty-state-box" style="display:none;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" style="color:var(--terra); margin-bottom:8px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <h3>No students in this class</h3>
+            <p style="font-size:0.8125rem;">Add a student below to get started.</p>
+          </div>
+
+          <!-- Add Student Bar -->
+          <div class="add-student-container">
+            <input type="text" id="newStudentInput" class="add-student-input" placeholder="+ Add student full name..." aria-label="Student name" />
+            <button id="addStudentBtn" class="btn-primary">
+              + Add Student
             </button>
           </div>
-        </div>
-
-        <!-- Student Cards Container -->
-        <div id="studentListContainer" class="student-cards-list">
-          <!-- Rendered dynamically via App.renderStudentList -->
-        </div>
-
-        <!-- Empty State -->
-        <div id="emptyStudentState" class="empty-state-box" style="display:none;">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" style="color:var(--terra); margin-bottom:8px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          <h3>No students in this class</h3>
-          <p style="font-size:0.8125rem;">Add a student below to get started.</p>
-        </div>
-
-        <!-- Add Student Bar -->
-        <div class="add-student-container">
-          <input type="text" id="newStudentInput" class="add-student-input" placeholder="+ Add student full name..." aria-label="Student name" />
-          <button id="addStudentBtn" class="btn-primary">
-            + Add Student
-          </button>
         </div>
 
       </div>
     </section>
 
     <!-- =========================================================================
-         SCREEN 4: SUBMISSION CONFIRMATION & SUCCESS SCREEN
+         SCREEN 3: SUBMISSION CONFIRMATION & SUCCESS SCREEN
          ========================================================================= -->
     <section id="screenSuccess" class="app-screen">
       <div class="editorial-sheet">
@@ -271,8 +232,8 @@
 
           <!-- Next Actions -->
           <div class="success-actions-group">
-            <button class="btn-primary" onclick="App.navigateTo('classes')" style="width: 100%; min-height: 44px;">
-              Take Attendance for Another Class
+            <button class="btn-primary" onclick="App.navigateTo('attendance')" style="width: 100%; min-height: 44px;">
+              Take Attendance for Another Nilai
             </button>
             <div class="success-subactions">
               <button class="btn-ghost-action" onclick="App.navigateTo('attendance')" style="flex: 1;">
@@ -289,13 +250,13 @@
     </section>
 
     <!-- =========================================================================
-         SCREEN 5: DASHBOARD ANALYTICS VIEW
+         SCREEN 4: DASHBOARD ANALYTICS VIEW
          ========================================================================= -->
     <section id="screenAnalytics" class="app-screen">
       <div class="editorial-sheet">
         <!-- Top Back Navigation -->
         <div class="attendance-top-nav" style="margin-bottom: 16px;">
-          <button class="btn-back-hub" onclick="App.navigateTo('classes')" title="Back to Classes">
+          <button class="btn-back-hub" onclick="App.navigateTo('attendance')" title="Back to Attendance">
             <span>← Back to Classes</span>
           </button>
           <div class="attendance-class-badge">
@@ -311,7 +272,7 @@
 
   </main>
 
-  <!-- Sticky Bottom Action Bar (Only visible on Screen 3) -->
+  <!-- Sticky Bottom Action Bar (Only visible on Screen 2) -->
   <aside class="sticky-action-bar" id="stickyActionBar" style="display: none;">
     <div class="sticky-action-container">
       <div class="tally-group">
@@ -344,12 +305,12 @@
   <!-- Toast Container -->
   <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
-  <!-- Scripts (Cache Busted v25) -->
-  <script src="js/store.js?v=25"></script>
-  <script src="js/sheets-api.js?v=25"></script>
-  <script src="js/student-mgr.js?v=25"></script>
-  <script src="js/dashboard.js?v=25"></script>
-  <script src="js/app.js?v=25"></script>
+  <!-- Scripts (Cache Busted v26) -->
+  <script src="js/store.js?v=26"></script>
+  <script src="js/sheets-api.js?v=26"></script>
+  <script src="js/student-mgr.js?v=26"></script>
+  <script src="js/dashboard.js?v=26"></script>
+  <script src="js/app.js?v=26"></script>
 </body>
 
 </html>

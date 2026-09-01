@@ -1,6 +1,6 @@
 /**
- * Baladatta Tamil School Attendance - Guided Multi-Screen Application Controller
- * Claude Warm Dark Mode & Step-by-Step Flow Architecture
+ * Baladatta Tamil School Attendance - Main Application Controller
+ * Claude Warm Dark Mode & Animated Nilai Tabs Architecture
  */
 
 const AppUI = (() => {
@@ -94,14 +94,13 @@ const AppUI = (() => {
   };
 })();
 
-// Main Controller with Multi-Screen Flow
+// Main Controller with Animated Tabs Architecture
 const App = (() => {
   let currentLevel = 'Level1';
   let currentDate = Store.getTodayString();
   let currentAttendance = {};
-  let currentScreen = 'auth'; // 'auth' | 'classes' | 'attendance' | 'success' | 'analytics'
+  let currentScreen = 'auth'; // 'auth' | 'attendance' | 'success' | 'analytics'
   let isSubmitting = false;
-  let hasSkippedAuth = false;
 
   async function init() {
     Store.seedSampleHistoryIfEmpty();
@@ -114,7 +113,7 @@ const App = (() => {
         AppUI.showToast(`Google Sheets connected!`, 'success');
         updateAuthUI(true);
         if (currentScreen === 'auth') {
-          navigateTo('classes');
+          navigateTo('attendance');
         } else {
           refreshCurrentScreen();
         }
@@ -129,7 +128,7 @@ const App = (() => {
     // Check if user is already signed in or has stored token
     if (SheetsAPI.isSignedIn()) {
       updateAuthUI(true);
-      navigateTo('classes');
+      navigateTo('attendance');
     } else {
       navigateTo('auth');
     }
@@ -139,16 +138,11 @@ const App = (() => {
 
   function setupDatePickers() {
     const dateInput = document.getElementById('attendanceDatePicker');
-    const hubDateInput = document.getElementById('hubDatePicker');
     const maxDate = Store.formatDate(new Date(Date.now() + 86400000 * 60));
 
     if (dateInput) {
       dateInput.value = currentDate;
       dateInput.max = maxDate;
-    }
-    if (hubDateInput) {
-      hubDateInput.value = currentDate;
-      hubDateInput.max = maxDate;
     }
   }
 
@@ -166,20 +160,6 @@ const App = (() => {
     const nextDateBtn = document.getElementById('nextDateBtn');
     if (prevDateBtn) prevDateBtn.addEventListener('click', () => stepDate(-1));
     if (nextDateBtn) nextDateBtn.addEventListener('click', () => stepDate(1));
-
-    // Hub View Date picker
-    const hubDateInput = document.getElementById('hubDatePicker');
-    if (hubDateInput) {
-      hubDateInput.addEventListener('change', (e) => changeDate(e.target.value));
-    }
-    const hubTodayBtn = document.getElementById('hubDateTodayBtn');
-    if (hubTodayBtn) {
-      hubTodayBtn.addEventListener('click', () => changeDate(Store.getTodayString()));
-    }
-    const hubPrevDateBtn = document.getElementById('hubPrevDateBtn');
-    const hubNextDateBtn = document.getElementById('hubNextDateBtn');
-    if (hubPrevDateBtn) hubPrevDateBtn.addEventListener('click', () => stepDate(-1));
-    if (hubNextDateBtn) hubNextDateBtn.addEventListener('click', () => stepDate(1));
 
     // Submit Attendance Button
     const submitBtn = document.getElementById('submitAttendanceBtn');
@@ -214,15 +194,6 @@ const App = (() => {
       authGateGoogleBtn.addEventListener('click', () => SheetsAPI.signIn());
     }
 
-    const authGateGuestBtn = document.getElementById('authGateGuestBtn');
-    if (authGateGuestBtn) {
-      authGateGuestBtn.addEventListener('click', () => {
-        hasSkippedAuth = true;
-        navigateTo('classes');
-        AppUI.showToast('Continuing in Guest mode (local storage)', 'info');
-      });
-    }
-
     // Modal Events
     const modalConfirmBtn = document.getElementById('modalConfirmBtn');
     const modalCancelBtn = document.getElementById('modalCancelBtn');
@@ -244,7 +215,6 @@ const App = (() => {
 
     const screens = {
       auth: document.getElementById('screenAuth'),
-      classes: document.getElementById('screenClassSelect'),
       attendance: document.getElementById('screenAttendance'),
       success: document.getElementById('screenSuccess'),
       analytics: document.getElementById('screenAnalytics')
@@ -258,7 +228,7 @@ const App = (() => {
       if (s) s.classList.remove('active');
     });
 
-    // Toggle wide mode
+    // Toggle wide mode for analytics
     if (mainWrapper) {
       if (screenName === 'analytics') {
         mainWrapper.classList.add('dashboard-wide');
@@ -280,13 +250,12 @@ const App = (() => {
     }
 
     // Screen specific initializers
-    if (screenName === 'classes') {
-      renderClassSelectionHub();
-    } else if (screenName === 'attendance') {
+    if (screenName === 'attendance') {
       if (params.level) {
         currentLevel = params.level;
         StudentMgr.setLevel(currentLevel);
       }
+      renderNilaiTabs();
       loadCurrentAttendance();
     } else if (screenName === 'analytics') {
       Dashboard.init();
@@ -305,23 +274,19 @@ const App = (() => {
     currentDate = Store.formatDate(newDateStr);
 
     const dateInput = document.getElementById('attendanceDatePicker');
-    const hubDateInput = document.getElementById('hubDatePicker');
     if (dateInput) dateInput.value = currentDate;
-    if (hubDateInput) hubDateInput.value = currentDate;
 
-    if (currentScreen === 'classes') {
-      renderClassSelectionHub();
-    } else if (currentScreen === 'attendance') {
+    renderNilaiTabs();
+    if (currentScreen === 'attendance') {
       loadCurrentAttendance();
     }
   }
 
   /**
-   * Renders Screen 2: Class Selection Hub
+   * Renders the Animated Tabs Bar for Nilai Classes
    */
-  function renderClassSelectionHub() {
-    const grid = document.getElementById('classSelectionGrid');
-    const formattedDateEl = document.getElementById('hubFormattedDateText');
+  function renderNilaiTabs() {
+    const tabsBar = document.getElementById('animatedTabsBar');
     const teacherGreetingEl = document.getElementById('hubTeacherGreeting');
 
     if (teacherGreetingEl) {
@@ -329,65 +294,64 @@ const App = (() => {
       teacherGreetingEl.textContent = `Welcome back, ${teacherName}`;
     }
 
-    if (formattedDateEl) {
-      const isToday = currentDate === Store.getTodayString();
-      formattedDateEl.textContent = isToday ? 'Today' : currentDate;
-    }
-
-    if (!grid) return;
+    if (!tabsBar) return;
 
     const html = Store.LEVELS.map(lvl => {
       const label = lvl.id === 'Volunteers' ? 'Volunteers' : `Nilai ${lvl.id.replace('Level', '')}`;
-      const students = Store.getStudentsForLevel(lvl.id);
-      const studentCount = students.length;
+      const isActive = lvl.id === currentLevel;
       const { hasExistingRecord } = Store.getAttendanceForDate(lvl.id, currentDate);
 
       return `
-        <div class="class-card" onclick="App.selectClassAndStart('${lvl.id}')">
-          <div class="class-card-top">
-            <div class="class-card-name">${label}</div>
-            <span class="class-card-status-dot ${hasExistingRecord ? 'recorded' : 'pending'}">
-              ${hasExistingRecord ? '● Recorded' : '○ Pending'}
-            </span>
-          </div>
-
-          <div class="class-card-count">
-            ${studentCount} student${studentCount === 1 ? '' : 's'} enrolled
-          </div>
-
-          <div class="class-card-foot">
-            <span>${hasExistingRecord ? 'Review / Edit Attendance' : 'Take Attendance'}</span>
-            <span>→</span>
-          </div>
-        </div>
+        <button class="animated-tab-btn ${isActive ? 'active' : ''} ${hasExistingRecord ? 'recorded' : ''}" 
+                onclick="App.selectNilaiTab('${lvl.id}')"
+                title="${label}">
+          <span class="animated-tab-dot"></span>
+          <span>${label}</span>
+        </button>
       `;
     }).join('');
 
-    grid.innerHTML = html;
+    tabsBar.innerHTML = html;
   }
 
-  function selectClassAndStart(levelId) {
+  /**
+   * Switches to a different Nilai tab with smooth animation
+   */
+  function selectNilaiTab(levelId) {
+    if (currentLevel === levelId) return;
+
     currentLevel = levelId;
     StudentMgr.setLevel(currentLevel);
-    navigateTo('attendance', { level: levelId });
+
+    // Re-render tabs to update active state
+    renderNilaiTabs();
+
+    // Trigger tab content entrance animation
+    const tabContent = document.getElementById('animatedTabContent');
+    if (tabContent) {
+      tabContent.classList.remove('animated-tab-content');
+      void tabContent.offsetWidth; // Trigger reflow
+      tabContent.classList.add('animated-tab-content');
+    }
+
+    loadCurrentAttendance();
   }
 
   async function loadCurrentAttendance() {
     const studentContainer = document.getElementById('studentListContainer');
-    const classBadge = document.getElementById('attendanceClassBadge');
     const rosterTitle = document.getElementById('rosterClassNameTitle');
 
     const classLabel = currentLevel === 'Volunteers' ? 'Volunteers' : `Nilai ${currentLevel.replace('Level', '')}`;
-    if (classBadge) classBadge.textContent = `${classLabel}`;
-    if (rosterTitle) rosterTitle.textContent = `${classLabel} Students`;
+    const students = Store.getStudentsForLevel(currentLevel);
+    if (rosterTitle) rosterTitle.textContent = `${classLabel} (${students.length} students)`;
 
     if (!studentContainer) return;
 
-    const students = await SheetsAPI.fetchStudentsFromSheet(currentLevel);
+    const fetchedStudents = await SheetsAPI.fetchStudentsFromSheet(currentLevel);
     const { attendanceMap, hasExistingRecord } = Store.getAttendanceForDate(currentLevel, currentDate);
     currentAttendance = attendanceMap;
 
-    renderStudentList(students, hasExistingRecord);
+    renderStudentList(fetchedStudents, hasExistingRecord);
     updateStatsPills();
   }
 
@@ -543,7 +507,7 @@ const App = (() => {
       const totalCount = statuses.length;
       const rate = totalCount > 0 ? Math.round((presentCount / totalCount) * 100) : 0;
 
-      // Update Screen 4 elements
+      // Update Screen 3 elements
       const classLabel = currentLevel === 'Volunteers' ? 'Volunteers' : `Nilai ${currentLevel.replace('Level', '')}`;
       const successClassDateText = document.getElementById('successClassDateText');
       const successPresentCount = document.getElementById('successPresentCount');
@@ -566,9 +530,10 @@ const App = (() => {
         }
       }
 
+      renderNilaiTabs();
       AppUI.showToast(`Attendance saved!`, 'success');
 
-      // Seamlessly transition to Screen 4 (Confirmation Screen)
+      // Seamlessly transition to Screen 3 (Confirmation Screen)
       navigateTo('success');
     } catch (err) {
       console.error('[App] Submit error:', err);
@@ -583,17 +548,16 @@ const App = (() => {
   }
 
   function onStudentDataChanged() {
+    renderNilaiTabs();
     if (currentScreen === 'attendance') {
       loadCurrentAttendance();
-    } else if (currentScreen === 'classes') {
-      renderClassSelectionHub();
     } else if (currentScreen === 'analytics') {
       Dashboard.render();
     }
   }
 
   function refreshCurrentScreen() {
-    if (currentScreen === 'classes') renderClassSelectionHub();
+    renderNilaiTabs();
     if (currentScreen === 'attendance') loadCurrentAttendance();
     if (currentScreen === 'analytics') Dashboard.render();
   }
@@ -632,7 +596,7 @@ const App = (() => {
   return {
     init,
     navigateTo,
-    selectClassAndStart,
+    selectNilaiTab,
     changeDate,
     toggleAttendance,
     toggleAttendanceByIndex,

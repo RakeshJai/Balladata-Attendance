@@ -333,7 +333,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 }
 
 /* ==========================================================================
-   SCREEN 1: SIGN-IN GATE (GLASS CARD SPECIFICATION)
+   SCREEN 1: SIGN-IN GATE (GLASS CARD SPECIFICATION - NO GUEST MODE)
    ========================================================================== */
 .auth-glass-container {
   display: flex;
@@ -431,48 +431,6 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   transform: scale(0.98);
 }
 
-.glass-divider {
-  display: flex;
-  align-items: center;
-  text-align: center;
-  color: var(--ink-muted);
-  font-size: 0.75rem;
-  margin: 4px 0;
-}
-
-.glass-divider::before, .glass-divider::after {
-  content: '';
-  flex: 1;
-  border-bottom: 1px solid var(--rule-strong);
-}
-
-.glass-divider span {
-  padding: 0 10px;
-}
-
-.btn-guest-continue {
-  width: 100%;
-  background: var(--surface-raised);
-  color: var(--ink-secondary);
-  border: 1px solid var(--rule-strong);
-  padding: 11px 16px;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  cursor: pointer;
-  border-radius: 8px;
-  font-family: var(--sans);
-  transition: color 0.12s ease, background 0.12s ease, transform 0.08s ease;
-}
-
-.btn-guest-continue:hover {
-  color: var(--ink);
-  background: var(--surface-hover);
-}
-
-.btn-guest-continue:active {
-  transform: scale(0.98);
-}
-
 .auth-glass-footer {
   margin-top: 28px;
   font-size: 0.72rem;
@@ -480,7 +438,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 }
 
 /* ==========================================================================
-   SCREEN 2: WELCOME BACK & CLASS SELECTION HUB
+   SCREEN 2: ANIMATED TABS BAR & WORKSPACE
    ========================================================================== */
 .hub-welcome-banner {
   display: flex;
@@ -488,7 +446,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   padding-bottom: 16px;
   border-bottom: 1px solid var(--rule);
 }
@@ -503,148 +461,94 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   color: var(--ink-secondary);
 }
 
-.hub-date-toolbar {
+/* Animated Tabs Navigation */
+.animated-tabs-bar {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 20px;
-  background: var(--surface);
+  gap: 4px;
+  overflow-x: auto;
+  padding: 5px;
+  background: rgba(38, 37, 34, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--rule-strong);
-  border-radius: 8px;
-  padding: 10px 14px;
+  border-radius: 12px;
+  margin-bottom: 18px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
-.hub-session-note {
+.animated-tabs-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.animated-tab-btn {
+  padding: 8px 14px;
+  border-radius: 8px;
   font-size: 0.8125rem;
+  font-weight: 600;
   color: var(--ink-secondary);
-}
-
-.hub-session-note strong {
-  color: var(--terra);
-}
-
-/* Class Selection Grid & Cards */
-.class-selection-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 12px;
-}
-
-.class-card {
-  background: var(--surface);
-  border: 1px solid var(--rule-strong);
-  border-radius: 8px;
-  padding: 16px;
+  background: transparent;
+  border: 1px solid transparent;
   cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 124px;
-  transition: background 0.12s ease, border-color 0.12s ease, transform 0.08s ease;
-}
-
-.class-card:hover {
-  background: var(--surface-raised);
-  border-color: var(--terra-border);
-}
-
-.class-card:active {
-  transform: scale(0.98);
-}
-
-.class-card-top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-
-.class-card-name {
-  font-family: var(--serif);
-  font-size: 1.15rem;
-  color: var(--ink);
-  letter-spacing: -0.02em;
-}
-
-.class-card-status-dot {
-  font-size: 0.72rem;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 4px;
   white-space: nowrap;
-}
-
-.class-card-status-dot.recorded {
-  background: var(--sage-dim);
-  color: var(--sage);
-  border: 1px solid var(--sage-border);
-}
-
-.class-card-status-dot.pending {
-  background: var(--surface-raised);
-  color: var(--ink-muted);
-  border: 1px solid var(--rule);
-}
-
-.class-card-count {
-  font-size: 0.78rem;
-  color: var(--ink-secondary);
-}
-
-.class-card-foot {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 0.75rem;
-  color: var(--terra);
-  font-weight: 600;
-  margin-top: 12px;
-  border-top: 1px solid var(--rule);
-  padding-top: 8px;
-}
-
-/* ==========================================================================
-   SCREEN 3: FOCUSED ATTENDANCE TAKING STYLES
-   ========================================================================== */
-.attendance-top-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--rule);
-}
-
-.btn-back-hub {
-  background: var(--surface-raised);
-  color: var(--ink-secondary);
-  border: 1px solid var(--rule-strong);
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 0.78rem;
-  font-weight: 600;
-  cursor: pointer;
   font-family: var(--sans);
-  transition: background 0.12s ease, color 0.12s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.18s ease, background 0.18s ease, transform 0.08s ease, border-color 0.18s ease;
+  flex-shrink: 0;
 }
 
-.btn-back-hub:hover {
-  background: var(--surface-hover);
+.animated-tab-btn:hover {
   color: var(--ink);
+  background: var(--surface-raised);
 }
 
-.attendance-class-badge {
-  font-family: var(--serif);
-  font-size: 1.05rem;
-  color: var(--terra);
-  font-weight: 600;
+.animated-tab-btn:active {
+  transform: scale(0.97);
 }
 
-/* Common Toolbar Controls */
+.animated-tab-btn.active {
+  color: #ffffff;
+  background: var(--terra);
+  border-color: var(--terra-border);
+  box-shadow: 0 3px 10px rgba(217, 119, 87, 0.35);
+  font-weight: 700;
+}
+
+.animated-tab-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ink-muted);
+  transition: background 0.18s ease;
+}
+
+.animated-tab-btn.active .animated-tab-dot {
+  background: #ffffff;
+}
+
+.animated-tab-btn.recorded .animated-tab-dot {
+  background: var(--sage);
+}
+
+/* Animated Tab Content Transition */
+.animated-tab-content {
+  animation: tabEntrance 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes tabEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Toolbar Controls */
 .toolbar-card {
   border-bottom: 1px solid var(--rule);
   padding: 0 0 16px;
@@ -1024,7 +928,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 }
 
 /* ==========================================================================
-   SCREEN 4: SUBMISSION SUCCESS SCREEN STYLES
+   SCREEN 3: SUBMISSION SUCCESS SCREEN STYLES
    ========================================================================== */
 .success-screen-box {
   padding: 32px 16px;
@@ -1130,7 +1034,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 }
 
 /* ==========================================================================
-   SCREEN 5: DASHBOARD ANALYTICS STYLES
+   SCREEN 4: DASHBOARD ANALYTICS STYLES
    ========================================================================== */
 .dash-metrics-row {
   display: grid;
@@ -1551,7 +1455,6 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   .header-container { padding: 10px 14px; }
   .main-wrapper { padding: 12px 14px 130px; }
   .editorial-sheet { padding: 16px 12px; }
-  .class-selection-grid { grid-template-columns: 1fr; }
   .auth-glass-card { padding: 32px 20px; }
   
   .bg-watermark-left {

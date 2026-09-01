@@ -1,4 +1,4 @@
-const CACHE_NAME = 'baladatta-attendance-v25';
+const CACHE_NAME = 'baladatta-attendance-v26';
 const urlsToCache = [
   './',
   './index.html',
