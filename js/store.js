@@ -13,6 +13,7 @@ const Store = (() => {
   };
 
   const LEVELS = [
+    { id: 'Level0', label: 'Nilai 0 (Level 0)' },
     { id: 'Level1', label: 'Nilai 1 (Level 1)' },
     { id: 'Level2', label: 'Nilai 2 (Level 2)' },
     { id: 'Level3', label: 'Nilai 3 (Level 3)' },
@@ -24,6 +25,7 @@ const Store = (() => {
 
   // Default seed students per level for initial load or demo mode
   const DEFAULT_STUDENTS = {
+    Level0: ['Aadhya Ramesh', 'Dev Karthik', 'Inba Selvam', 'Kavin Kumar', 'Prisha Nair', 'Sai Pranav'],
     Level1: ['Aarav Kumar', 'Ananya Ramesh', 'Dhruv Patel', 'Kavya Sundaram', 'Madhavan Nair', 'Nila Selvan', 'Siddharth Iyer'],
     Level2: ['Aditi Venkatesh', 'Arjun Bala', 'Diya Natarajan', 'Ishaan Shankar', 'Maya Krishnan', 'Pranav Murugan', 'Tanvi Raj'],
     Level3: ['Abhinav Swaminathan', 'Harini Prakash', 'Karthik Raja', 'Meera Subramaniam', 'Rohan Sethuraman', 'Sneha Vijay'],
