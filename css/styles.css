@@ -1,48 +1,49 @@
 /* ==========================================================================
-   Baladatta Tamil School - Flat Neoclassical Editorial Design System
-   Palette: Terracotta (#D97757), Pampas (#F4F3EE), Cloudy (#B1ADA1), Tuatara (#373734), White (#FFFFFF).
+   Baladatta Tamil School - Claude Warm Dark Mode Design System
+   Palette: Terracotta (#D97757), Warm Charcoal Canvas (#1F1E1B), Elevated Matte (#262522 / #2B2A27),
+   Pampas Text (#F4F3EE), Cloudy Muted (#B1ADA1).
    Strict Flat States, Zero Glow, High Contrast, 4-Point Grid.
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-  /* Pampas & White Editorial Canvas Hierarchy */
-  --canvas: #f4f3ee;          /* Pampas: Soft warm off-white canvas */
-  --sheet: #ffffff;           /* White: Crisp clean editorial sheet */
-  --surface: #ffffff;         /* White: Card & plaque container */
-  --surface-raised: #faf9f6;  /* Subtle warm elevated tint */
-  --surface-hover: #ece9e2;   /* Interactive hover state */
-  --surface-active: #dedad0;  /* Pressed state */
+  /* Claude's Warm Dark Mode Hierarchy */
+  --canvas: #1f1e1b;          /* Warm dark charcoal canvas */
+  --sheet: #262522;           /* Elevated warm matte sheet */
+  --surface: #2b2a27;         /* Card & plaque container */
+  --surface-raised: #33312d;  /* Inputs, chips, secondary buttons */
+  --surface-hover: #3e3c37;   /* Interactive hover state */
+  --surface-active: #47443e;  /* Pressed state */
 
   /* Terracotta / Japonica Orange (Primary Interactive Accent) */
   --terra: #d97757;
-  --terra-hover: #c96848;
-  --terra-active: #b35637;
-  --terra-dim: rgba(217, 119, 87, 0.12);
+  --terra-hover: #e2896c;
+  --terra-active: #c26546;
+  --terra-dim: rgba(217, 119, 87, 0.16);
   --terra-border: rgba(217, 119, 87, 0.40);
 
   /* Bilva Sage (Semantic Present Status & Positive Metric) */
-  --sage: #4d7a5e;
-  --sage-hover: #3f684e;
-  --sage-active: #32553f;
-  --sage-dim: #eaf2ed;
-  --sage-border: #b3d4be;
+  --sage: #6b9e7a;
+  --sage-hover: #7ba888;
+  --sage-active: #5c8b6a;
+  --sage-dim: rgba(107, 158, 122, 0.16);
+  --sage-border: rgba(107, 158, 122, 0.40);
 
   /* Semantic Danger / Error */
-  --danger: #c85a54;
-  --danger-dim: #fbeeed;
-  --danger-border: #e8a9a5;
+  --danger: #cf5c5c;
+  --danger-dim: rgba(207, 92, 92, 0.16);
+  --danger-border: rgba(207, 92, 92, 0.40);
 
-  /* Text & Ink (High-contrast accessible hierarchy) */
-  --ink: #373734;             /* Tuatara: High-contrast near-black primary */
-  --ink-secondary: #5c5850;   /* Deep warm charcoal secondary */
-  --ink-muted: #827e74;       /* Warm gray metadata & subtext */
+  /* Text & Ink (Pampas & Cloudy on Warm Dark Canvas) */
+  --ink: #f4f3ee;             /* Pampas: Primary high-contrast warm off-white */
+  --ink-secondary: #b1ada1;   /* Cloudy: Secondary warm gray */
+  --ink-muted: #7d7970;       /* Muted tertiary subtext */
 
   /* Architectural Borders & Rules */
-  --rule: #e8e5de;            /* Cloudy tint light border */
-  --rule-strong: #d4d0c7;     /* Cloudy tint solid border */
-  --rule-cloudy: #b1ada1;     /* Cloudy: Muted warm gray */
+  --rule: rgba(244, 243, 238, 0.08);
+  --rule-strong: rgba(244, 243, 238, 0.14);
+  --rule-cloudy: #b1ada1;
 
   /* Typography */
   --serif: 'DM Serif Display', Georgia, serif;
@@ -99,11 +100,10 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center top;
-  opacity: 0.08;
-  mix-blend-mode: multiply;
+  opacity: 0.10;
   pointer-events: none;
   z-index: 0;
-  filter: contrast(1.15);
+  filter: contrast(1.15) brightness(0.85);
   mask-image: linear-gradient(to right, rgba(0,0,0,1) 35%, rgba(0,0,0,0) 100%);
   -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1) 35%, rgba(0,0,0,0) 100%);
 }
@@ -119,11 +119,10 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   background-repeat: no-repeat;
   background-size: cover;
   background-position: right center;
-  opacity: 0.07;
-  mix-blend-mode: multiply;
+  opacity: 0.09;
   pointer-events: none;
   z-index: 0;
-  filter: contrast(1.15);
+  filter: contrast(1.15) brightness(0.85);
   mask-image: linear-gradient(to left, rgba(0,0,0,1) 35%, rgba(0,0,0,0) 100%);
   -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,1) 35%, rgba(0,0,0,0) 100%);
 }
@@ -135,8 +134,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center 20%;
-  opacity: 0.03;
-  mix-blend-mode: multiply;
+  opacity: 0.04;
   pointer-events: none;
   z-index: 0;
 }
@@ -160,7 +158,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(244, 243, 238, 0.98);
+  background: rgba(31, 30, 27, 0.98);
   border-bottom: 1px solid var(--rule-strong);
   padding-top: env(safe-area-inset-top, 0);
 }
@@ -271,7 +269,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 }
 
 .sync-button.connected:hover {
-  background: #ddead2;
+  background: rgba(107, 158, 122, 0.24);
 }
 
 .sync-dot {
@@ -295,7 +293,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 
 .segmented-pill-bar {
   display: flex;
-  border-bottom: 1px solid var(--rule-strong);
+  border-bottom: 1px solid var(--rule);
   gap: 0;
 }
 
@@ -374,9 +372,9 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   border-radius: 6px;
   font-size: 0.8125rem;
   font-weight: 600;
-  background: var(--surface-raised);
+  background: var(--surface);
   color: var(--ink-secondary);
-  border: 1px solid var(--rule-strong);
+  border: 1px solid var(--rule);
   cursor: pointer;
   white-space: nowrap;
   font-family: var(--sans);
@@ -432,7 +430,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   font-weight: 600;
   outline: none;
   font-family: var(--sans);
-  color-scheme: light;
+  color-scheme: dark;
   transition: border-color 0.12s ease, background 0.12s ease;
 }
 
@@ -537,7 +535,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 }
 
 .btn-ghost-action {
-  background: var(--surface-raised);
+  background: var(--surface);
   color: var(--ink-secondary);
   border: 1px solid var(--rule-strong);
   padding: 6px 14px;
@@ -590,8 +588,8 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   transition: background 0.12s ease;
 }
 
-.student-card:hover { background: var(--surface-raised); }
-.student-card:active { background: var(--surface-hover); }
+.student-card:hover { background: var(--surface-hover); }
+.student-card:active { background: var(--surface-active); }
 
 .student-info {
   display: flex;
@@ -724,7 +722,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 }
 
 .is-present .attendance-toggle-btn:hover {
-  background: #ddead2;
+  background: rgba(107, 158, 122, 0.24);
 }
 
 /* --- Add Student Row --- */
@@ -795,7 +793,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   left: 0;
   right: 0;
   z-index: 90;
-  background: rgba(244, 243, 238, 0.98);
+  background: rgba(31, 30, 27, 0.98);
   border-top: 1px solid var(--rule-strong);
   padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0));
 }
@@ -856,7 +854,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 }
 
 /* ==========================================================================
-   Analytics Dashboard - Flat Neoclassical Editorial
+   Analytics Dashboard - Flat Neoclassical Claude Dark Mode
    ========================================================================== */
 .dashboard-section { display: none; }
 
@@ -869,7 +867,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 }
 
 .dash-metric-plaque {
-  background: var(--surface-raised);
+  background: var(--surface);
   border: 1px solid var(--rule-strong);
   border-radius: 8px;
   padding: 14px 16px;
@@ -940,7 +938,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   flex: 1;
   height: 10px;
   background: var(--surface-raised);
-  border: 1px solid var(--rule-strong);
+  border: 1px solid var(--rule);
   border-radius: 2px;
   overflow: hidden;
 }
@@ -1044,8 +1042,8 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   transition: background 0.12s ease;
 }
 
-.dash-ledger-row:hover { background: var(--surface-raised); }
-.dash-ledger-row:active { background: var(--surface-hover); }
+.dash-ledger-row:hover { background: var(--surface-hover); }
+.dash-ledger-row:active { background: var(--surface-active); }
 
 .dash-ledger-name {
   display: flex;
@@ -1135,7 +1133,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(55, 55, 52, 0.55);
+  background: rgba(0, 0, 0, 0.75);
   z-index: 300;
   align-items: center;
   justify-content: center;
@@ -1145,7 +1143,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 .modal-overlay.active { display: flex; }
 
 .modal-box {
-  background: #ffffff;
+  background: var(--surface);
   border: 1px solid var(--rule-strong);
   border-radius: 10px;
   max-width: 440px;
@@ -1195,7 +1193,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 }
 
 .toast {
-  background: #ffffff;
+  background: var(--surface-raised);
   border: 1px solid var(--rule-strong);
   color: var(--ink);
   padding: 10px 16px;
@@ -1220,12 +1218,12 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   
   .bg-watermark-left {
     width: 200px;
-    opacity: 0.05;
+    opacity: 0.08;
     max-width: 45vw;
   }
   .bg-watermark-right {
     width: 200px;
-    opacity: 0.05;
+    opacity: 0.07;
     max-width: 45vw;
   }
   
