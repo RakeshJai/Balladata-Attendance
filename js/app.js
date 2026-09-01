@@ -1,7 +1,6 @@
 /**
- * Baladatta Tamil School Attendance - Main Application Controller
- * Neoclassical Indian Traditional Architecture
- * Craftsman register rows, roll number indexing, and tactile status seals.
+ * Baladatta Tamil School Attendance - Guided Multi-Screen Application Controller
+ * Claude Warm Dark Mode & Step-by-Step Flow Architecture
  */
 
 const AppUI = (() => {
@@ -95,18 +94,18 @@ const AppUI = (() => {
   };
 })();
 
-// Main Controller
+// Main Controller with Multi-Screen Flow
 const App = (() => {
   let currentLevel = 'Level1';
   let currentDate = Store.getTodayString();
   let currentAttendance = {};
-  let currentView = 'attendance';
+  let currentScreen = 'auth'; // 'auth' | 'classes' | 'attendance' | 'success' | 'analytics'
   let isSubmitting = false;
+  let hasSkippedAuth = false;
 
   async function init() {
     Store.seedSampleHistoryIfEmpty();
-    populateNilaiControls();
-    setupDatePicker();
+    setupDatePickers();
 
     StudentMgr.init(currentLevel, onStudentDataChanged);
 
@@ -114,61 +113,73 @@ const App = (() => {
       (resp) => {
         AppUI.showToast(`Google Sheets connected!`, 'success');
         updateAuthUI(true);
-        loadCurrentAttendance();
+        if (currentScreen === 'auth') {
+          navigateTo('classes');
+        } else {
+          refreshCurrentScreen();
+        }
       },
       (err) => {
-        AppUI.showToast('OAuth sign-in cancelled or failed.', 'error');
         updateAuthUI(false);
       }
     );
 
     setupEventListeners();
-    await loadCurrentAttendance();
+
+    // Check if user is already signed in or has stored token
+    if (SheetsAPI.isSignedIn()) {
+      updateAuthUI(true);
+      navigateTo('classes');
+    } else {
+      navigateTo('auth');
+    }
 
     registerServiceWorker();
   }
 
-  function populateNilaiControls() {
-    const pillsRow = document.getElementById('levelPillsRow');
-    if (pillsRow) {
-      pillsRow.innerHTML = Store.LEVELS.map(lvl => {
-        const label = lvl.id === 'Volunteers' ? 'Volunteers' : `Nilai ${lvl.id.replace('Level', '')}`;
-        return `
-          <button class="level-chip ${lvl.id === currentLevel ? 'active' : ''}" onclick="App.changeLevel('${lvl.id}')">
-            <span>${label}</span>
-          </button>
-        `;
-      }).join('');
-    }
-  }
-
-  function setupDatePicker() {
+  function setupDatePickers() {
     const dateInput = document.getElementById('attendanceDatePicker');
+    const hubDateInput = document.getElementById('hubDatePicker');
+    const maxDate = Store.formatDate(new Date(Date.now() + 86400000 * 60));
+
     if (dateInput) {
       dateInput.value = currentDate;
-      dateInput.max = Store.formatDate(new Date(Date.now() + 86400000 * 60));
+      dateInput.max = maxDate;
+    }
+    if (hubDateInput) {
+      hubDateInput.value = currentDate;
+      hubDateInput.max = maxDate;
     }
   }
 
   function setupEventListeners() {
+    // Attendance View Date picker
     const dateInput = document.getElementById('attendanceDatePicker');
     if (dateInput) {
-      dateInput.addEventListener('change', (e) => {
-        changeDate(e.target.value);
-      });
+      dateInput.addEventListener('change', (e) => changeDate(e.target.value));
     }
-
     const todayBtn = document.getElementById('dateTodayBtn');
     if (todayBtn) {
-      todayBtn.addEventListener('click', () => {
-        changeDate(Store.getTodayString());
-      });
+      todayBtn.addEventListener('click', () => changeDate(Store.getTodayString()));
     }
-
     const prevDateBtn = document.getElementById('prevDateBtn');
     const nextDateBtn = document.getElementById('nextDateBtn');
     if (prevDateBtn) prevDateBtn.addEventListener('click', () => stepDate(-1));
     if (nextDateBtn) nextDateBtn.addEventListener('click', () => stepDate(1));
+
+    // Hub View Date picker
+    const hubDateInput = document.getElementById('hubDatePicker');
+    if (hubDateInput) {
+      hubDateInput.addEventListener('change', (e) => changeDate(e.target.value));
+    }
+    const hubTodayBtn = document.getElementById('hubDateTodayBtn');
+    if (hubTodayBtn) {
+      hubTodayBtn.addEventListener('click', () => changeDate(Store.getTodayString()));
+    }
+    const hubPrevDateBtn = document.getElementById('hubPrevDateBtn');
+    const hubNextDateBtn = document.getElementById('hubNextDateBtn');
+    if (hubPrevDateBtn) hubPrevDateBtn.addEventListener('click', () => stepDate(-1));
+    if (hubNextDateBtn) hubNextDateBtn.addEventListener('click', () => stepDate(1));
 
     // Submit Attendance Button
     const submitBtn = document.getElementById('submitAttendanceBtn');
@@ -192,17 +203,23 @@ const App = (() => {
       });
     }
 
-    // Navigation Tabs
-    const navAttendanceTab = document.getElementById('navAttendanceTab');
-    const navDashboardTab = document.getElementById('navDashboardTab');
-    if (navAttendanceTab) navAttendanceTab.addEventListener('click', () => switchView('attendance'));
-    if (navDashboardTab) navDashboardTab.addEventListener('click', () => switchView('dashboard'));
-
-    // Google Login
+    // Google Login Buttons
     const googleLoginBtn = document.getElementById('googleLoginBtn');
     if (googleLoginBtn) {
-      googleLoginBtn.addEventListener('click', () => {
-        SheetsAPI.signIn();
+      googleLoginBtn.addEventListener('click', () => SheetsAPI.signIn());
+    }
+
+    const authGateGoogleBtn = document.getElementById('authGateGoogleBtn');
+    if (authGateGoogleBtn) {
+      authGateGoogleBtn.addEventListener('click', () => SheetsAPI.signIn());
+    }
+
+    const authGateGuestBtn = document.getElementById('authGateGuestBtn');
+    if (authGateGuestBtn) {
+      authGateGuestBtn.addEventListener('click', () => {
+        hasSkippedAuth = true;
+        navigateTo('classes');
+        AppUI.showToast('Continuing in Guest mode (local storage)', 'info');
       });
     }
 
@@ -219,6 +236,63 @@ const App = (() => {
     updateOnlineBanner();
   }
 
+  /**
+   * Multi-Screen Navigator
+   */
+  function navigateTo(screenName, params = {}) {
+    currentScreen = screenName;
+
+    const screens = {
+      auth: document.getElementById('screenAuth'),
+      classes: document.getElementById('screenClassSelect'),
+      attendance: document.getElementById('screenAttendance'),
+      success: document.getElementById('screenSuccess'),
+      analytics: document.getElementById('screenAnalytics')
+    };
+
+    const stickyBar = document.getElementById('stickyActionBar');
+    const mainWrapper = document.querySelector('.main-wrapper');
+
+    // Hide all screens
+    Object.values(screens).forEach(s => {
+      if (s) s.classList.remove('active');
+    });
+
+    // Toggle wide mode
+    if (mainWrapper) {
+      if (screenName === 'analytics') {
+        mainWrapper.classList.add('dashboard-wide');
+      } else {
+        mainWrapper.classList.remove('dashboard-wide');
+      }
+    }
+
+    // Toggle sticky action bar (only visible during attendance taking)
+    if (stickyBar) {
+      stickyBar.style.display = screenName === 'attendance' ? 'block' : 'none';
+    }
+
+    // Activate requested screen
+    const target = screens[screenName];
+    if (target) {
+      target.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Screen specific initializers
+    if (screenName === 'classes') {
+      renderClassSelectionHub();
+    } else if (screenName === 'attendance') {
+      if (params.level) {
+        currentLevel = params.level;
+        StudentMgr.setLevel(currentLevel);
+      }
+      loadCurrentAttendance();
+    } else if (screenName === 'analytics') {
+      Dashboard.init();
+    }
+  }
+
   function stepDate(daysDelta) {
     const parsed = new Date(currentDate + 'T00:00:00');
     parsed.setDate(parsed.getDate() + daysDelta);
@@ -229,20 +303,84 @@ const App = (() => {
   function changeDate(newDateStr) {
     if (!newDateStr) return;
     currentDate = Store.formatDate(newDateStr);
+
     const dateInput = document.getElementById('attendanceDatePicker');
+    const hubDateInput = document.getElementById('hubDatePicker');
     if (dateInput) dateInput.value = currentDate;
-    loadCurrentAttendance();
+    if (hubDateInput) hubDateInput.value = currentDate;
+
+    if (currentScreen === 'classes') {
+      renderClassSelectionHub();
+    } else if (currentScreen === 'attendance') {
+      loadCurrentAttendance();
+    }
   }
 
-  function changeLevel(newLevelId) {
-    currentLevel = newLevelId;
+  /**
+   * Renders Screen 2: Class Selection Hub
+   */
+  function renderClassSelectionHub() {
+    const grid = document.getElementById('classSelectionGrid');
+    const formattedDateEl = document.getElementById('hubFormattedDateText');
+    const teacherGreetingEl = document.getElementById('hubTeacherGreeting');
+
+    if (teacherGreetingEl) {
+      const teacherName = Store.getTeacherName() || 'Teacher';
+      teacherGreetingEl.textContent = `Welcome back, ${teacherName}`;
+    }
+
+    if (formattedDateEl) {
+      const isToday = currentDate === Store.getTodayString();
+      formattedDateEl.textContent = isToday ? 'Today' : currentDate;
+    }
+
+    if (!grid) return;
+
+    const html = Store.LEVELS.map(lvl => {
+      const label = lvl.id === 'Volunteers' ? 'Volunteers' : `Nilai ${lvl.id.replace('Level', '')}`;
+      const students = Store.getStudentsForLevel(lvl.id);
+      const studentCount = students.length;
+      const { hasExistingRecord } = Store.getAttendanceForDate(lvl.id, currentDate);
+
+      return `
+        <div class="class-card" onclick="App.selectClassAndStart('${lvl.id}')">
+          <div class="class-card-top">
+            <div class="class-card-name">${label}</div>
+            <span class="class-card-status-dot ${hasExistingRecord ? 'recorded' : 'pending'}">
+              ${hasExistingRecord ? '● Recorded' : '○ Pending'}
+            </span>
+          </div>
+
+          <div class="class-card-count">
+            ${studentCount} student${studentCount === 1 ? '' : 's'} enrolled
+          </div>
+
+          <div class="class-card-foot">
+            <span>${hasExistingRecord ? 'Review / Edit Attendance' : 'Take Attendance'}</span>
+            <span>→</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    grid.innerHTML = html;
+  }
+
+  function selectClassAndStart(levelId) {
+    currentLevel = levelId;
     StudentMgr.setLevel(currentLevel);
-    populateNilaiControls();
-    loadCurrentAttendance();
+    navigateTo('attendance', { level: levelId });
   }
 
   async function loadCurrentAttendance() {
     const studentContainer = document.getElementById('studentListContainer');
+    const classBadge = document.getElementById('attendanceClassBadge');
+    const rosterTitle = document.getElementById('rosterClassNameTitle');
+
+    const classLabel = currentLevel === 'Volunteers' ? 'Volunteers' : `Nilai ${currentLevel.replace('Level', '')}`;
+    if (classBadge) classBadge.textContent = `${classLabel}`;
+    if (rosterTitle) rosterTitle.textContent = `${classLabel} Students`;
+
     if (!studentContainer) return;
 
     const students = await SheetsAPI.fetchStudentsFromSheet(currentLevel);
@@ -399,20 +537,39 @@ const App = (() => {
       const teacher = Store.getTeacherName();
       const result = await SheetsAPI.submitAttendance(currentLevel, currentDate, currentAttendance, teacher);
 
-      if (result.syncedWithSheet) {
-        AppUI.showToast(`Attendance saved & synced to Google Sheets!`, 'success');
-      } else if (result.offlineOnly) {
-        AppUI.showToast(`Saved locally (offline mode).`, 'info');
-      } else {
-        AppUI.showToast(`Saved locally (Sheets: ${result.error?.message || 'Offline'})`, 'info');
+      const statuses = Object.values(currentAttendance);
+      const presentCount = statuses.filter(s => s === 'Present').length;
+      const absentCount = statuses.filter(s => s === 'Absent').length;
+      const totalCount = statuses.length;
+      const rate = totalCount > 0 ? Math.round((presentCount / totalCount) * 100) : 0;
+
+      // Update Screen 4 elements
+      const classLabel = currentLevel === 'Volunteers' ? 'Volunteers' : `Nilai ${currentLevel.replace('Level', '')}`;
+      const successClassDateText = document.getElementById('successClassDateText');
+      const successPresentCount = document.getElementById('successPresentCount');
+      const successAbsentCount = document.getElementById('successAbsentCount');
+      const successRateVal = document.getElementById('successRateVal');
+      const successSyncMessage = document.getElementById('successSyncMessage');
+
+      if (successClassDateText) successClassDateText.textContent = `Successfully recorded for ${classLabel} · ${currentDate}`;
+      if (successPresentCount) successPresentCount.textContent = presentCount;
+      if (successAbsentCount) successAbsentCount.textContent = absentCount;
+      if (successRateVal) successRateVal.textContent = `${rate}%`;
+
+      if (successSyncMessage) {
+        if (result.syncedWithSheet) {
+          successSyncMessage.textContent = 'Saved & Synced to Google Sheets';
+        } else if (result.offlineOnly) {
+          successSyncMessage.textContent = 'Saved locally (Offline Mode)';
+        } else {
+          successSyncMessage.textContent = `Saved locally (Sheets: Offline)`;
+        }
       }
 
-      const studentsList = Store.getStudentsForLevel(currentLevel);
-      renderStudentList(studentsList, true);
+      AppUI.showToast(`Attendance saved!`, 'success');
 
-      if (currentView === 'dashboard') {
-        Dashboard.render();
-      }
+      // Seamlessly transition to Screen 4 (Confirmation Screen)
+      navigateTo('success');
     } catch (err) {
       console.error('[App] Submit error:', err);
       AppUI.showToast('Error saving attendance.', 'error');
@@ -426,38 +583,19 @@ const App = (() => {
   }
 
   function onStudentDataChanged() {
-    loadCurrentAttendance();
-    if (currentView === 'dashboard') {
+    if (currentScreen === 'attendance') {
+      loadCurrentAttendance();
+    } else if (currentScreen === 'classes') {
+      renderClassSelectionHub();
+    } else if (currentScreen === 'analytics') {
       Dashboard.render();
     }
   }
 
-  function switchView(view) {
-    currentView = view;
-    const attendanceView = document.getElementById('attendanceViewSection');
-    const dashboardView = document.getElementById('dashboardViewSection');
-    const navAttendance = document.getElementById('navAttendanceTab');
-    const navDashboard = document.getElementById('navDashboardTab');
-    const stickyBar = document.getElementById('stickyActionBar');
-    const mainWrapper = document.querySelector('.main-wrapper');
-
-    if (view === 'attendance') {
-      if (attendanceView) attendanceView.style.display = 'block';
-      if (dashboardView) dashboardView.style.display = 'none';
-      if (navAttendance) navAttendance.classList.add('active');
-      if (navDashboard) navDashboard.classList.remove('active');
-      if (stickyBar) stickyBar.style.display = 'block';
-      if (mainWrapper) mainWrapper.classList.remove('dashboard-wide');
-      loadCurrentAttendance();
-    } else {
-      if (attendanceView) attendanceView.style.display = 'none';
-      if (dashboardView) dashboardView.style.display = 'block';
-      if (navAttendance) navAttendance.classList.remove('active');
-      if (navDashboard) navDashboard.classList.add('active');
-      if (stickyBar) stickyBar.style.display = 'none';
-      if (mainWrapper) mainWrapper.classList.add('dashboard-wide');
-      Dashboard.init();
-    }
+  function refreshCurrentScreen() {
+    if (currentScreen === 'classes') renderClassSelectionHub();
+    if (currentScreen === 'attendance') loadCurrentAttendance();
+    if (currentScreen === 'analytics') Dashboard.render();
   }
 
   function updateAuthUI(isSignedIn) {
@@ -469,7 +607,7 @@ const App = (() => {
         if (btnText) btnText.textContent = 'Sheets Connected';
       } else {
         googleLoginBtn.classList.remove('connected');
-        if (btnText) btnText.textContent = 'Sync Sheets';
+        if (btnText) btnText.textContent = 'Sign in with Google';
       }
     }
   }
@@ -484,28 +622,30 @@ const App = (() => {
   function registerServiceWorker() {
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
-          .then(reg => {
-            console.log('SW Registered:', reg.scope);
-            reg.update();
-          })
-          .catch(err => console.warn('SW Registration error:', err));
+        navigator.serviceWorker.register('./sw.js').catch(err => {
+          console.warn('[SW] Registration failed:', err);
+        });
       });
     }
   }
 
   return {
     init,
-    changeLevel,
+    navigateTo,
+    selectClassAndStart,
     changeDate,
     toggleAttendance,
     toggleAttendanceByIndex,
     markAll,
-    submitCurrentAttendance,
-    switchView
+    submitCurrentAttendance
   };
 })();
 
-window.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
   App.init();
 });
+
+if (typeof window !== 'undefined') {
+  window.App = App;
+  window.AppUI = AppUI;
+}

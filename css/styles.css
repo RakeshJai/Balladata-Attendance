@@ -74,7 +74,7 @@ body {
 }
 
 /* Headings: Tight letter spacing (-0.025em) and tight line height (1.15) for professional hierarchy */
-h1, h2, h3, .brand-kirtimukha, .dash-section-title, .modal-title, .roster-heading {
+h1, h2, h3, .brand-kirtimukha, .dash-section-title, .modal-title, .roster-heading, .auth-gate-title, .hub-title, .success-title {
   font-family: var(--serif);
   letter-spacing: -0.025em;
   line-height: 1.15;
@@ -208,6 +208,10 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   color: var(--terra);
 }
 
+.brand-monogram.lg {
+  font-size: 1.8rem;
+}
+
 .brand-titles {
   display: flex;
   flex-direction: column;
@@ -256,20 +260,10 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   background: var(--surface-active);
 }
 
-.sync-button:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-  transform: none;
-}
-
 .sync-button.connected {
   color: var(--sage);
   border-color: var(--sage-border);
   background: var(--sage-dim);
-}
-
-.sync-button.connected:hover {
-  background: rgba(107, 158, 122, 0.24);
 }
 
 .sync-dot {
@@ -281,56 +275,12 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 
 .sync-button.connected .sync-dot { background: var(--sage); }
 
-/* --- Navigation Underline Tabs --- */
-.nav-pill-container {
-  max-width: 760px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 0 16px;
-  position: relative;
-  z-index: 1;
-}
-
-.segmented-pill-bar {
-  display: flex;
-  border-bottom: 1px solid var(--rule);
-  gap: 0;
-}
-
-.nav-pill-btn {
-  flex: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px 16px;
-  min-height: var(--min-touch-target);
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--ink-muted);
-  background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
-  cursor: pointer;
-  font-family: var(--sans);
-  transition: color 0.12s ease, border-color 0.12s ease;
-  margin-bottom: -1px;
-}
-
-.nav-pill-btn:hover { color: var(--ink-secondary); }
-
-.nav-pill-btn.active {
-  color: var(--terra);
-  border-bottom-color: var(--terra);
-  font-weight: 700;
-}
-
-/* --- Main Content Frame --- */
+/* --- Multi-Screen Controller --- */
 .main-wrapper {
   max-width: 760px;
   width: 100%;
   margin: 0 auto;
-  padding: 16px 16px 140px;
+  padding: 20px 16px 140px;
   flex: 1;
   position: relative;
   z-index: 1;
@@ -341,67 +291,299 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   max-width: 900px;
 }
 
+.app-screen {
+  display: none;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.app-screen.active {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .editorial-sheet {
   background: var(--sheet);
   border: 1px solid var(--rule-strong);
   border-radius: 10px;
-  padding: 20px 16px;
+  padding: 24px 20px;
 }
 
-@media (min-width: 640px) {
-  .editorial-sheet { padding: 24px; }
-}
-
-/* --- Nilai Tablet Selector --- */
-.level-scroll-section { margin-bottom: 20px; }
-
-.level-pills-row {
+/* ==========================================================================
+   SCREEN 1: SIGN-IN GATE STYLES
+   ========================================================================== */
+.auth-gate-card {
+  background: var(--sheet);
+  border: 1px solid var(--rule-strong);
+  border-radius: 12px;
+  padding: 40px 24px;
+  text-align: center;
+  max-width: 480px;
+  margin: 40px auto;
   display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
+  flex-direction: column;
+  align-items: center;
 }
 
-.level-pills-row::-webkit-scrollbar { display: none; }
-
-.level-chip {
-  padding: 8px 16px;
-  min-height: 38px;
-  border-radius: 6px;
-  font-size: 0.8125rem;
-  font-weight: 600;
+.auth-gate-emblem {
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
   background: var(--surface);
+  border: 1px solid var(--rule-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.auth-gate-emblem img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.auth-gate-title {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.auth-gate-desc {
+  font-size: 0.875rem;
   color: var(--ink-secondary);
-  border: 1px solid var(--rule);
+  line-height: 1.5;
+  margin-bottom: 28px;
+  max-width: 380px;
+}
+
+.auth-gate-actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn-google-signin {
+  width: 100%;
+  background: #ffffff;
+  color: #373734;
+  border: 1px solid #d4d0c7;
+  border-radius: 6px;
+  padding: 12px 20px;
+  min-height: 48px;
+  font-size: 0.9375rem;
+  font-weight: 600;
   cursor: pointer;
-  white-space: nowrap;
-  font-family: var(--sans);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease, transform 0.08s ease;
+  gap: 12px;
+  font-family: var(--sans);
+  transition: background 0.12s ease, transform 0.08s ease;
 }
 
-.level-chip:hover {
+.btn-google-signin:hover {
+  background: #f4f3ee;
+}
+
+.btn-google-signin:active {
+  transform: scale(0.98);
+}
+
+.btn-guest-continue {
+  width: 100%;
+  background: transparent;
+  color: var(--ink-muted);
+  border: 1px solid transparent;
+  padding: 10px 16px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 6px;
+  font-family: var(--sans);
+  transition: color 0.12s ease, background 0.12s ease;
+}
+
+.btn-guest-continue:hover {
+  color: var(--ink);
+  background: var(--surface);
+}
+
+.auth-gate-footer {
+  margin-top: 24px;
+  font-size: 0.72rem;
+  color: var(--ink-muted);
+}
+
+/* ==========================================================================
+   SCREEN 2: WELCOME BACK & CLASS SELECTION HUB
+   ========================================================================== */
+.hub-welcome-banner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.hub-title {
+  font-size: 1.45rem;
+  margin-bottom: 4px;
+}
+
+.hub-subtitle {
+  font-size: 0.8125rem;
+  color: var(--ink-secondary);
+}
+
+.hub-date-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+  background: var(--surface);
+  border: 1px solid var(--rule-strong);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.hub-session-note {
+  font-size: 0.8125rem;
+  color: var(--ink-secondary);
+}
+
+.hub-session-note strong {
+  color: var(--terra);
+}
+
+/* Class Selection Grid & Cards */
+.class-selection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.class-card {
+  background: var(--surface);
+  border: 1px solid var(--rule-strong);
+  border-radius: 8px;
+  padding: 16px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 124px;
+  transition: background 0.12s ease, border-color 0.12s ease, transform 0.08s ease;
+}
+
+.class-card:hover {
+  background: var(--surface-raised);
+  border-color: var(--terra-border);
+}
+
+.class-card:active {
+  transform: scale(0.98);
+}
+
+.class-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.class-card-name {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+
+.class-card-status-dot {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.class-card-status-dot.recorded {
+  background: var(--sage-dim);
+  color: var(--sage);
+  border: 1px solid var(--sage-border);
+}
+
+.class-card-status-dot.pending {
+  background: var(--surface-raised);
+  color: var(--ink-muted);
+  border: 1px solid var(--rule);
+}
+
+.class-card-count {
+  font-size: 0.78rem;
+  color: var(--ink-secondary);
+}
+
+.class-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--terra);
+  font-weight: 600;
+  margin-top: 12px;
+  border-top: 1px solid var(--rule);
+  padding-top: 8px;
+}
+
+/* ==========================================================================
+   SCREEN 3: FOCUSED ATTENDANCE TAKING STYLES
+   ========================================================================== */
+.attendance-top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.btn-back-hub {
+  background: var(--surface-raised);
+  color: var(--ink-secondary);
+  border: 1px solid var(--rule-strong);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--sans);
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.btn-back-hub:hover {
   background: var(--surface-hover);
   color: var(--ink);
 }
 
-.level-chip:active {
-  transform: scale(0.97);
-  background: var(--surface-active);
-}
-
-.level-chip.active {
-  background: var(--terra-dim);
+.attendance-class-badge {
+  font-family: var(--serif);
+  font-size: 1.05rem;
   color: var(--terra);
-  border-color: var(--terra-border);
-  font-weight: 700;
+  font-weight: 600;
 }
 
-/* --- Date Toolbar --- */
+/* Common Toolbar Controls */
 .toolbar-card {
   border-bottom: 1px solid var(--rule);
   padding: 0 0 16px;
@@ -504,7 +686,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   border: 1px solid var(--terra-border);
 }
 
-/* --- Roster Header & Actions --- */
+/* Roster Header & Actions */
 .roster-header-row {
   display: flex;
   align-items: center;
@@ -547,6 +729,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   font-family: var(--sans);
   display: inline-flex;
   align-items: center;
+  gap: 6px;
   transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease, transform 0.08s ease;
 }
 
@@ -560,13 +743,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   background: var(--surface-active);
 }
 
-.btn-ghost-action:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* --- Student Register Rows --- */
+/* Student Cards & Toggle Buttons */
 .student-cards-list {
   display: flex;
   flex-direction: column;
@@ -686,7 +863,6 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   background: var(--danger-dim);
 }
 
-/* Flat Status Toggle Button */
 .attendance-toggle-btn {
   min-width: 88px;
   padding: 8px 14px;
@@ -725,7 +901,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   background: rgba(107, 158, 122, 0.24);
 }
 
-/* --- Add Student Row --- */
+/* Add Student Row */
 .add-student-container {
   border-top: 1px solid var(--rule);
   padding-top: 16px;
@@ -757,9 +933,9 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   color: #ffffff;
   border: 1px solid var(--terra-border);
   border-radius: 6px;
-  padding: 8px 18px;
+  padding: 10px 20px;
   min-height: var(--min-touch-target);
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   font-weight: 700;
   cursor: pointer;
   font-family: var(--sans);
@@ -786,79 +962,115 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   transform: none;
 }
 
-/* --- Sticky Bottom Action Bar --- */
-.sticky-action-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 90;
-  background: rgba(31, 30, 27, 0.98);
-  border-top: 1px solid var(--rule-strong);
-  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0));
-}
-
-.sticky-action-container {
-  max-width: 760px;
+/* ==========================================================================
+   SCREEN 4: SUBMISSION SUCCESS SCREEN STYLES
+   ========================================================================== */
+.success-screen-box {
+  padding: 32px 16px;
+  text-align: center;
+  max-width: 500px;
   margin: 0 auto;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
 }
 
-.tally-group {
+.success-icon-badge {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--sage-dim);
+  border: 1px solid var(--sage-border);
+  color: var(--sage);
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 0.84rem;
+  justify-content: center;
+  margin-bottom: 16px;
 }
 
-.tally-chip { font-weight: 700; }
-.tally-chip.present { color: var(--sage); }
-.tally-chip.absent { color: var(--ink-muted); }
-.tally-chip.total { color: var(--ink-secondary); font-weight: 500; }
+.success-title {
+  font-size: 1.5rem;
+  margin-bottom: 6px;
+}
 
-.btn-submit-attendance {
-  background: var(--terra);
-  color: #ffffff;
-  border: 1px solid var(--terra-border);
-  border-radius: 6px;
-  padding: 10px 22px;
-  min-height: 44px;
-  font-size: 0.875rem;
+.success-subtitle {
+  font-size: 0.84rem;
+  color: var(--ink-secondary);
+  margin-bottom: 24px;
+}
+
+.success-summary-card {
+  background: var(--surface);
+  border: 1px solid var(--rule-strong);
+  border-radius: 8px;
+  padding: 16px 20px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-bottom: 20px;
+}
+
+.success-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.success-stat-val {
+  font-family: var(--serif);
+  font-size: 1.5rem;
   font-weight: 700;
-  cursor: pointer;
+  line-height: 1.15;
+}
+
+.success-stat-val.present { color: var(--sage); }
+.success-stat-val.absent { color: var(--terra); }
+.success-stat-val.rate { color: var(--ink); }
+
+.success-stat-label {
+  font-size: 0.72rem;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.success-stat-divider {
+  width: 1px;
+  height: 36px;
+  background: var(--rule);
+}
+
+.success-sync-pill {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
   gap: 8px;
-  font-family: var(--sans);
-  transition: background 0.12s ease, border-color 0.12s ease, transform 0.08s ease;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: var(--surface-raised);
+  border: 1px solid var(--rule-strong);
+  font-size: 0.75rem;
+  color: var(--ink-secondary);
+  margin-bottom: 28px;
 }
 
-.btn-submit-attendance:hover {
-  background: var(--terra-hover);
-  border-color: var(--terra);
+.success-actions-group {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.btn-submit-attendance:active {
-  transform: scale(0.98);
-  background: var(--terra-active);
-}
-
-.btn-submit-attendance:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-  transform: none;
+.success-subactions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
 }
 
 /* ==========================================================================
-   Analytics Dashboard - Flat Neoclassical Claude Dark Mode
+   SCREEN 5: DASHBOARD ANALYTICS STYLES
    ========================================================================== */
-.dashboard-section { display: none; }
-
-/* --- Metric Plaques --- */
 .dash-metrics-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -898,7 +1110,6 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   color: var(--ink-muted);
 }
 
-/* --- Section Cards --- */
 .dash-section-card {
   background: var(--surface);
   border: 1px solid var(--rule-strong);
@@ -913,7 +1124,6 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   margin-bottom: 14px;
 }
 
-/* --- Class Comparison Bars --- */
 .dash-bars-list {
   display: flex;
   flex-direction: column;
@@ -958,7 +1168,6 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   flex-shrink: 0;
 }
 
-/* --- Student Ledger --- */
 .dash-ledger-header {
   display: flex;
   align-items: center;
@@ -1128,6 +1337,73 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   border: 1px solid var(--rule-strong);
 }
 
+/* --- Sticky Bottom Action Bar --- */
+.sticky-action-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 90;
+  background: rgba(31, 30, 27, 0.98);
+  border-top: 1px solid var(--rule-strong);
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0));
+}
+
+.sticky-action-container {
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tally-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.84rem;
+}
+
+.tally-chip { font-weight: 700; }
+.tally-chip.present { color: var(--sage); }
+.tally-chip.absent { color: var(--ink-muted); }
+.tally-chip.total { color: var(--ink-secondary); font-weight: 500; }
+
+.btn-submit-attendance {
+  background: var(--terra);
+  color: #ffffff;
+  border: 1px solid var(--terra-border);
+  border-radius: 6px;
+  padding: 10px 22px;
+  min-height: 44px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--sans);
+  transition: background 0.12s ease, border-color 0.12s ease, transform 0.08s ease;
+}
+
+.btn-submit-attendance:hover {
+  background: var(--terra-hover);
+  border-color: var(--terra);
+}
+
+.btn-submit-attendance:active {
+  transform: scale(0.98);
+  background: var(--terra-active);
+}
+
+.btn-submit-attendance:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
 /* --- Modal Dialog --- */
 .modal-overlay {
   display: none;
@@ -1212,9 +1488,9 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 /* --- Mobile Specific Tuning (< 640px) --- */
 @media (max-width: 640px) {
   .header-container { padding: 10px 14px; }
-  .nav-pill-container { padding: 0 14px; }
   .main-wrapper { padding: 12px 14px 130px; }
   .editorial-sheet { padding: 16px 12px; }
+  .class-selection-grid { grid-template-columns: 1fr; }
   
   .bg-watermark-left {
     width: 200px;
