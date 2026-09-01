@@ -316,7 +316,6 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   max-width: 440px;
   padding: 44px 32px;
   text-align: center;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(244, 243, 238, 0.12);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -333,7 +332,6 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   justify-content: center;
   margin-bottom: 20px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .glass-emblem-wrap img {
@@ -381,8 +379,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   justify-content: center;
   gap: 12px;
   font-family: var(--sans);
-  transition: background 0.12s ease, transform 0.08s ease, box-shadow 0.12s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: background 0.12s ease, transform 0.08s ease;
 }
 
 .btn-google-signin:hover {
@@ -474,7 +471,6 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   color: #ffffff;
   background: var(--terra);
   border-color: var(--terra-border);
-  box-shadow: 0 3px 10px rgba(217, 119, 87, 0.35);
   font-weight: 700;
 }
 
