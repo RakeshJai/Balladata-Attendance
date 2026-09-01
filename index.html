@@ -7,6 +7,22 @@
   <title>Baladatta Tamil School Attendance</title>
   <meta name="description" content="Step-by-step attendance portal for Baladatta Tamil School teachers." />
 
+  <!-- Disable caching for rapid local dev -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+
+  <script>
+    // Invalidate stale caches immediately
+    if ('caches' in window) {
+      caches.keys().then(names => {
+        names.forEach(name => {
+          if (name !== 'baladatta-attendance-v25') caches.delete(name);
+        });
+      });
+    }
+  </script>
+
   <!-- Google Identity Services & GAPI Client -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://apis.google.com/js/api.js" async defer></script>
@@ -16,15 +32,15 @@
   <meta name="theme-color" content="#1f1e1b">
   <link rel="icon" type="image/png" href="Logo.png">
 
-  <!-- Claude Warm Dark Neoclassical Theme (v21) -->
-  <link rel="stylesheet" href="css/styles.css?v=21">
+  <!-- Claude Warm Dark Neoclassical Theme (v25) -->
+  <link rel="stylesheet" href="css/styles.css?v=25">
 </head>
 
 <body>
-  <!-- Traditional Architectural Backdrop Layers -->
+  <!-- Traditional Architectural Breathing Backdrop Layers -->
+  <div class="bg-architectural-breathing" aria-hidden="true"></div>
   <div class="bg-watermark-left" aria-hidden="true"></div>
   <div class="bg-watermark-right" aria-hidden="true"></div>
-  <div class="bg-architectural-center" aria-hidden="true"></div>
 
   <!-- Offline Notice -->
   <div id="offlineBanner" class="offline-banner">
@@ -60,21 +76,22 @@
   <main class="main-wrapper">
 
     <!-- =========================================================================
-         SCREEN 1: SIGN-IN GATE (Glass Card)
+         SCREEN 1: SIGN-IN GATE (Glass Card - Active by default)
          ========================================================================= -->
-    <section id="screenAuth" class="app-screen">
+    <section id="screenAuth" class="app-screen active">
       <div class="auth-glass-container">
         <div class="auth-glass-card">
-          <div class="ob-emblem mx-auto" style="margin: 0 auto 24px;">
+          <div class="glass-emblem-wrap">
             <img src="Logo.png" alt="Baladatta Emblem" onerror="this.outerHTML='<span class=\'brand-monogram lg\'>B</span>'">
           </div>
+
           <div class="auth-glass-header">
             <h2 class="auth-glass-title">Welcome back.</h2>
-            <p class="auth-glass-desc">Please sign in to access your attendance portal.</p>
+            <p class="auth-glass-desc">Baladatta Tamil School Teacher Attendance Portal</p>
           </div>
-          
+
           <div class="auth-glass-content">
-            <button id="authGateGoogleBtn" class="btn-google-signin" style="width:100%;">
+            <button id="authGateGoogleBtn" class="btn-google-signin">
               <svg class="google-icon" width="18" height="18" viewBox="0 0 24 24">
                 <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.9C6.2 7.3 8.9 5 12 5z"/>
                 <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.6h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.9z"/>
@@ -83,12 +100,18 @@
               </svg>
               <span>Sign in with Google</span>
             </button>
-          </div>
-          
-          <div class="auth-glass-footer">
-            <button id="authGateGuestBtn" class="btn-guest-continue" style="width:100%;">
+
+            <div class="glass-divider">
+              <span>or</span>
+            </div>
+
+            <button id="authGateGuestBtn" class="btn-guest-continue">
               Continue as Guest (Offline Mode)
             </button>
+          </div>
+
+          <div class="auth-glass-footer">
+            <span>2026 Academic Year · Google Sheets Live Sync</span>
           </div>
         </div>
       </div>
@@ -321,12 +344,12 @@
   <!-- Toast Container -->
   <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
-  <!-- Scripts (Cache Busted v21) -->
-  <script src="js/store.js?v=21"></script>
-  <script src="js/sheets-api.js?v=21"></script>
-  <script src="js/student-mgr.js?v=21"></script>
-  <script src="js/dashboard.js?v=21"></script>
-  <script src="js/app.js?v=21"></script>
+  <!-- Scripts (Cache Busted v25) -->
+  <script src="js/store.js?v=25"></script>
+  <script src="js/sheets-api.js?v=25"></script>
+  <script src="js/student-mgr.js?v=25"></script>
+  <script src="js/dashboard.js?v=25"></script>
+  <script src="js/app.js?v=25"></script>
 </body>
 
 </html>

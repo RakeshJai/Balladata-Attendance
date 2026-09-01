@@ -1,4 +1,4 @@
-const CACHE_NAME = 'baladatta-attendance-v20';
+const CACHE_NAME = 'baladatta-attendance-v25';
 const urlsToCache = [
   './',
   './index.html',
@@ -27,7 +27,7 @@ self.addEventListener('activate', event => {
       return Promise.all(
         cacheNames.map(name => {
           if (name !== CACHE_NAME) {
-            console.log('[SW] Clearing old cache:', name);
+            console.log('[SW] Deleting old cache:', name);
             return caches.delete(name);
           }
         })

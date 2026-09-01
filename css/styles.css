@@ -74,7 +74,7 @@ body {
 }
 
 /* Headings: Tight letter spacing (-0.025em) and tight line height (1.15) for professional hierarchy */
-h1, h2, h3, .brand-kirtimukha, .dash-section-title, .modal-title, .roster-heading, .auth-gate-title, .hub-title, .success-title {
+h1, h2, h3, .brand-kirtimukha, .dash-section-title, .modal-title, .roster-heading, .auth-glass-title, .hub-title, .success-title {
   font-family: var(--serif);
   letter-spacing: -0.025em;
   line-height: 1.15;
@@ -88,7 +88,38 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   outline-offset: 2px;
 }
 
-/* --- Architectural Watermark Canvas Layers --- */
+/* --- Architectural Breathing Backdrop --- */
+@keyframes breathing-zoom {
+  0% {
+    transform: scale(1);
+    opacity: 0.12;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.20;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.12;
+  }
+}
+
+.bg-architectural-breathing {
+  position: fixed;
+  inset: -5%;
+  width: 110%;
+  height: 110%;
+  background-image: url('../assets/traditional/temple_gopuram_study.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center 25%;
+  opacity: 0.14;
+  pointer-events: none;
+  z-index: 0;
+  filter: contrast(1.15) brightness(0.85);
+  animation: breathing-zoom 20s ease-in-out infinite alternate;
+}
+
 .bg-watermark-left {
   position: fixed;
   top: 0;
@@ -127,27 +158,6 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,1) 35%, rgba(0,0,0,0) 100%);
 }
 
-@keyframes arch-breathe {
-  0% { transform: scale(1); opacity: 0.08; }
-  50% { transform: scale(1.04); opacity: 0.16; }
-  100% { transform: scale(1); opacity: 0.08; }
-}
-
-.bg-architectural-center {
-  position: fixed;
-  inset: -10%;
-  width: 120%;
-  height: 120%;
-  background-image: url('../assets/traditional/temple_gopuram_study.jpg');
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center 20%;
-  opacity: 0.08;
-  pointer-events: none;
-  z-index: 0;
-  animation: arch-breathe 24s ease-in-out infinite;
-}
-
 /* Offline Notice */
 .offline-banner {
   display: none;
@@ -167,7 +177,9 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(31, 30, 27, 0.98);
+  background: rgba(31, 30, 27, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--rule-strong);
   padding-top: env(safe-area-inset-top, 0);
 }
@@ -321,64 +333,74 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 }
 
 /* ==========================================================================
-   SCREEN 1: SIGN-IN GATE (GLASS CARD)
+   SCREEN 1: SIGN-IN GATE (GLASS CARD SPECIFICATION)
    ========================================================================== */
 .auth-glass-container {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 50vh;
-  margin-top: 6vh;
+  min-height: calc(100vh - 240px);
+  width: 100%;
+  padding: 16px 0;
 }
 
 .auth-glass-card {
-  background: rgba(38, 37, 34, 0.4);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(244, 243, 238, 0.14);
-  border-radius: 16px;
+  background: rgba(38, 37, 34, 0.72);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(244, 243, 238, 0.16);
+  border-radius: 20px;
   width: 100%;
-  max-width: 420px;
-  padding: 40px 32px;
+  max-width: 440px;
+  padding: 44px 32px;
   text-align: center;
-  box-shadow: 0 24px 40px rgba(0,0,0,0.2);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(244, 243, 238, 0.12);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.ob-emblem {
+.glass-emblem-wrap {
   width: 64px;
   height: 64px;
-  border-radius: 12px;
-  background: var(--surface);
+  border-radius: 14px;
+  background: var(--surface-raised);
   border: 1px solid var(--rule-strong);
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 20px;
   overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.ob-emblem img {
+.glass-emblem-wrap img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
+.auth-glass-header {
+  margin-bottom: 28px;
+}
+
 .auth-glass-title {
-  font-family: var(--serif);
-  font-size: 1.75rem;
+  font-size: 1.85rem;
   color: var(--ink);
   margin-bottom: 8px;
-  letter-spacing: -0.025em;
 }
 
 .auth-glass-desc {
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   color: var(--ink-secondary);
-  margin-bottom: 32px;
   line-height: 1.5;
 }
 
 .auth-glass-content {
-  margin-bottom: 12px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .btn-google-signin {
@@ -386,8 +408,8 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   background: #ffffff;
   color: #373734;
   border: 1px solid #d4d0c7;
-  border-radius: 6px;
-  padding: 12px 20px;
+  border-radius: 8px;
+  padding: 13px 20px;
   min-height: 48px;
   font-size: 0.9375rem;
   font-weight: 600;
@@ -397,7 +419,8 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   justify-content: center;
   gap: 12px;
   font-family: var(--sans);
-  transition: background 0.12s ease, transform 0.08s ease;
+  transition: background 0.12s ease, transform 0.08s ease, box-shadow 0.12s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .btn-google-signin:hover {
@@ -408,23 +431,52 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   transform: scale(0.98);
 }
 
+.glass-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: var(--ink-muted);
+  font-size: 0.75rem;
+  margin: 4px 0;
+}
+
+.glass-divider::before, .glass-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--rule-strong);
+}
+
+.glass-divider span {
+  padding: 0 10px;
+}
+
 .btn-guest-continue {
   width: 100%;
-  background: transparent;
-  color: var(--ink-muted);
-  border: 1px solid transparent;
-  padding: 10px 16px;
+  background: var(--surface-raised);
+  color: var(--ink-secondary);
+  border: 1px solid var(--rule-strong);
+  padding: 11px 16px;
   font-size: 0.8125rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  border-radius: 6px;
+  border-radius: 8px;
   font-family: var(--sans);
-  transition: color 0.12s ease, background 0.12s ease;
+  transition: color 0.12s ease, background 0.12s ease, transform 0.08s ease;
 }
 
 .btn-guest-continue:hover {
   color: var(--ink);
-  background: rgba(244, 243, 238, 0.05);
+  background: var(--surface-hover);
+}
+
+.btn-guest-continue:active {
+  transform: scale(0.98);
+}
+
+.auth-glass-footer {
+  margin-top: 28px;
+  font-size: 0.72rem;
+  color: var(--ink-muted);
 }
 
 /* ==========================================================================
@@ -1500,6 +1552,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   .main-wrapper { padding: 12px 14px 130px; }
   .editorial-sheet { padding: 16px 12px; }
   .class-selection-grid { grid-template-columns: 1fr; }
+  .auth-glass-card { padding: 32px 20px; }
   
   .bg-watermark-left {
     width: 200px;
