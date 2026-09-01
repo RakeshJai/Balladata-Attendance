@@ -390,24 +390,17 @@ const App = (() => {
       html += `
         <div class="${cardClass}" id="student-card-${index}" onclick="App.toggleAttendanceByIndex(${index})">
           <div class="student-info">
-            <div class="student-avatar" id="avatar-${index}">
-              ${rollNumber}
-            </div>
-            <div class="student-meta">
-              <span class="student-name">${AppUI.escapeHtml(student)}</span>
-              <span class="student-status-hint" id="status-hint-${index}">
-                ${isPresent ? 'Present' : 'Absent'}
-              </span>
-            </div>
+            <span class="student-idx">${rollNumber}</span>
+            <span class="student-name">${AppUI.escapeHtml(student)}</span>
           </div>
 
           <div class="student-card-actions" onclick="event.stopPropagation()">
             <div class="crud-btn-group">
               <button class="btn-icon-subtle" title="Edit Student Name" onclick="StudentMgr.promptEditStudent('${AppUI.escapeHtml(student)}')">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
               </button>
               <button class="btn-icon-subtle delete" title="Delete Student" onclick="StudentMgr.promptDeleteStudent('${AppUI.escapeHtml(student)}')">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
               </button>
             </div>
 
@@ -436,14 +429,10 @@ const App = (() => {
 
     const isPresent = next === 'Present';
     const card = document.getElementById(`student-card-${index}`);
-    const hint = document.getElementById(`status-hint-${index}`);
     const btn = document.getElementById(`toggle-btn-${index}`);
 
     if (card) {
       card.className = isPresent ? 'student-card is-present' : 'student-card';
-    }
-    if (hint) {
-      hint.innerHTML = isPresent ? 'Present' : 'Absent';
     }
     if (btn) {
       btn.innerHTML = isPresent ? 'Present' : 'Absent';
