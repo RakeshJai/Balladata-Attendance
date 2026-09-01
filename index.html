@@ -60,63 +60,36 @@
   <main class="main-wrapper">
 
     <!-- =========================================================================
-         SCREEN 1: ONBOARDING & SIGN-IN GATE (Multi-Screen Flow)
+         SCREEN 1: SIGN-IN GATE (Glass Card)
          ========================================================================= -->
     <section id="screenAuth" class="app-screen">
-      <div class="onboarding-card">
-        <div class="ob-slider">
+      <div class="auth-glass-container">
+        <div class="auth-glass-card">
+          <div class="ob-emblem mx-auto" style="margin: 0 auto 24px;">
+            <img src="Logo.png" alt="Baladatta Emblem" onerror="this.outerHTML='<span class=\'brand-monogram lg\'>B</span>'">
+          </div>
+          <div class="auth-glass-header">
+            <h2 class="auth-glass-title">Welcome back.</h2>
+            <p class="auth-glass-desc">Please sign in to access your attendance portal.</p>
+          </div>
           
-          <!-- Slide 1: Welcome -->
-          <div class="ob-slide active" id="obSlide0">
-            <div class="ob-emblem">
-              <img src="Logo.png" alt="Baladatta Emblem" onerror="this.outerHTML='<span class=\'brand-monogram lg\'>B</span>'">
-            </div>
-            <h2 class="ob-title">Welcome back.</h2>
-            <p class="ob-desc">The official attendance portal for Baladatta Tamil School teachers.</p>
-            <button class="btn-primary ob-next-btn" onclick="App.nextOnboardingSlide(1)">Begin</button>
+          <div class="auth-glass-content">
+            <button id="authGateGoogleBtn" class="btn-google-signin" style="width:100%;">
+              <svg class="google-icon" width="18" height="18" viewBox="0 0 24 24">
+                <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.9C6.2 7.3 8.9 5 12 5z"/>
+                <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.6h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.9z"/>
+                <path fill="#FBBC05" d="M5.3 14.7c-.2-.7-.4-1.5-.4-2.4s.2-1.7.4-2.4L1.6 7c-.8 1.6-1.3 3.4-1.3 5.3s.5 3.7 1.3 5.3l3.7-2.9z"/>
+                <path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3.1 0-5.8-2.3-6.7-5.3L1.6 16c1.9 3.8 5.8 6.4 10.4 6.4z"/>
+              </svg>
+              <span>Sign in with Google</span>
+            </button>
           </div>
-
-          <!-- Slide 2: Sync -->
-          <div class="ob-slide next" id="obSlide1">
-            <div class="ob-icon-wrapper">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-            </div>
-            <h2 class="ob-title">Seamless Sync</h2>
-            <p class="ob-desc">Take attendance with a beautiful, minimal interface. Data pushes directly to the master Google Sheet in real-time.</p>
-            <button class="btn-primary ob-next-btn" onclick="App.nextOnboardingSlide(2)">Continue</button>
+          
+          <div class="auth-glass-footer">
+            <button id="authGateGuestBtn" class="btn-guest-continue" style="width:100%;">
+              Continue as Guest (Offline Mode)
+            </button>
           </div>
-
-          <!-- Slide 3: Sign In -->
-          <div class="ob-slide next" id="obSlide2">
-            <div class="ob-icon-wrapper auth">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-            </div>
-            <h2 class="ob-title">Sign in to continue</h2>
-            <p class="ob-desc" style="margin-bottom: 24px;">Connect your authorized account to access your assigned classes.</p>
-
-            <div class="auth-gate-actions w-full">
-              <button id="authGateGoogleBtn" class="btn-google-signin">
-                <svg class="google-icon" width="18" height="18" viewBox="0 0 24 24">
-                  <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.9C6.2 7.3 8.9 5 12 5z"/>
-                  <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.6h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.9z"/>
-                  <path fill="#FBBC05" d="M5.3 14.7c-.2-.7-.4-1.5-.4-2.4s.2-1.7.4-2.4L1.6 7c-.8 1.6-1.3 3.4-1.3 5.3s.5 3.7 1.3 5.3l3.7-2.9z"/>
-                  <path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3.1 0-5.8-2.3-6.7-5.3L1.6 16c1.9 3.8 5.8 6.4 10.4 6.4z"/>
-                </svg>
-                <span>Sign in with Google</span>
-              </button>
-
-              <button id="authGateGuestBtn" class="btn-guest-continue">
-                Continue as Guest (Offline Mode)
-              </button>
-            </div>
-          </div>
-
-        </div>
-
-        <div class="ob-dots-container">
-          <div class="ob-dot active" id="obDot0" onclick="App.nextOnboardingSlide(0)"></div>
-          <div class="ob-dot" id="obDot1" onclick="App.nextOnboardingSlide(1)"></div>
-          <div class="ob-dot" id="obDot2" onclick="App.nextOnboardingSlide(2)"></div>
         </div>
       </div>
     </section>

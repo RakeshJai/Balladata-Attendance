@@ -237,25 +237,6 @@ const App = (() => {
   }
 
   /**
-   * Onboarding Slider Logic
-   */
-  function nextOnboardingSlide(slideIndex) {
-    document.querySelectorAll('.ob-slide').forEach((slide, idx) => {
-      if (idx < slideIndex) {
-        slide.className = 'ob-slide prev';
-      } else if (idx === slideIndex) {
-        slide.className = 'ob-slide active';
-      } else {
-        slide.className = 'ob-slide next';
-      }
-    });
-
-    document.querySelectorAll('.ob-dot').forEach((dot, idx) => {
-      dot.className = idx === slideIndex ? 'ob-dot active' : 'ob-dot';
-    });
-  }
-
-  /**
    * Multi-Screen Navigator
    */
   function navigateTo(screenName, params = {}) {
@@ -656,8 +637,7 @@ const App = (() => {
     toggleAttendance,
     toggleAttendanceByIndex,
     markAll,
-    submitCurrentAttendance,
-    nextOnboardingSlide
+    submitCurrentAttendance
   };
 })();
 

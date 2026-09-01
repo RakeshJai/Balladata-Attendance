@@ -127,16 +127,25 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,1) 35%, rgba(0,0,0,0) 100%);
 }
 
+@keyframes arch-breathe {
+  0% { transform: scale(1); opacity: 0.08; }
+  50% { transform: scale(1.04); opacity: 0.16; }
+  100% { transform: scale(1); opacity: 0.08; }
+}
+
 .bg-architectural-center {
   position: fixed;
-  inset: 0;
+  inset: -10%;
+  width: 120%;
+  height: 120%;
   background-image: url('../assets/traditional/temple_gopuram_study.jpg');
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center 20%;
-  opacity: 0.04;
+  opacity: 0.08;
   pointer-events: none;
   z-index: 0;
+  animation: arch-breathe 24s ease-in-out infinite;
 }
 
 /* Offline Notice */
@@ -312,59 +321,27 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 }
 
 /* ==========================================================================
-   SCREEN 1: ONBOARDING GATE STYLES
+   SCREEN 1: SIGN-IN GATE (GLASS CARD)
    ========================================================================== */
-.onboarding-card {
-  background: var(--sheet);
-  border: 1px solid var(--rule-strong);
-  border-radius: 12px;
-  width: 100%;
-  max-width: 440px;
-  margin: 40px auto;
-  min-height: 400px;
-  position: relative;
-  overflow: hidden;
+.auth-glass-container {
   display: flex;
-  flex-direction: column;
-}
-
-.ob-slider {
-  position: relative;
-  flex: 1;
-  display: flex;
-}
-
-.ob-slide {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
+  min-height: 50vh;
+  margin-top: 6vh;
+}
+
+.auth-glass-card {
+  background: rgba(38, 37, 34, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(244, 243, 238, 0.14);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 420px;
   padding: 40px 32px;
   text-align: center;
-  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.ob-slide.active {
-  transform: translateX(0);
-  opacity: 1;
-  pointer-events: auto;
-  z-index: 2;
-}
-
-.ob-slide.prev {
-  transform: translateX(-40px);
-  opacity: 0;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.ob-slide.next {
-  transform: translateX(40px);
-  opacity: 0;
-  pointer-events: none;
-  z-index: 1;
+  box-shadow: 0 24px 40px rgba(0,0,0,0.2);
 }
 
 .ob-emblem {
@@ -376,7 +353,6 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 24px;
   overflow: hidden;
 }
 
@@ -386,71 +362,23 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   object-fit: cover;
 }
 
-.ob-icon-wrapper {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: var(--surface-raised);
-  border: 1px solid var(--rule-strong);
-  color: var(--terra);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 24px;
-}
-
-.ob-icon-wrapper.auth {
-  color: var(--sage);
-}
-
-.ob-title {
+.auth-glass-title {
+  font-family: var(--serif);
   font-size: 1.75rem;
-  margin-bottom: 12px;
+  color: var(--ink);
+  margin-bottom: 8px;
+  letter-spacing: -0.025em;
 }
 
-.ob-desc {
+.auth-glass-desc {
   font-size: 0.9375rem;
   color: var(--ink-secondary);
-  line-height: 1.5;
   margin-bottom: 32px;
-  max-width: 320px;
+  line-height: 1.5;
 }
 
-.ob-next-btn {
-  width: 100%;
-  max-width: 240px;
-}
-
-.ob-dots-container {
-  position: absolute;
-  bottom: 24px;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  z-index: 10;
-}
-
-.ob-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--rule-strong);
-  cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease;
-}
-
-.ob-dot.active {
-  background: var(--terra);
-  transform: scale(1.2);
-}
-
-.auth-gate-actions {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.auth-glass-content {
+  margin-bottom: 12px;
 }
 
 .btn-google-signin {
@@ -496,7 +424,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 
 .btn-guest-continue:hover {
   color: var(--ink);
-  background: var(--surface);
+  background: rgba(244, 243, 238, 0.05);
 }
 
 /* ==========================================================================
