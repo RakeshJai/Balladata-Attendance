@@ -113,49 +113,11 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center 25%;
-  opacity: 0.14;
+  opacity: 0.16;
   pointer-events: none;
   z-index: 0;
   filter: contrast(1.15) brightness(0.85);
   animation: breathing-zoom 20s ease-in-out infinite alternate;
-}
-
-.bg-watermark-left {
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  width: 440px;
-  max-width: 32vw;
-  background-image: url('../assets/traditional/meenakshi_pillar_study.jpg');
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center top;
-  opacity: 0.10;
-  pointer-events: none;
-  z-index: 0;
-  filter: contrast(1.15) brightness(0.85);
-  mask-image: linear-gradient(to right, rgba(0,0,0,1) 35%, rgba(0,0,0,0) 100%);
-  -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1) 35%, rgba(0,0,0,0) 100%);
-}
-
-.bg-watermark-right {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 520px;
-  max-width: 36vw;
-  background-image: url('../assets/traditional/temple_gopuram_study.jpg');
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: right center;
-  opacity: 0.09;
-  pointer-events: none;
-  z-index: 0;
-  filter: contrast(1.15) brightness(0.85);
-  mask-image: linear-gradient(to left, rgba(0,0,0,1) 35%, rgba(0,0,0,0) 100%);
-  -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,1) 35%, rgba(0,0,0,0) 100%);
 }
 
 /* Offline Notice */

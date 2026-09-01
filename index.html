@@ -17,7 +17,7 @@
     if ('caches' in window) {
       caches.keys().then(names => {
         names.forEach(name => {
-          if (name !== 'baladatta-attendance-v26') caches.delete(name);
+          if (name !== 'baladatta-attendance-v27') caches.delete(name);
         });
       });
     }
@@ -32,15 +32,13 @@
   <meta name="theme-color" content="#1f1e1b">
   <link rel="icon" type="image/png" href="Logo.png">
 
-  <!-- Claude Warm Dark Neoclassical Theme (v26) -->
-  <link rel="stylesheet" href="css/styles.css?v=26">
+  <!-- Claude Warm Dark Neoclassical Theme (v27) -->
+  <link rel="stylesheet" href="css/styles.css?v=27">
 </head>
 
 <body>
-  <!-- Traditional Architectural Breathing Backdrop Layers -->
+  <!-- Clean Text-Free Traditional Architectural Breathing Backdrop -->
   <div class="bg-architectural-breathing" aria-hidden="true"></div>
-  <div class="bg-watermark-left" aria-hidden="true"></div>
-  <div class="bg-watermark-right" aria-hidden="true"></div>
 
   <!-- Offline Notice -->
   <div id="offlineBanner" class="offline-banner">
@@ -305,12 +303,12 @@
   <!-- Toast Container -->
   <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
-  <!-- Scripts (Cache Busted v26) -->
-  <script src="js/store.js?v=26"></script>
-  <script src="js/sheets-api.js?v=26"></script>
-  <script src="js/student-mgr.js?v=26"></script>
-  <script src="js/dashboard.js?v=26"></script>
-  <script src="js/app.js?v=26"></script>
+  <!-- Scripts (Cache Busted v27) -->
+  <script src="js/store.js?v=27"></script>
+  <script src="js/sheets-api.js?v=27"></script>
+  <script src="js/student-mgr.js?v=27"></script>
+  <script src="js/dashboard.js?v=27"></script>
+  <script src="js/app.js?v=27"></script>
 </body>
 
 </html>
