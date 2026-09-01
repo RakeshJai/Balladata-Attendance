@@ -271,10 +271,10 @@ const App = (() => {
       existingDateBadge.style.display = 'inline-flex';
       if (hasExistingRecord) {
         existingDateBadge.className = 'date-status-badge saved';
-        existingDateBadge.innerHTML = '✓ Saved Session';
+        existingDateBadge.innerHTML = 'Saved Session';
       } else {
         existingDateBadge.className = 'date-status-badge fresh';
-        existingDateBadge.innerHTML = '● Fresh Session';
+        existingDateBadge.innerHTML = 'Fresh Session';
       }
     }
 
@@ -310,7 +310,7 @@ const App = (() => {
             </div>
 
             <button class="attendance-toggle-btn" id="toggle-btn-${index}" onclick="App.toggleAttendance('${AppUI.escapeHtml(student)}', ${index})">
-              ${isPresent ? '● Present' : '○ Absent'}
+              ${isPresent ? 'Present' : 'Absent'}
             </button>
           </div>
         </div>
@@ -344,7 +344,7 @@ const App = (() => {
       hint.innerHTML = isPresent ? 'Present' : 'Absent';
     }
     if (btn) {
-      btn.innerHTML = isPresent ? '● Present' : '○ Absent';
+      btn.innerHTML = isPresent ? 'Present' : 'Absent';
     }
 
     updateStatsPills();
@@ -466,7 +466,7 @@ const App = (() => {
     if (googleLoginBtn) {
       if (isSignedIn) {
         googleLoginBtn.classList.add('connected');
-        if (btnText) btnText.textContent = '✓ Sheets Connected';
+        if (btnText) btnText.textContent = 'Sheets Connected';
       } else {
         googleLoginBtn.classList.remove('connected');
         if (btnText) btnText.textContent = 'Sync Sheets';

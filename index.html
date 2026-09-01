@@ -16,14 +16,11 @@
   <meta name="theme-color" content="#120f0a">
   <link rel="icon" type="image/png" href="Logo.png">
 
-  <!-- Neoclassical Theme (v17) -->
-  <link rel="stylesheet" href="css/styles.css?v=17">
+  <!-- Flat Neoclassical Theme (v18) -->
+  <link rel="stylesheet" href="css/styles.css?v=18">
 </head>
 
 <body>
-  <!-- Ambient Load-In Glow at Top of Screen -->
-  <div class="top-ambient-glow" aria-hidden="true"></div>
-
   <!-- Traditional Architectural Backdrop Layers -->
   <div class="bg-watermark-left" aria-hidden="true"></div>
   <div class="bg-watermark-right" aria-hidden="true"></div>
@@ -39,7 +36,7 @@
     <div class="header-container">
       <div class="brand-section">
         <div class="brand-emblem" id="headerAvatar">
-          <img src="Logo.png" alt="Baladatta Emblem" onerror="this.outerHTML='<span>🏛️</span>'">
+          <img src="Logo.png" alt="Baladatta Emblem" onerror="this.outerHTML='<span class=\'brand-monogram\'>B</span>'">
         </div>
         <div class="brand-titles">
           <h1 class="brand-kirtimukha">Baladatta Tamil School</h1>
@@ -94,7 +91,7 @@
           </div>
 
           <div>
-            <span id="existingDateBadge" class="date-status-badge fresh">● Fresh Session</span>
+            <span id="existingDateBadge" class="date-status-badge fresh">Fresh Session</span>
           </div>
         </div>
 
@@ -107,7 +104,7 @@
             <button id="markAllPresentBtn" class="btn-ghost-action" title="Mark All Present">
               Mark All Present
             </button>
-            <span style="color: var(--rule-strong);">/</span>
+            <span class="action-separator">/</span>
             <button id="markAllAbsentBtn" class="btn-ghost-action" title="Mark All Absent">
               Mark All Absent
             </button>
@@ -121,9 +118,9 @@
 
         <!-- Empty State -->
         <div id="emptyStudentState" class="empty-state-box" style="display:none;">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color:var(--terra); margin-bottom:8px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" style="color:var(--terra); margin-bottom:8px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           <h3>No students in this class</h3>
-          <p style="font-size:0.82rem;">Add a student below to get started.</p>
+          <p style="font-size:0.8125rem;">Add a student below to get started.</p>
         </div>
 
         <!-- Add Student Bar -->
@@ -156,7 +153,7 @@
         <span class="tally-chip total stat-total-count">0 Total</span>
       </div>
 
-      <button id="submitAttendanceBtn" class="btn-submit-attendance" title="Save & Sync Attendance">
+      <button id="submitAttendanceBtn" class="btn-submit-attendance" title="Save and Sync Attendance">
         <span>Submit Attendance</span>
       </button>
     </div>
@@ -171,7 +168,7 @@
       </div>
       <div id="modalBody" class="modal-body-area"></div>
       <div class="modal-foot">
-        <button id="modalCancelBtn" class="btn-ghost-action" style="padding:8px 18px;">Cancel</button>
+        <button id="modalCancelBtn" class="btn-ghost-action" style="padding:8px 16px;">Cancel</button>
         <button id="modalConfirmBtn" class="btn-primary">Confirm</button>
       </div>
     </div>
@@ -180,12 +177,12 @@
   <!-- Toast Container -->
   <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
-  <!-- Scripts (Cache Busted v16) -->
-  <script src="js/store.js?v=17"></script>
-  <script src="js/sheets-api.js?v=17"></script>
-  <script src="js/student-mgr.js?v=17"></script>
-  <script src="js/dashboard.js?v=17"></script>
-  <script src="js/app.js?v=17"></script>
+  <!-- Scripts (Cache Busted v18) -->
+  <script src="js/store.js?v=18"></script>
+  <script src="js/sheets-api.js?v=18"></script>
+  <script src="js/student-mgr.js?v=18"></script>
+  <script src="js/dashboard.js?v=18"></script>
+  <script src="js/app.js?v=18"></script>
 </body>
 
 </html>
