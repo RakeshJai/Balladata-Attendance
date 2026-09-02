@@ -56,9 +56,9 @@ const StudentMgr = (() => {
    */
   function promptEditStudent(currentName) {
     const modalHtml = `
-      <div class="toolbar-group">
-        <label class="toolbar-label" for="editStudentInput">Student Full Name</label>
-        <input type="text" id="editStudentInput" class="add-student-field" value="${AppUI.escapeHtml(currentName)}" style="width:100%" />
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <label style="font-size:0.8rem; font-weight:600; color:var(--text-secondary);" for="editStudentInput">Student Full Name</label>
+        <input type="text" id="editStudentInput" class="add-student-input" value="${AppUI.escapeHtml(currentName)}" style="width:100%" />
       </div>
     `;
 
@@ -66,7 +66,7 @@ const StudentMgr = (() => {
       title: 'Edit Student Name',
       bodyHtml: modalHtml,
       confirmText: 'Save Changes',
-      confirmClass: 'btn-coral',
+      confirmClass: 'btn-primary',
       onConfirm: async () => {
         const input = document.getElementById('editStudentInput');
         const newName = input ? input.value.trim() : '';
@@ -120,7 +120,7 @@ const StudentMgr = (() => {
         Are you sure you want to remove <strong>${AppUI.escapeHtml(studentName)}</strong> from <strong>${activeLevel}</strong>?
       </p>
       <p style="color: var(--text-muted); font-size: 0.8125rem;">
-        Existing historical attendance logs for this student will be retained in reports.
+        Historical attendance logs for this student will be preserved in school reports.
       </p>
     `;
 
@@ -128,7 +128,7 @@ const StudentMgr = (() => {
       title: 'Remove Student',
       bodyHtml: modalHtml,
       confirmText: 'Yes, Remove',
-      confirmClass: 'btn-coral',
+      confirmClass: 'btn-primary',
       onConfirm: async () => {
         const deleted = Store.deleteStudent(activeLevel, studentName);
         if (deleted) {

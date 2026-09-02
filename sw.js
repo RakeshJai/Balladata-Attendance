@@ -1,4 +1,4 @@
-const CACHE_NAME = 'baladatta-attendance-v12';
+const CACHE_NAME = 'baladatta-attendance-v34';
 const urlsToCache = [
   './',
   './index.html',
@@ -9,7 +9,9 @@ const urlsToCache = [
   './js/sheets-api.js',
   './js/student-mgr.js',
   './js/dashboard.js',
-  './js/app.js'
+  './js/app.js',
+  './assets/traditional/temple_gopuram_study.jpg',
+  './assets/traditional/meenakshi_pillar_study.jpg'
 ];
 
 self.addEventListener('install', event => {
@@ -25,7 +27,7 @@ self.addEventListener('activate', event => {
       return Promise.all(
         cacheNames.map(name => {
           if (name !== CACHE_NAME) {
-            console.log('[SW] Clearing old cache:', name);
+            console.log('[SW] Deleting old cache:', name);
             return caches.delete(name);
           }
         })

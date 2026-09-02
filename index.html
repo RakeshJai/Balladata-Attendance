@@ -3,259 +3,287 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Baladatta Tamil School Attendance | பாலதத்தா தமிழ்ப்பள்ளி</title>
-  <meta name="description" content="Modern mobile attendance tracking app for Baladatta Tamil School." />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Baladatta Tamil School Attendance</title>
+  <meta name="description" content="Step-by-step attendance portal for Baladatta Tamil School teachers." />
 
-  <!-- Type pairing: editorial serif display with a practical sans-serif UI -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Disable caching for rapid local dev -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+
+  <script>
+    // Invalidate stale caches immediately
+    if ('caches' in window) {
+      caches.keys().then(names => {
+        names.forEach(name => {
+          if (name !== 'baladatta-attendance-v34') caches.delete(name);
+        });
+      });
+    }
+  </script>
 
   <!-- Google Identity Services & GAPI Client -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://apis.google.com/js/api.js" async defer></script>
 
-  <!-- PWA Manifest & Theme Color -->
+  <!-- PWA Manifest & Icons -->
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#17131a">
+  <meta name="theme-color" content="#1f1e1b">
   <link rel="icon" type="image/png" href="Logo.png">
 
-  <!-- NeoClassical Traditional Indian design system -->
-  <link rel="stylesheet" href="css/styles.css?v=12">
+  <!-- Claude Warm Dark Neoclassical Theme (v34) -->
+  <link rel="stylesheet" href="css/styles.css?v=34">
 </head>
 
 <body>
-  <!-- Reusable traditional Indian motif library; kept inline for crisp, offline-safe rendering -->
-  <svg class="motif-library" aria-hidden="true" focusable="false">
-    <defs>
-      <symbol id="motif-lotus" viewBox="0 0 32 24">
-        <path d="M16 21c-5.6 0-10.2-2.3-13-6.2 4.4-.5 8.1.7 10.4 3.1-1.1-4.3-4.2-7.1-8.2-8.7 4.7-.3 8.3 1.5 10.8 5.1V5.5c0-.5.4-1 1-1s1 .5 1 1v3.8c2.5-3.6 6.1-5.4 10.8-5.1-4 1.6-7.1 4.4-8.2 8.7 2.3-2.4 6-3.6 10.4-3.1C26.2 18.7 21.6 21 16 21Z" fill="currentColor"/>
-        <path d="M4 22h24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-      </symbol>
-      <symbol id="motif-diya" viewBox="0 0 24 24">
-        <path d="M5 13.5h14c-.8 4.2-3.2 6.3-7 6.3s-6.2-2.1-7-6.3Z" fill="currentColor"/>
-        <path d="M12 11.5c-1.8-2.2.7-3.3 0-6 2.8 2.7 2.5 4.5 0 6Z" fill="currentColor"/>
-        <path d="M3.5 21h17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-      </symbol>
-      <symbol id="motif-mandala" viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.4"/>
-        <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.4"/>
-        <path d="M12 2v4M12 18v4M2 12h4M18 12h4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M19.1 4.9l-2.8 2.8M7.7 16.3l-2.8 2.8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-      </symbol>
-      <symbol id="motif-diamond" viewBox="0 0 12 12">
-        <path d="M6 1 11 6 6 11 1 6 6 1Z" fill="none" stroke="currentColor" stroke-width="1.2"/>
-        <circle cx="6" cy="6" r="1.2" fill="currentColor"/>
-      </symbol>
-    </defs>
-  </svg>
+  <!-- Clean Text-Free Traditional Architectural Breathing Backdrop -->
+  <div class="bg-architectural-breathing" aria-hidden="true"></div>
 
-  <!-- Offline Alert -->
+  <!-- Offline Notice -->
   <div id="offlineBanner" class="offline-banner">
-    ⚠️ Offline Mode: Changes saved locally.
+    Offline Mode: Changes saved locally and will sync when reconnected.
   </div>
 
-  <!-- Header (Figma Mobile App Style) -->
+  <!-- Top App Header -->
   <header class="app-header">
     <div class="header-container">
-      <div class="brand-section">
-        <div class="brand-avatar" id="headerAvatar">
-          <img src="Logo.png" alt="Baladatta Logo" onerror="this.outerHTML='<span>🏫</span>'">
+      <div class="brand-section" onclick="App.navigateTo('attendance')" style="cursor: pointer;" title="Go to Attendance">
+        <div class="brand-emblem" id="headerAvatar">
+          <img src="Logo.png" alt="Baladatta Emblem" onerror="this.outerHTML='<span class=\'brand-monogram\'>B</span>'">
         </div>
-        <div class="brand-text">
-          <span class="brand-greeting">Hello, <strong id="teacherDisplay">Teacher</strong> 👋</span>
-          <h1 class="brand-title">Baladatta Tamil School</h1>
+        <div class="brand-titles">
+          <h1 class="brand-kirtimukha">Baladatta Tamil School</h1>
+          <span class="brand-subtamil">Attendance Portal</span>
         </div>
       </div>
 
       <div class="header-actions">
-        <button id="googleLoginBtn" class="sync-button" title="Connect Google Sheets">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          Sync Sheets
-        </button>
+        <!-- User Info / Auth Button -->
+        <div id="headerAuthSection" class="header-auth-group">
+          <button id="googleLoginBtn" class="sync-button" title="Sign in with Google">
+            <span class="sync-dot"></span>
+            <span id="googleLoginBtnText">Sign in with Google</span>
+          </button>
+        </div>
       </div>
     </div>
   </header>
 
-  <!-- Segmented Navigation Pills (Figma Pill Bar) -->
-  <div class="nav-pill-container">
-    <nav class="segmented-pill-bar" aria-label="App Navigation">
-      <button id="navAttendanceTab" class="nav-pill-btn active">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-        <span>Mark Attendance</span>
-      </button>
-      <button id="navDashboardTab" class="nav-pill-btn">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
-        <span>Summary Dashboard</span>
-      </button>
-    </nav>
-  </div>
-
-  <!-- Main Container -->
+  <!-- Main Multi-Screen Content Container -->
   <main class="main-wrapper">
 
-    <!-- ATTENDANCE VIEW -->
-    <section id="attendanceViewSection">
-      
-      <!-- Horizontal Nilai Chips (Figma Category Chips) -->
-      <div class="level-scroll-section">
-        <div class="section-label">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--primary);"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-          Select Nilai / Level (வகுப்பு நிலை)
-        </div>
-        <div id="levelPillsRow" class="level-pills-row">
-          <!-- Populated dynamically via JS -->
-        </div>
-      </div>
-
-      <!-- Top Toolbar Card: Date Field at Top & Nilai Select (Requirements 1 & 5) -->
-      <div class="figma-card">
-        <div class="toolbar-layout">
-          
-          <!-- Nilai Dropdown (Requirement 5) -->
-          <div class="field-group">
-            <label class="field-label" for="nilaiSelect">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--primary);"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-              Nilai Dropdown
-            </label>
-            <div class="pill-select-wrapper">
-              <select id="nilaiSelect" class="pill-select" aria-label="Select Nilai">
-                <!-- Populated via JS -->
-              </select>
-              <div class="select-arrow-icon">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
-              </div>
-            </div>
+    <!-- =========================================================================
+         SCREEN 1: SIGN-IN GATE (Glass Card - Google Sign In Only)
+         ========================================================================= -->
+    <section id="screenAuth" class="app-screen active">
+      <div class="auth-glass-container">
+        <div class="auth-glass-card">
+          <div class="glass-emblem-wrap">
+            <img src="Logo.png" alt="Baladatta Emblem" onerror="this.outerHTML='<span class=\'brand-monogram lg\'>B</span>'">
           </div>
 
-          <!-- Date Field at Top (Requirement 1) -->
-          <div class="field-group">
-            <label class="field-label" for="attendanceDatePicker">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--primary);"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-              Session Date (தேதி)
-            </label>
-            <div class="date-controls-row">
-              <button id="prevDateBtn" class="pill-nav-btn" title="Previous Day">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="15 18 9 12 15 6"/></svg>
-              </button>
-              <input type="date" id="attendanceDatePicker" class="pill-date-input" aria-label="Attendance Date" />
-              <button id="nextDateBtn" class="pill-nav-btn" title="Next Day">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"/></svg>
-              </button>
-              <button id="dateTodayBtn" class="pill-today-btn" title="Today">Today</button>
-            </div>
+          <div class="auth-glass-header">
+            <h2 class="auth-glass-title">Welcome back.</h2>
+            <p class="auth-glass-desc">Sign in with your Google account to record attendance and sync with school records.</p>
           </div>
 
+          <div class="auth-glass-content">
+            <button id="authGateGoogleBtn" class="btn-google-signin">
+              <svg class="google-icon" width="18" height="18" viewBox="0 0 24 24">
+                <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.9C6.2 7.3 8.9 5 12 5z"/>
+                <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.6h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.9z"/>
+                <path fill="#FBBC05" d="M5.3 14.7c-.2-.7-.4-1.5-.4-2.4s.2-1.7.4-2.4L1.6 7c-.8 1.6-1.3 3.4-1.3 5.3s.5 3.7 1.3 5.3l3.7-2.9z"/>
+                <path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3.1 0-5.8-2.3-6.7-5.3L1.6 16c1.9 3.8 5.8 6.4 10.4 6.4z"/>
+              </svg>
+              <span>Sign in with Google</span>
+            </button>
+          </div>
+
+          <div class="auth-glass-footer">
+            <span>2026 Academic Year · Google Sheets Live Sync</span>
+          </div>
         </div>
       </div>
-
-      <!-- TOP SUBMIT ACTION BAR (Requirement 2) -->
-      <div class="action-banner top-banner">
-        <div class="counter-pills-group">
-          <span class="counter-chip present stat-present-count">0 Present</span>
-          <span class="counter-chip absent stat-absent-count">0 Absent</span>
-          <span class="counter-chip total stat-total-count">0 Total</span>
-          <span id="existingDateBadge" class="counter-chip saved" style="display:none;"></span>
-        </div>
-
-        <div class="action-buttons-group">
-          <button id="markAllPresentTop" class="btn-outline-pill" title="Mark all Present">
-            ✓ All Present
-          </button>
-          <button id="markAllAbsentTop" class="btn-outline-pill" title="Mark all Absent">
-            ✗ All Absent
-          </button>
-          <!-- Top Submit Button (Requirement 2) -->
-          <button id="submitBtnTop" class="btn-pill btn-coral" title="Submit Attendance">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-            Submit Attendance
-          </button>
-        </div>
-      </div>
-
-      <!-- Roster Header -->
-      <div class="roster-header">
-        <h2 class="roster-title">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--primary);"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-          Students Roster
-        </h2>
-        <span class="roster-hint">Tap <strong>P</strong> (Present) or <strong>A</strong> (Absent)</span>
-      </div>
-
-      <!-- Student Cards Container -->
-      <div id="studentListContainer" class="student-cards-list">
-        <!-- Rendered dynamically via App.renderStudentList -->
-      </div>
-
-      <!-- Empty State -->
-      <div id="emptyStudentState" class="empty-state-box" style="display:none;">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted); margin-bottom:8px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <h3>No students found in this Nilai</h3>
-        <p style="font-size:0.85rem;">Add a student below to get started.</p>
-      </div>
-
-      <!-- Add Student Bar (Requirement 3) -->
-      <div class="add-student-banner">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--primary);"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        <input type="text" id="newStudentInput" class="add-student-field" placeholder="Enter student full name..." aria-label="Student name" />
-        <button id="addStudentBtn" class="btn-pill btn-coral" style="padding: 10px 20px; font-size:0.85rem;">
-          + Add Student
-        </button>
-      </div>
-
-      <!-- BOTTOM SUBMIT ACTION BAR (Requirement 2) -->
-      <div class="action-banner bottom-banner">
-        <div class="counter-pills-group">
-          <span class="counter-chip present stat-present-count">0 Present</span>
-          <span class="counter-chip absent stat-absent-count">0 Absent</span>
-          <span class="counter-chip total stat-total-count">0 Total</span>
-        </div>
-
-        <div class="action-buttons-group">
-          <!-- Bottom Submit Button (Requirement 2) -->
-          <button id="submitBtnBottom" class="btn-pill btn-coral" title="Submit Attendance">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-            Submit Attendance
-          </button>
-        </div>
-      </div>
-
     </section>
 
-    <!-- DASHBOARD VIEW (Requirement 4) -->
-    <section id="dashboardViewSection" class="dashboard-view">
-      <div class="roster-header" style="margin-bottom: 16px;">
-        <div>
-          <h2 class="roster-title">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--primary);"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-            Student Attendance Analytics & Summary
-          </h2>
-          <p class="roster-hint" style="margin-top:2px;">
-            Real-time attendance rates, student summaries, and session logs.
+    <!-- =========================================================================
+         SCREEN 2: TACTILE ATTENDANCE DECK (NO SPREADSHEET MATRIX)
+         ========================================================================= -->
+    <section id="screenAttendance" class="app-screen">
+      <div class="editorial-sheet">
+
+        <!-- Top Nilai Tabs Bar -->
+        <div class="animated-tabs-bar" id="animatedTabsBar">
+          <!-- Rendered dynamically via App.renderNilaiTabs -->
+        </div>
+
+        <!-- Weekly Picker (Sunday-based) -->
+        <div class="weekly-picker-bar" id="weeklyPickerBar">
+          <button class="icon-btn weekly-nav-btn" id="prevWeekBtn" title="Previous week" aria-label="Previous week">‹</button>
+          <div class="weekly-picker-center">
+            <button class="weekly-display-btn" id="weeklyDisplayBtn" title="Pick week">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              <span id="weeklyDisplayText">Week of Sep 1, 2026</span>
+            </button>
+            <span class="weekly-range-sub" id="weeklyRangeSub">Sep 1 – Sep 7 · Sunday week</span>
+            <input type="date" id="weeklyDatePicker" class="weekly-date-input-hidden" aria-label="Pick week date" />
+          </div>
+          <button class="icon-btn weekly-nav-btn" id="nextWeekBtn" title="Next week" aria-label="Next week">›</button>
+          <button class="btn-today weekly-today-btn" id="todayWeekBtn" title="Jump to this week">Today</button>
+        </div>
+
+        <!-- Tab Content Area -->
+        <div class="animated-tab-content" id="animatedTabContent">
+          <!-- Roster Header & Actions -->
+          <div class="roster-header-row">
+            <div class="roster-heading">
+              <span id="rosterClassNameTitle">Nilai Roster</span>
+            </div>
+            
+            <div class="roster-actions">
+              <button id="markAllPresentBtn" class="btn-roster-pill present" title="Mark All Present">
+                <span>Mark All Present</span>
+              </button>
+              <button id="markAllAbsentBtn" class="btn-roster-pill absent" title="Mark All Absent">
+                <span>Mark All Absent</span>
+              </button>
+              <button class="btn-roster-pill analytics" onclick="App.navigateTo('analytics')" title="View School Analytics">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+                <span>Analytics</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Tactile Student Tiles Grid (App Feel) -->
+          <div id="studentListContainer" class="student-tiles-grid">
+            <!-- Rendered dynamically via App.renderStudentList -->
+          </div>
+
+          <!-- Empty State -->
+          <div id="emptyStudentState" class="empty-state-box" style="display:none;">
+            <p style="font-size:0.875rem; color:var(--ink-muted);">No students enrolled in this Nilai yet.</p>
+          </div>
+
+          <!-- Clean Inline Add Student Bar -->
+          <div class="add-student-container">
+            <input type="text" id="newStudentInput" class="add-student-input" placeholder="+ Add new student name..." aria-label="Student name" />
+            <button id="addStudentBtn" class="btn-add-student">
+              + Add
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SCREEN 3: SUBMISSION CONFIRMATION & SUCCESS SCREEN
+         ========================================================================= -->
+    <section id="screenSuccess" class="app-screen">
+      <div class="editorial-sheet">
+        <div class="success-screen-box">
+          <div class="success-icon-badge">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+
+          <h2 class="success-title">Attendance Submitted</h2>
+          <p class="success-subtitle" id="successClassDateText">
+            Successfully recorded for Nilai 1 · September 1, 2026
           </p>
+
+          <!-- Attendance Summary Breakdown Card -->
+          <div class="success-summary-card">
+            <div class="success-stat-item">
+              <span class="success-stat-val present" id="successPresentCount">0</span>
+              <span class="success-stat-label">Present</span>
+            </div>
+            <div class="success-stat-divider"></div>
+            <div class="success-stat-item">
+              <span class="success-stat-val absent" id="successAbsentCount">0</span>
+              <span class="success-stat-label">Absent</span>
+            </div>
+            <div class="success-stat-divider"></div>
+            <div class="success-stat-item">
+              <span class="success-stat-val rate" id="successRateVal">0%</span>
+              <span class="success-stat-label">Rate</span>
+            </div>
+          </div>
+
+          <!-- Cloud Sync Indicator -->
+          <div class="success-sync-pill" id="successSyncPill">
+            <span class="sync-dot"></span>
+            <span id="successSyncMessage">Saved & Synced to Google Sheets</span>
+          </div>
+
+          <!-- Next Actions -->
+          <div class="success-actions-group">
+            <button class="btn-primary" onclick="App.navigateTo('attendance')" style="width: 100%; min-height: 44px;">
+              Take Attendance for Another Nilai
+            </button>
+            <div class="success-subactions">
+              <button class="btn-ghost-action" onclick="App.navigateTo('attendance')" style="flex: 1;">
+                Edit this Session
+              </button>
+              <button class="btn-ghost-action" onclick="App.navigateTo('analytics')" style="flex: 1;">
+                View Analytics
+              </button>
+            </div>
+          </div>
+
         </div>
       </div>
+    </section>
 
-      <div id="dashboardContent">
-        <!-- Rendered dynamically via Dashboard.render -->
+    <!-- =========================================================================
+         SCREEN 4: DASHBOARD ANALYTICS VIEW
+         ========================================================================= -->
+    <section id="screenAnalytics" class="app-screen">
+      <div class="editorial-sheet">
+        <!-- Top Back Navigation -->
+        <div class="attendance-top-nav" style="margin-bottom: 16px;">
+          <button class="btn-back-hub" onclick="App.navigateTo('attendance')" title="Back to Attendance">
+            <span>← Back to Attendance</span>
+          </button>
+          <div class="attendance-class-badge">
+            School Analytics
+          </div>
+        </div>
+
+        <div id="dashboardContent">
+          <!-- Rendered dynamically via Dashboard.render -->
+        </div>
       </div>
     </section>
 
   </main>
+
+  <!-- Sticky Bottom Action Bar (Only visible on Screen 2) -->
+  <aside class="sticky-action-bar" id="stickyActionBar" style="display: none;">
+    <div class="sticky-action-container">
+      <div class="tally-group">
+        <span class="tally-chip present stat-present-count">0 Present</span>
+        <span class="tally-chip absent stat-absent-count">0 Absent</span>
+        <span class="tally-chip total stat-total-count">0 Total</span>
+      </div>
+
+      <button id="submitAttendanceBtn" class="btn-submit-attendance" title="Save and Submit Attendance">
+        <span>Submit Attendance</span>
+      </button>
+    </div>
+  </aside>
 
   <!-- Reusable Modal Dialog -->
   <div id="modalOverlay" class="modal-overlay" role="dialog" aria-modal="true">
     <div class="modal-box">
       <div class="modal-head">
         <h3 id="modalTitle" class="modal-title">Modal Title</h3>
-        <button id="modalCloseIcon" class="crud-btn" aria-label="Close modal">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
+        <button id="modalCloseIcon" class="btn-icon-subtle" aria-label="Close modal">✕</button>
       </div>
       <div id="modalBody" class="modal-body-area"></div>
       <div class="modal-foot">
-        <button id="modalCancelBtn" class="btn-outline-pill">Cancel</button>
-        <button id="modalConfirmBtn" class="btn-pill btn-coral" style="padding: 10px 20px;">Confirm</button>
+        <button id="modalCancelBtn" class="btn-ghost-action" style="padding:8px 16px;">Cancel</button>
+        <button id="modalConfirmBtn" class="btn-primary">Confirm</button>
       </div>
     </div>
   </div>
@@ -263,12 +291,12 @@
   <!-- Toast Container -->
   <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
-  <!-- Scripts (Cache Busted v12) -->
-  <script src="js/store.js?v=12"></script>
-  <script src="js/sheets-api.js?v=12"></script>
-  <script src="js/student-mgr.js?v=12"></script>
-  <script src="js/dashboard.js?v=12"></script>
-  <script src="js/app.js?v=12"></script>
+  <!-- Scripts (Cache Busted v34) -->
+  <script src="js/store.js?v=34"></script>
+  <script src="js/sheets-api.js?v=34"></script>
+  <script src="js/student-mgr.js?v=34"></script>
+  <script src="js/dashboard.js?v=34"></script>
+  <script src="js/app.js?v=34"></script>
 </body>
 
 </html>
