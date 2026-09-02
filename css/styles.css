@@ -2101,6 +2101,35 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 .toast.error { border-left: 3px solid var(--danger); }
 .toast.info { border-left: 3px solid var(--terra); }
 
+/* --- Desktop Airy Layout (>= 900px) — bigger tiles, less clump --- */
+@media (min-width: 900px) {
+  .main-wrapper { max-width: 860px; padding: 24px 20px 140px; }
+  .main-wrapper.dashboard-wide { max-width: 980px; }
+  .editorial-sheet { padding: 28px 24px; border-radius: 12px; }
+  .weekly-picker-bar { padding: 14px 16px; gap: 12px; }
+  .weekly-display-btn { padding: 8px 14px; font-size: 0.9375rem; }
+  .roster-header-row { margin-bottom: 18px; padding-bottom: 10px; }
+  .roster-heading { font-size: 1.2rem; }
+  .student-tiles-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-bottom: 12px;
+  }
+  .student-tile {
+    padding: 16px 18px;
+    border-radius: 12px;
+    min-height: 68px;
+    gap: 14px;
+  }
+  .tile-roll { font-size: 0.8rem; width: 26px; }
+  .tile-name { font-size: 1.02rem; }
+  .btn-icon-subtle { width: 28px; height: 28px; }
+  .vol-hours-stepper { gap: 8px; padding: 4px; border-radius: 10px; }
+  .vol-hours-btn { width: 32px; height: 32px; font-size: 1.05rem; border-radius: 8px; }
+  .vol-hours-display { min-width: 64px; font-size: 0.875rem; }
+  .btn-roster-pill { padding: 9px 16px; font-size: 0.875rem; }
+}
+
 /* --- Mobile Specific Tuning (< 640px) --- */
 @media (max-width: 640px) {
   .header-container { padding: 10px 14px; }
