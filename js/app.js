@@ -97,14 +97,15 @@ const AppUI = (() => {
 // Main Controller with Animated Tabs Architecture
 const App = (() => {
   let currentLevel = 'Level1';
-  let currentDate = Store.getTodayString();
+  let currentDate = Store.getSundayString(Store.getTodayString());
   let currentAttendance = {};
+  let currentVolunteerHours = {}; // for Volunteers: student -> 0-8 hours
   let currentScreen = 'auth'; // 'auth' | 'attendance' | 'success' | 'analytics'
   let isSubmitting = false;
 
   async function init() {
     Store.seedSampleHistoryIfEmpty();
-    setupDatePickers();
+    setupWeeklyPicker();
 
     StudentMgr.init(currentLevel, onStudentDataChanged);
 
@@ -136,30 +137,46 @@ const App = (() => {
     registerServiceWorker();
   }
 
-  function setupDatePickers() {
-    const dateInput = document.getElementById('attendanceDatePicker');
-    const maxDate = Store.formatDate(new Date(Date.now() + 86400000 * 60));
-
+  function setupWeeklyPicker() {
+    renderWeeklyPicker();
+    const dateInput = document.getElementById('weeklyDatePicker');
     if (dateInput) {
-      dateInput.value = currentDate;
+      const maxDate = Store.formatDate(new Date(Date.now() + 86400000 * 60));
       dateInput.max = maxDate;
+      dateInput.value = currentDate;
     }
   }
 
+  function renderWeeklyPicker() {
+    const displayText = document.getElementById('weeklyDisplayText');
+    const rangeSub = document.getElementById('weeklyRangeSub');
+    const dateInput = document.getElementById('weeklyDatePicker');
+    if (displayText) displayText.textContent = Store.formatWeekDisplay(currentDate);
+    if (rangeSub) rangeSub.textContent = Store.formatWeekRange(currentDate);
+    if (dateInput) dateInput.value = currentDate;
+  }
+
   function setupEventListeners() {
-    // Attendance View Date picker
-    const dateInput = document.getElementById('attendanceDatePicker');
-    if (dateInput) {
-      dateInput.addEventListener('change', (e) => changeDate(e.target.value));
+    // Weekly Picker (Sunday-based)
+    const weeklyDateInput = document.getElementById('weeklyDatePicker');
+    if (weeklyDateInput) {
+      weeklyDateInput.addEventListener('change', (e) => changeDate(e.target.value));
     }
-    const todayBtn = document.getElementById('dateTodayBtn');
-    if (todayBtn) {
-      todayBtn.addEventListener('click', () => changeDate(Store.getTodayString()));
+    const weeklyDisplayBtn = document.getElementById('weeklyDisplayBtn');
+    if (weeklyDisplayBtn && weeklyDateInput) {
+      weeklyDisplayBtn.addEventListener('click', () => {
+        if (weeklyDateInput.showPicker) weeklyDateInput.showPicker();
+        else weeklyDateInput.click();
+      });
     }
-    const prevDateBtn = document.getElementById('prevDateBtn');
-    const nextDateBtn = document.getElementById('nextDateBtn');
-    if (prevDateBtn) prevDateBtn.addEventListener('click', () => stepDate(-1));
-    if (nextDateBtn) nextDateBtn.addEventListener('click', () => stepDate(1));
+    const todayWeekBtn = document.getElementById('todayWeekBtn');
+    if (todayWeekBtn) {
+      todayWeekBtn.addEventListener('click', () => changeDate(Store.getSundayString(Store.getTodayString())));
+    }
+    const prevWeekBtn = document.getElementById('prevWeekBtn');
+    const nextWeekBtn = document.getElementById('nextWeekBtn');
+    if (prevWeekBtn) prevWeekBtn.addEventListener('click', () => stepWeek(-1));
+    if (nextWeekBtn) nextWeekBtn.addEventListener('click', () => stepWeek(1));
 
     // Submit Attendance Button
     const submitBtn = document.getElementById('submitAttendanceBtn');
@@ -262,19 +279,22 @@ const App = (() => {
     }
   }
 
-  function stepDate(daysDelta) {
-    const parsed = new Date(currentDate + 'T00:00:00');
-    parsed.setDate(parsed.getDate() + daysDelta);
-    const newDateStr = Store.formatDate(parsed);
+  function stepWeek(weeksDelta) {
+    const newDateStr = Store.addWeeks(currentDate, weeksDelta);
     changeDate(newDateStr);
+  }
+
+  // Back-compat alias
+  function stepDate(daysDelta) {
+    // Interpret as weeks if called from old code
+    stepWeek(daysDelta);
   }
 
   function changeDate(newDateStr) {
     if (!newDateStr) return;
-    currentDate = Store.formatDate(newDateStr);
+    currentDate = Store.getSundayString(Store.formatDate(newDateStr));
 
-    const dateInput = document.getElementById('attendanceDatePicker');
-    if (dateInput) dateInput.value = currentDate;
+    renderWeeklyPicker();
 
     renderNilaiTabs();
     if (currentScreen === 'attendance') {
@@ -343,13 +363,26 @@ const App = (() => {
 
     const classLabel = currentLevel === 'Volunteers' ? 'Volunteers' : `Nilai ${currentLevel.replace('Level', '')}`;
     const students = Store.getStudentsForLevel(currentLevel);
-    if (rosterTitle) rosterTitle.textContent = `${classLabel} (${students.length} students)`;
+    if (rosterTitle) {
+      const weekLabel = Store.formatWeekDisplay(currentDate);
+      rosterTitle.textContent = `${classLabel} (${students.length}) · ${weekLabel}`;
+    }
 
     if (!studentContainer) return;
 
     const fetchedStudents = await SheetsAPI.fetchStudentsFromSheet(currentLevel);
-    const { attendanceMap, hasExistingRecord } = Store.getAttendanceForDate(currentLevel, currentDate);
+    const { attendanceMap, hoursMap, hasExistingRecord } = Store.getAttendanceForDate(currentLevel, currentDate);
     currentAttendance = attendanceMap;
+    if (currentLevel === 'Volunteers') {
+      currentVolunteerHours = hoursMap || {};
+      // Ensure all students have entry
+      fetchedStudents.forEach(s => {
+        if (currentVolunteerHours[s] === undefined) currentVolunteerHours[s] = currentAttendance[s] === 'Present' ? 1 : 0;
+        if (currentAttendance[s] === undefined) currentAttendance[s] = currentVolunteerHours[s] > 0 ? 'Present' : 'Absent';
+      });
+    } else {
+      currentVolunteerHours = {};
+    }
 
     renderStudentList(fetchedStudents, hasExistingRecord);
     updateStatsPills();
@@ -367,36 +400,70 @@ const App = (() => {
 
     if (emptyState) emptyState.style.display = 'none';
 
+    const isVolView = currentLevel === 'Volunteers';
     let html = '';
     students.forEach((student, index) => {
-      const status = currentAttendance[student] || 'Absent';
-      const isPresent = status === 'Present';
-      const cardClass = isPresent ? 'student-tile is-present' : 'student-tile';
       const rollNumber = String(index + 1).padStart(2, '0');
-
-      html += `
-        <div class="${cardClass}" id="student-card-${index}" onclick="App.toggleAttendanceByIndex(${index})">
+      const safeName = AppUI.escapeHtml(student);
+      if (isVolView) {
+        const hours = typeof currentVolunteerHours[student] === 'number' ? currentVolunteerHours[student] : (currentAttendance[student] === 'Present' ? 1 : 0);
+        const isPresent = hours > 0;
+        const cardClass = isPresent ? 'student-tile is-present' : 'student-tile';
+        const minusDisabled = hours <= 0 ? 'disabled' : '';
+        const plusDisabled = hours >= 8 ? 'disabled' : '';
+        html += `
+        <div class="${cardClass}" id="student-card-${index}" onclick="App.adjustVolunteerHours('${safeName}', ${index}, 1)">
           <div class="tile-content">
             <span class="tile-roll">${rollNumber}</span>
-            <span class="tile-name">${AppUI.escapeHtml(student)}</span>
+            <span class="tile-name">${safeName}</span>
           </div>
 
           <div class="tile-right" onclick="event.stopPropagation()">
             <div class="tile-crud">
-              <button class="btn-icon-subtle" title="Edit Student" onclick="StudentMgr.promptEditStudent('${AppUI.escapeHtml(student)}')">
+              <button class="btn-icon-subtle" title="Edit Student" onclick="StudentMgr.promptEditStudent('${safeName}')">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
               </button>
-              <button class="btn-icon-subtle delete" title="Delete Student" onclick="StudentMgr.promptDeleteStudent('${AppUI.escapeHtml(student)}')">
+              <button class="btn-icon-subtle delete" title="Delete Student" onclick="StudentMgr.promptDeleteStudent('${safeName}')">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
               </button>
             </div>
 
-            <button class="tile-pill-btn" id="toggle-btn-${index}" onclick="App.toggleAttendance('${AppUI.escapeHtml(student)}', ${index})">
+            <div class="vol-hours-stepper" id="vol-stepper-${index}">
+              <button class="vol-hours-btn minus" ${minusDisabled} onclick="App.adjustVolunteerHours('${safeName}', ${index}, -1)" title="Remove 1 hour">−</button>
+              <span class="vol-hours-display ${isPresent ? 'has-hours' : ''}" id="vol-hours-display-${index}">${hours} hr${hours !== 1 ? 's' : ''}</span>
+              <button class="vol-hours-btn plus" ${plusDisabled} onclick="App.adjustVolunteerHours('${safeName}', ${index}, 1)" title="Add 1 hour">+</button>
+            </div>
+          </div>
+        </div>
+      `;
+      } else {
+        const status = currentAttendance[student] || 'Absent';
+        const isPresent = status === 'Present';
+        const cardClass = isPresent ? 'student-tile is-present' : 'student-tile';
+        html += `
+        <div class="${cardClass}" id="student-card-${index}" onclick="App.toggleAttendanceByIndex(${index})">
+          <div class="tile-content">
+            <span class="tile-roll">${rollNumber}</span>
+            <span class="tile-name">${safeName}</span>
+          </div>
+
+          <div class="tile-right" onclick="event.stopPropagation()">
+            <div class="tile-crud">
+              <button class="btn-icon-subtle" title="Edit Student" onclick="StudentMgr.promptEditStudent('${safeName}')">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+              <button class="btn-icon-subtle delete" title="Delete Student" onclick="StudentMgr.promptDeleteStudent('${safeName}')">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              </button>
+            </div>
+
+            <button class="tile-pill-btn" id="toggle-btn-${index}" onclick="App.toggleAttendance('${safeName}', ${index})">
               ${isPresent ? '✓ Present' : 'Absent'}
             </button>
           </div>
         </div>
       `;
+      }
     });
 
     studentContainer.innerHTML = html;
@@ -405,11 +472,22 @@ const App = (() => {
   function toggleAttendanceByIndex(index) {
     const students = Store.getStudentsForLevel(currentLevel);
     if (students && students[index]) {
-      toggleAttendance(students[index], index);
+      if (currentLevel === 'Volunteers') {
+        adjustVolunteerHours(students[index], index, 1);
+      } else {
+        toggleAttendance(students[index], index);
+      }
     }
   }
 
   function toggleAttendance(studentName, index) {
+    if (currentLevel === 'Volunteers') {
+      // For volunteers, toggle between 0 and 1 hr
+      const currentHours = typeof currentVolunteerHours[studentName] === 'number' ? currentVolunteerHours[studentName] : (currentAttendance[studentName] === 'Present' ? 1 : 0);
+      const nextHours = currentHours > 0 ? 0 : 1;
+      adjustVolunteerHours(studentName, index, nextHours - currentHours);
+      return;
+    }
     const current = currentAttendance[studentName] || 'Absent';
     const next = current === 'Present' ? 'Absent' : 'Present';
     currentAttendance[studentName] = next;
@@ -428,20 +506,74 @@ const App = (() => {
     updateStatsPills();
   }
 
+  function adjustVolunteerHours(studentName, index, delta) {
+    const currentHours = typeof currentVolunteerHours[studentName] === 'number' ? currentVolunteerHours[studentName] : 0;
+    let nextHours = currentHours + delta;
+    // If delta is not +/-1 but absolute jump (for toggle), handle; already computed correctly
+    nextHours = Math.max(0, Math.min(8, nextHours));
+    if (nextHours === currentHours) return;
+
+    currentVolunteerHours[studentName] = nextHours;
+    currentAttendance[studentName] = nextHours > 0 ? 'Present' : 'Absent';
+
+    const card = document.getElementById(`student-card-${index}`);
+    const display = document.getElementById(`vol-hours-display-${index}`);
+    const stepper = document.getElementById(`vol-stepper-${index}`);
+    const isPresent = nextHours > 0;
+
+    if (card) card.className = isPresent ? 'student-tile is-present' : 'student-tile';
+    if (display) {
+      display.textContent = `${nextHours} hr${nextHours !== 1 ? 's' : ''}`;
+      display.className = `vol-hours-display ${isPresent ? 'has-hours' : ''}`;
+    }
+    if (stepper) {
+      const minusBtn = stepper.querySelector('.vol-hours-btn.minus');
+      const plusBtn = stepper.querySelector('.vol-hours-btn.plus');
+      if (minusBtn) minusBtn.disabled = nextHours <= 0;
+      if (plusBtn) plusBtn.disabled = nextHours >= 8;
+    }
+
+    updateStatsPills();
+  }
+
   function markAll(status) {
-    const isPresent = status === 'Present';
-    const students = Object.keys(currentAttendance);
-    students.forEach(s => {
+    const studentsList = Store.getStudentsForLevel(currentLevel);
+    if (currentLevel === 'Volunteers') {
+      const targetHours = status === 'Present' ? 1 : 0;
+      studentsList.forEach(s => {
+        currentVolunteerHours[s] = targetHours;
+        currentAttendance[s] = targetHours > 0 ? 'Present' : 'Absent';
+      });
+      renderStudentList(studentsList, true);
+      updateStatsPills();
+      AppUI.showToast(`Marked all as ${status.toLowerCase()} (${targetHours} hr)`, 'info');
+      return;
+    }
+    studentsList.forEach(s => {
       currentAttendance[s] = status;
     });
-
-    const studentsList = Store.getStudentsForLevel(currentLevel);
+    // Ensure currentVolunteerHours cleared for non-vol view
     renderStudentList(studentsList, true);
     updateStatsPills();
     AppUI.showToast(`Marked all as ${status.toLowerCase()}`, 'info');
   }
 
   function updateStatsPills() {
+    const isVolView = currentLevel === 'Volunteers';
+    if (isVolView) {
+      const hoursVals = Object.values(currentVolunteerHours);
+      const presentCount = hoursVals.filter(h => h > 0).length;
+      const absentCount = hoursVals.filter(h => h === 0).length;
+      const totalCount = hoursVals.length;
+      const totalHours = hoursVals.reduce((sum, h) => sum + (h || 0), 0);
+      const presentEls = document.querySelectorAll('.stat-present-count');
+      const absentEls = document.querySelectorAll('.stat-absent-count');
+      const totalEls = document.querySelectorAll('.stat-total-count');
+      presentEls.forEach(el => el.textContent = `${presentCount} Present · ${totalHours} hrs`);
+      absentEls.forEach(el => el.textContent = `${absentCount} Absent`);
+      totalEls.forEach(el => el.textContent = `${totalCount} Total`);
+      return;
+    }
     const statuses = Object.values(currentAttendance);
     const presentCount = statuses.filter(s => s === 'Present').length;
     const absentCount = statuses.filter(s => s === 'Absent').length;
@@ -458,10 +590,25 @@ const App = (() => {
 
   async function submitCurrentAttendance() {
     if (isSubmitting) return;
-    const students = Object.keys(currentAttendance);
-    if (students.length === 0) {
+    const isVolSubmit = currentLevel === 'Volunteers';
+    const students = isVolSubmit ? Object.keys(currentVolunteerHours) : Object.keys(currentAttendance);
+    // Fallback to roster if map empty (e.g., fresh load)
+    const rosterForSubmit = Store.getStudentsForLevel(currentLevel);
+    const submitKeys = students.length > 0 ? students : rosterForSubmit;
+    if (submitKeys.length === 0) {
       AppUI.showToast('No students to submit attendance for.', 'error');
       return;
+    }
+    // Ensure maps include all roster students
+    if (isVolSubmit) {
+      rosterForSubmit.forEach(s => {
+        if (currentVolunteerHours[s] === undefined) currentVolunteerHours[s] = 0;
+        if (currentAttendance[s] === undefined) currentAttendance[s] = currentVolunteerHours[s] > 0 ? 'Present' : 'Absent';
+      });
+    } else {
+      rosterForSubmit.forEach(s => {
+        if (currentAttendance[s] === undefined) currentAttendance[s] = 'Absent';
+      });
     }
 
     isSubmitting = true;
@@ -475,26 +622,48 @@ const App = (() => {
 
     try {
       const teacher = Store.getTeacherName();
-      const result = await SheetsAPI.submitAttendance(currentLevel, currentDate, currentAttendance, teacher);
+      let result;
+      if (isVolSubmit) {
+        result = await SheetsAPI.submitAttendance(currentLevel, currentDate, currentAttendance, teacher, currentVolunteerHours);
+      } else {
+        result = await SheetsAPI.submitAttendance(currentLevel, currentDate, currentAttendance, teacher);
+      }
 
-      const statuses = Object.values(currentAttendance);
-      const presentCount = statuses.filter(s => s === 'Present').length;
-      const absentCount = statuses.filter(s => s === 'Absent').length;
-      const totalCount = statuses.length;
-      const rate = totalCount > 0 ? Math.round((presentCount / totalCount) * 100) : 0;
+      let presentCount, absentCount, totalCount, rate, totalHours;
+      if (isVolSubmit) {
+        const hoursVals = Object.values(currentVolunteerHours);
+        presentCount = hoursVals.filter(h => h > 0).length;
+        absentCount = hoursVals.filter(h => h === 0).length;
+        totalCount = hoursVals.length;
+        totalHours = hoursVals.reduce((sum, h) => sum + (h || 0), 0);
+        rate = totalCount > 0 ? Math.round((presentCount / totalCount) * 100) : 0;
+      } else {
+        const statuses = Object.values(currentAttendance);
+        presentCount = statuses.filter(s => s === 'Present').length;
+        absentCount = statuses.filter(s => s === 'Absent').length;
+        totalCount = statuses.length;
+        rate = totalCount > 0 ? Math.round((presentCount / totalCount) * 100) : 0;
+      }
 
       // Update Screen 3 elements
       const classLabel = currentLevel === 'Volunteers' ? 'Volunteers' : `Nilai ${currentLevel.replace('Level', '')}`;
+      const weekRangeText = Store.formatWeekRange(currentDate);
       const successClassDateText = document.getElementById('successClassDateText');
       const successPresentCount = document.getElementById('successPresentCount');
       const successAbsentCount = document.getElementById('successAbsentCount');
       const successRateVal = document.getElementById('successRateVal');
       const successSyncMessage = document.getElementById('successSyncMessage');
 
-      if (successClassDateText) successClassDateText.textContent = `Successfully recorded for ${classLabel} · ${currentDate}`;
-      if (successPresentCount) successPresentCount.textContent = presentCount;
+      if (successClassDateText) {
+        if (isVolSubmit) {
+          successClassDateText.textContent = `Successfully recorded for ${classLabel} · ${Store.formatWeekDisplay(currentDate)} · ${totalHours} total hours`;
+        } else {
+          successClassDateText.textContent = `Successfully recorded for ${classLabel} · ${Store.formatWeekDisplay(currentDate)}`;
+        }
+      }
+      if (successPresentCount) successPresentCount.textContent = isVolSubmit ? totalHours + ' hrs' : presentCount;
       if (successAbsentCount) successAbsentCount.textContent = absentCount;
-      if (successRateVal) successRateVal.textContent = `${rate}%`;
+      if (successRateVal) successRateVal.textContent = isVolSubmit ? presentCount + '/' + totalCount + ' weeks' : `${rate}%`;
 
       if (successSyncMessage) {
         if (result.syncedWithSheet) {
@@ -574,8 +743,11 @@ const App = (() => {
     navigateTo,
     selectNilaiTab,
     changeDate,
+    stepWeek,
+    stepDate,
     toggleAttendance,
     toggleAttendanceByIndex,
+    adjustVolunteerHours,
     markAll,
     submitCurrentAttendance
   };

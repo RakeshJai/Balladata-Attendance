@@ -59,6 +59,47 @@ const Store = (() => {
     return formatDate(new Date());
   }
 
+  // Weekly helpers — Sunday defines the week (Tamil school weekly)
+  function getSundayString(dateStr) {
+    const d = new Date((dateStr || getTodayString()) + 'T00:00:00');
+    if (isNaN(d.getTime())) return formatDate(new Date());
+    const day = d.getDay(); // 0=Sunday
+    d.setDate(d.getDate() - day);
+    return formatDate(d);
+  }
+
+  function getWeekRange(sundayStr) {
+    const sunday = new Date(sundayStr + 'T00:00:00');
+    const saturday = new Date(sunday);
+    saturday.setDate(sunday.getDate() + 6);
+    return { start: formatDate(sunday), end: formatDate(saturday) };
+  }
+
+  function formatWeekDisplay(sundayStr) {
+    const d = new Date(sundayStr + 'T00:00:00');
+    const opts = { month: 'short', day: 'numeric', year: 'numeric' };
+    return 'Week of ' + d.toLocaleDateString('en-US', opts);
+  }
+
+  function formatWeekRange(sundayStr) {
+    const { start, end } = getWeekRange(sundayStr);
+    const s = new Date(start + 'T00:00:00');
+    const e = new Date(end + 'T00:00:00');
+    const sameMonth = s.getMonth() === e.getMonth() && s.getFullYear() === e.getFullYear();
+    const sFmt = s.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const eFmt = e.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    if (sameMonth) {
+      return s.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' \u2013 ' + e.toLocaleDateString('en-US', { day: 'numeric', year: 'numeric' }) + ' \u00B7 Sunday week';
+    }
+    return sFmt + ' \u2013 ' + eFmt + ' \u00B7 Sunday week';
+  }
+
+  function addWeeks(dateStr, weeksDelta) {
+    const d = new Date(dateStr + 'T00:00:00');
+    d.setDate(d.getDate() + weeksDelta * 7);
+    return formatDate(d);
+  }
+
   // Load students from storage or seed
   function getStudentsMap() {
     const raw = localStorage.getItem(STORAGE_KEYS.STUDENTS);
@@ -160,47 +201,71 @@ const Store = (() => {
    * Appends attendance records to the log store.
    * If attendance submitted multiple times for same day for same person,
    * our retrieval & summary queries pick up the latest!
+   * For Volunteers, hours 0-8 is stored (1 hr per Present week default).
    */
   function appendLogs(newLogs) {
     const current = getLogs();
     const nowIso = new Date().toISOString();
-    const enriched = newLogs.map(l => ({
-      date: formatDate(l.date),
-      timestamp: l.timestamp || nowIso,
-      teacher: l.teacher || 'Teacher',
-      student: l.student,
-      status: l.status === 'Present' ? 'Present' : 'Absent',
-      level: l.level
-    }));
+    const enriched = newLogs.map(l => {
+      const isVol = l.level === 'Volunteers';
+      const normalizedDate = getSundayString(formatDate(l.date));
+      let hours = l.hours;
+      let status = l.status;
+      if (isVol) {
+        if (typeof hours !== 'number') {
+          // Back-compat: Present=1, Absent=0
+          hours = status === 'Present' ? 1 : (typeof status === 'number' ? Math.max(0, Math.min(8, status)) : 0);
+        }
+        hours = Math.max(0, Math.min(8, Math.round(hours)));
+        status = hours > 0 ? 'Present' : 'Absent';
+      } else {
+        // Non-volunteers: normalize status, hours derived for consistency
+        status = status === 'Present' ? 'Present' : 'Absent';
+        hours = status === 'Present' ? 1 : 0;
+      }
+      return {
+        date: normalizedDate,
+        timestamp: l.timestamp || nowIso,
+        teacher: l.teacher || 'Teacher',
+        student: l.student,
+        status: status,
+        hours: hours,
+        level: l.level
+      };
+    });
     current.push(...enriched);
     saveLogs(current);
   }
 
   /**
    * Retrieves latest attendance record for each student in a given level on a specific date.
+   * Weekly Sunday-normalized. For Volunteers, returns hours 0-8 per student.
    * Requirement 6: "If attendance submitted multiple times for same day for same person, it should pick up the latest."
    * Requirement 7: "Attendance default value should be no (Absent). If attendance existed for that day, should retrieve and show the value."
    * 
    * @param {string} levelId - e.g. 'Level1'
-   * @param {string} dateStr - 'YYYY-MM-DD'
-   * @returns {Object} map of studentName -> 'Present'|'Absent'
+   * @param {string} dateStr - 'YYYY-MM-DD' (any day in week, normalized to Sunday)
+   * @returns {Object} { attendanceMap: student->'Present'|'Absent', hoursMap: student->0-8, hasExistingRecord }
    */
   function getAttendanceForDate(levelId, dateStr) {
-    const normalizedDate = formatDate(dateStr);
+    const normalizedDate = getSundayString(formatDate(dateStr));
     const students = getStudentsForLevel(levelId);
     const logs = getLogs();
+    const isVol = levelId === 'Volunteers';
 
-    // Filter logs for this date and level
-    const matchingLogs = logs.filter(l => l.level === levelId && formatDate(l.date) === normalizedDate);
+    // Filter logs for this week (Sunday-normalized) and level
+    const matchingLogs = logs.filter(l => l.level === levelId && getSundayString(formatDate(l.date)) === normalizedDate);
 
     // Sort matching logs chronologically so later ones overwrite earlier ones
     matchingLogs.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
     const result = {};
+    const hoursResult = {};
 
-    // First default all students to 'Absent' (No) as per requirement 7
+    // First default all students to 'Absent' (No) / 0 hrs as per requirement 7
     students.forEach(student => {
       result[student] = 'Absent';
+      hoursResult[student] = 0;
     });
 
     let hasExistingRecord = matchingLogs.length > 0;
@@ -208,31 +273,40 @@ const Store = (() => {
     // Apply latest matching logs
     matchingLogs.forEach(log => {
       if (result.hasOwnProperty(log.student) || students.includes(log.student)) {
-        result[log.student] = log.status;
+        result[log.student] = log.status || (log.hours > 0 ? 'Present' : 'Absent');
+        if (isVol) {
+          let h = typeof log.hours === 'number' ? log.hours : (log.status === 'Present' ? 1 : 0);
+          hoursResult[log.student] = Math.max(0, Math.min(8, h));
+        } else {
+          hoursResult[log.student] = result[log.student] === 'Present' ? 1 : 0;
+        }
       }
     });
 
     return {
       attendanceMap: result,
+      hoursMap: hoursResult,
       hasExistingRecord: hasExistingRecord
     };
   }
 
   /**
    * Compute aggregate metrics and per-student summaries for the Dashboard.
+   * Weekly Sunday-normalized. For Volunteers, hours 0-8 per week (1 hr default per Present).
    * Uses deduplication: only the latest record for a (student, date) is counted!
    */
   function getDashboardStats(selectedLevel = 'ALL', dateFilter = null) {
     const logs = getLogs();
     const studentsMap = getStudentsMap();
+    const normalizedFilter = dateFilter ? getSundayString(formatDate(dateFilter)) : null;
 
-    // Map: studentKey (level + '::' + student) -> Map(date -> { status, timestamp })
+    // Map: studentKey (level + '::' + student) -> Map(date -> { status, hours, timestamp })
     const studentDateMap = new Map();
 
     logs.forEach(log => {
-      const logDate = formatDate(log.date);
+      const logDate = getSundayString(formatDate(log.date));
       if (selectedLevel !== 'ALL' && log.level !== selectedLevel) return;
-      if (dateFilter && logDate !== dateFilter) return;
+      if (normalizedFilter && logDate !== normalizedFilter) return;
 
       const key = `${log.level}::${log.student}`;
       if (!studentDateMap.has(key)) {
@@ -243,8 +317,12 @@ const Store = (() => {
 
       // Latest timestamp wins
       if (!existing || new Date(log.timestamp).getTime() >= new Date(existing.timestamp).getTime()) {
+        const isVol = log.level === 'Volunteers';
+        let hours = typeof log.hours === 'number' ? log.hours : (log.status === 'Present' ? 1 : 0);
+        if (isVol) hours = Math.max(0, Math.min(8, hours));
         dateRecords.set(logDate, {
-          status: log.status,
+          status: log.status || (hours > 0 ? 'Present' : 'Absent'),
+          hours: hours,
           timestamp: log.timestamp,
           teacher: log.teacher,
           level: log.level,
@@ -258,29 +336,37 @@ const Store = (() => {
     let totalPresent = 0;
     let totalAbsent = 0;
     let totalSessionsLogged = 0;
+    let totalVolunteerHours = 0;
 
     // Collect all known students in scope
     const targetLevels = selectedLevel === 'ALL' ? LEVELS.map(l => l.id) : [selectedLevel];
 
     targetLevels.forEach(levelId => {
       const students = studentsMap[levelId] || [];
+      const isVolunteerLevel = levelId === 'Volunteers';
       students.forEach(studentName => {
         const key = `${levelId}::${studentName}`;
         const dateRecords = studentDateMap.get(key) || new Map();
 
         let presentCount = 0;
         let absentCount = 0;
+        let volunteerHours = 0;
         const history = [];
 
         dateRecords.forEach((rec, dStr) => {
-          if (rec.status === 'Present') {
+          const isPresent = rec.status === 'Present' || (isVolunteerLevel && rec.hours > 0);
+          if (isPresent) {
             presentCount++;
           } else {
             absentCount++;
           }
+          if (isVolunteerLevel) {
+            volunteerHours += Math.max(0, Math.min(8, rec.hours || 0));
+          }
           history.push({
             date: dStr,
             status: rec.status,
+            hours: isVolunteerLevel ? rec.hours : (rec.status === 'Present' ? 1 : 0),
             teacher: rec.teacher,
             timestamp: rec.timestamp
           });
@@ -290,6 +376,8 @@ const Store = (() => {
 
         const totalDays = presentCount + absentCount;
         const percentage = totalDays > 0 ? Math.round((presentCount / totalDays) * 100) : 0;
+        if (isVolunteerLevel) totalVolunteerHours += volunteerHours;
+        else volunteerHours = 0;
 
         totalPresent += presentCount;
         totalAbsent += absentCount;
@@ -302,6 +390,8 @@ const Store = (() => {
           absentCount: absentCount,
           totalDays: totalDays,
           percentage: percentage,
+          volunteerHours: volunteerHours,
+          isVolunteer: isVolunteerLevel,
           history: history
         });
       });
@@ -330,6 +420,7 @@ const Store = (() => {
       totalAbsent: totalAbsent,
       totalSessions: allDates.size,
       overallAttendanceRate: overallRate,
+      totalVolunteerHours: totalVolunteerHours,
       students: studentSummaries
     };
   }
@@ -353,24 +444,46 @@ const Store = (() => {
 
       for (let i = 1; i <= 6; i++) {
         const d = new Date(now);
-        d.setDate(d.getDate() - (i * 7)); // past 6 weeks (e.g. Sundays)
-        pastDates.push(formatDate(d));
+        d.setDate(d.getDate() - (i * 7)); // past 6 weeks
+        pastDates.push(getSundayString(formatDate(d)));
       }
 
       LEVELS.forEach(lvl => {
         const students = DEFAULT_STUDENTS[lvl.id] || [];
+        const isVol = lvl.id === 'Volunteers';
         pastDates.forEach(dStr => {
           students.forEach(st => {
             // 85% attendance seed
             const isPresent = Math.random() > 0.15;
-            sampleLogs.push({
-              date: dStr,
-              timestamp: new Date(dStr + 'T10:00:00Z').toISOString(),
-              teacher: 'Baladatta Teacher',
-              student: st,
-              status: isPresent ? 'Present' : 'Absent',
-              level: lvl.id
-            });
+            if (isVol) {
+              let hours = 0;
+              if (isPresent) {
+                // 70% 1hr, 25% 2hrs, 5% 3hrs to demo variable hours
+                const r = Math.random();
+                if (r < 0.7) hours = 1;
+                else if (r < 0.95) hours = 2;
+                else hours = 3;
+              }
+              sampleLogs.push({
+                date: dStr,
+                timestamp: new Date(dStr + 'T10:00:00Z').toISOString(),
+                teacher: 'Baladatta Teacher',
+                student: st,
+                status: hours > 0 ? 'Present' : 'Absent',
+                hours: hours,
+                level: lvl.id
+              });
+            } else {
+              sampleLogs.push({
+                date: dStr,
+                timestamp: new Date(dStr + 'T10:00:00Z').toISOString(),
+                teacher: 'Baladatta Teacher',
+                student: st,
+                status: isPresent ? 'Present' : 'Absent',
+                hours: isPresent ? 1 : 0,
+                level: lvl.id
+              });
+            }
           });
         });
       });
@@ -383,6 +496,11 @@ const Store = (() => {
     LEVELS,
     formatDate,
     getTodayString,
+    getSundayString,
+    getWeekRange,
+    formatWeekDisplay,
+    formatWeekRange,
+    addWeeks,
     getStudentsForLevel,
     setStudentsForLevel,
     addStudent,

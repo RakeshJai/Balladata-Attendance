@@ -173,6 +173,7 @@ const SheetsAPI = (() => {
 
   /**
    * Fetches historical logs from 'Logs' tab.
+   * Supports both legacy 6-col (A-F) and new 7-col (A-G with hours) sheets.
    */
   async function fetchLogsFromSheet() {
     if (!isSignedIn || !isGapiLoaded) {
@@ -181,18 +182,30 @@ const SheetsAPI = (() => {
     try {
       const response = await gapi.client.sheets.spreadsheets.values.get({
         spreadsheetId: CONFIG.SPREADSHEET_ID,
-        range: `Logs!A2:F`
+        range: `Logs!A2:G`
       });
       const rows = response.result.values || [];
       if (rows.length > 0) {
-        const parsedLogs = rows.map(r => ({
-          date: r[0] || "",
-          teacher: r[1] || "",
-          student: r[2] || "",
-          status: r[3] || "Absent",
-          level: r[4] || "",
-          timestamp: r[5] || (r[0] ? new Date(r[0]).toISOString() : new Date().toISOString())
-        })).filter(l => l.student && l.date);
+        const parsedLogs = rows.map(r => {
+          const hoursRaw = r[6];
+          let hours = hoursRaw !== undefined && hoursRaw !== '' ? parseInt(hoursRaw, 10) : null;
+          if (hours !== null && isNaN(hours)) hours = null;
+          const status = r[3] || "Absent";
+          const level = r[4] || "";
+          const isVol = level === 'Volunteers';
+          if (hours === null) {
+            hours = isVol ? (status === 'Present' ? 1 : 0) : (status === 'Present' ? 1 : 0);
+          }
+          return {
+            date: r[0] || "",
+            teacher: r[1] || "",
+            student: r[2] || "",
+            status: status,
+            hours: hours,
+            level: level,
+            timestamp: r[5] || (r[0] ? new Date(r[0]).toISOString() : new Date().toISOString())
+          };
+        }).filter(l => l.student && l.date);
 
         Store.saveLogs(parsedLogs);
         return parsedLogs;
@@ -205,53 +218,98 @@ const SheetsAPI = (() => {
 
   /**
    * Submits attendance for a given level and date.
-   * Updates local store immediately AND appends to Google Sheets Logs tab.
+   * For Volunteers, volunteerHoursMap (student->0-8) is used; 1 hr per Present week default.
+   * Updates local store immediately AND appends to Google Sheets Logs tab (A-G with hours).
    */
-  async function submitAttendance(levelId, dateStr, attendanceMap, teacherName) {
-    const students = Object.keys(attendanceMap);
+  async function submitAttendance(levelId, dateStr, attendanceMap, teacherName, volunteerHoursMap = null) {
+    const isVol = levelId === 'Volunteers';
+    const students = isVol && volunteerHoursMap ? Object.keys(volunteerHoursMap) : Object.keys(attendanceMap);
+    // Fallback to attendanceMap keys if volunteer map empty
+    const effectiveStudents = students.length > 0 ? students : Object.keys(attendanceMap);
     const nowIso = new Date().toISOString();
-    const formattedDate = Store.formatDate(dateStr);
+    const normalizedDate = Store.getSundayString ? Store.getSundayString(Store.formatDate(dateStr)) : Store.formatDate(dateStr);
 
-    const logEntries = students.map(student => ({
-      date: formattedDate,
-      timestamp: nowIso,
-      teacher: teacherName,
-      student: student,
-      status: attendanceMap[student] || "Absent",
-      level: levelId
-    }));
+    const logEntries = effectiveStudents.map(student => {
+      if (isVol) {
+        const hours = volunteerHoursMap && typeof volunteerHoursMap[student] === 'number' ? volunteerHoursMap[student] : (attendanceMap[student] === 'Present' ? 1 : 0);
+        const clamped = Math.max(0, Math.min(8, hours));
+        return {
+          date: normalizedDate,
+          timestamp: nowIso,
+          teacher: teacherName,
+          student: student,
+          status: clamped > 0 ? 'Present' : 'Absent',
+          hours: clamped,
+          level: levelId
+        };
+      }
+      return {
+        date: normalizedDate,
+        timestamp: nowIso,
+        teacher: teacherName,
+        student: student,
+        status: attendanceMap[student] || "Absent",
+        hours: attendanceMap[student] === 'Present' ? 1 : 0,
+        level: levelId
+      };
+    });
 
     // Always update local store first (immediate offline reactivity)
     Store.appendLogs(logEntries);
 
     if (isSignedIn && isGapiLoaded) {
       try {
-        // 1. Append rows to Logs tab
+        // 1. Append rows to Logs tab (A-G with hours)
         const sheetRows = logEntries.map(l => [
           l.date,
           l.teacher,
           l.student,
           l.status,
           l.level,
-          l.timestamp
+          l.timestamp,
+          l.hours
         ]);
 
         await gapi.client.sheets.spreadsheets.values.append({
           spreadsheetId: CONFIG.SPREADSHEET_ID,
-          range: `Logs!A:F`,
+          range: `Logs!A:G`,
           valueInputOption: "USER_ENTERED",
           insertDataOption: "INSERT_ROWS",
           resource: { values: sheetRows }
         });
 
-        // 2. Update status column in the level's specific sheet (Col A = Name, Col B = Status)
-        const statusColumnValues = students.map(s => [attendanceMap[s] || "Absent"]);
-        await gapi.client.sheets.spreadsheets.values.update({
-          spreadsheetId: CONFIG.SPREADSHEET_ID,
-          range: `${levelId}!B2:B${students.length + 1}`,
-          valueInputOption: "USER_ENTERED",
-          resource: { values: statusColumnValues }
-        });
+        // 2. Update status/hours column in the level's specific sheet (Col A = Name, Col B = Status, Col C = Hours for Volunteers)
+        if (isVol) {
+          const hoursColumnValues = effectiveStudents.map(s => {
+            const hrs = volunteerHoursMap && typeof volunteerHoursMap[s] === 'number' ? volunteerHoursMap[s] : 0;
+            return [Math.max(0, Math.min(8, hrs))];
+          });
+          await gapi.client.sheets.spreadsheets.values.update({
+            spreadsheetId: CONFIG.SPREADSHEET_ID,
+            range: `${levelId}!C2:C${effectiveStudents.length + 1}`,
+            valueInputOption: "USER_ENTERED",
+            resource: { values: hoursColumnValues }
+          });
+          // Also update status column B for backward compat
+          const statusColumnValues = effectiveStudents.map(s => {
+            const hrs = volunteerHoursMap && typeof volunteerHoursMap[s] === 'number' ? volunteerHoursMap[s] : 0;
+            return [hrs > 0 ? 'Present' : 'Absent'];
+          });
+          await gapi.client.sheets.spreadsheets.values.update({
+            spreadsheetId: CONFIG.SPREADSHEET_ID,
+            range: `${levelId}!B2:B${effectiveStudents.length + 1}`,
+            valueInputOption: "USER_ENTERED",
+            resource: { values: statusColumnValues }
+          });
+        } else {
+          const statusColumnValues = effectiveStudents.map(s => [attendanceMap[s] || "Absent"]);
+          await gapi.client.sheets.spreadsheets.values.update({
+            spreadsheetId: CONFIG.SPREADSHEET_ID,
+            range: `${levelId}!B2:B${effectiveStudents.length + 1}`,
+            valueInputOption: "USER_ENTERED",
+            resource: { values: statusColumnValues }
+          });
+        }
 
         return { success: true, syncedWithSheet: true };
       } catch (err) {

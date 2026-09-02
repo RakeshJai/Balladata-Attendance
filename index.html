@@ -17,7 +17,7 @@
     if ('caches' in window) {
       caches.keys().then(names => {
         names.forEach(name => {
-          if (name !== 'baladatta-attendance-v32') caches.delete(name);
+          if (name !== 'baladatta-attendance-v34') caches.delete(name);
         });
       });
     }
@@ -32,8 +32,8 @@
   <meta name="theme-color" content="#1f1e1b">
   <link rel="icon" type="image/png" href="Logo.png">
 
-  <!-- Claude Warm Dark Neoclassical Theme (v32) -->
-  <link rel="stylesheet" href="css/styles.css?v=32">
+  <!-- Claude Warm Dark Neoclassical Theme (v34) -->
+  <link rel="stylesheet" href="css/styles.css?v=34">
 </head>
 
 <body>
@@ -116,6 +116,21 @@
         <!-- Top Nilai Tabs Bar -->
         <div class="animated-tabs-bar" id="animatedTabsBar">
           <!-- Rendered dynamically via App.renderNilaiTabs -->
+        </div>
+
+        <!-- Weekly Picker (Sunday-based) -->
+        <div class="weekly-picker-bar" id="weeklyPickerBar">
+          <button class="icon-btn weekly-nav-btn" id="prevWeekBtn" title="Previous week" aria-label="Previous week">‹</button>
+          <div class="weekly-picker-center">
+            <button class="weekly-display-btn" id="weeklyDisplayBtn" title="Pick week">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              <span id="weeklyDisplayText">Week of Sep 1, 2026</span>
+            </button>
+            <span class="weekly-range-sub" id="weeklyRangeSub">Sep 1 – Sep 7 · Sunday week</span>
+            <input type="date" id="weeklyDatePicker" class="weekly-date-input-hidden" aria-label="Pick week date" />
+          </div>
+          <button class="icon-btn weekly-nav-btn" id="nextWeekBtn" title="Next week" aria-label="Next week">›</button>
+          <button class="btn-today weekly-today-btn" id="todayWeekBtn" title="Jump to this week">Today</button>
         </div>
 
         <!-- Tab Content Area -->
@@ -276,12 +291,12 @@
   <!-- Toast Container -->
   <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
-  <!-- Scripts (Cache Busted v32) -->
-  <script src="js/store.js?v=32"></script>
-  <script src="js/sheets-api.js?v=32"></script>
-  <script src="js/student-mgr.js?v=32"></script>
-  <script src="js/dashboard.js?v=32"></script>
-  <script src="js/app.js?v=32"></script>
+  <!-- Scripts (Cache Busted v34) -->
+  <script src="js/store.js?v=34"></script>
+  <script src="js/sheets-api.js?v=34"></script>
+  <script src="js/student-mgr.js?v=34"></script>
+  <script src="js/dashboard.js?v=34"></script>
+  <script src="js/app.js?v=34"></script>
 </body>
 
 </html>
