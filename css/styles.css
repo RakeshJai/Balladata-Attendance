@@ -2103,9 +2103,11 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 
 /* --- Desktop Airy Layout (>= 900px) — bigger tiles, less clump --- */
 @media (min-width: 900px) {
+  .header-container { max-width: 860px; }
   .main-wrapper { max-width: 860px; padding: 24px 20px 140px; }
   .main-wrapper.dashboard-wide { max-width: 980px; }
   .editorial-sheet { padding: 28px 24px; border-radius: 12px; }
+  .sticky-action-container { max-width: 860px; }
   .weekly-picker-bar { padding: 14px 16px; gap: 12px; }
   .weekly-display-btn { padding: 8px 14px; font-size: 0.9375rem; }
   .roster-header-row { margin-bottom: 18px; padding-bottom: 10px; }
@@ -2113,7 +2115,7 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   .student-tiles-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 14px;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
   }
   .student-tile {
     padding: 16px 18px;
